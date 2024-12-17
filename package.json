@@ -11,8 +11,10 @@
     "@ai-sdk/amazon-bedrock": "^1.0.5",
     "@ai-sdk/anthropic": "^1.0.5",
     "@ai-sdk/google": "^1.0.10",
+    "@ai-sdk/mistral": "^1.0.5",
     "@ai-sdk/openai": "^1.0.8",
     "ai": "^4.0.18",
+    "dotenv": "^16.4.7",
     "json-diff": "^1.0.6"
   },
   "devDependencies": {

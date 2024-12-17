@@ -1,5 +1,5 @@
 export interface Input {
-  fileUrl: string;
+  imageUrl: string;
   metadata: Metadata;
   jsonSchema: JsonSchema;
   trueJsonOutput: Record<string, any>;

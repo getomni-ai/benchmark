@@ -1,5 +1,5 @@
 {
-  "fileUrl": "https://omni-demo-data.s3.us-east-1.amazonaws.com/test/prior_auth.pdf",
+  "imageUrl": "https://omni-demo-data.s3.us-east-1.amazonaws.com/test/prior-auth.png",
   "metadata": {
     "orientation": 0,
     "documentQuality": "clean",
