@@ -5,12 +5,21 @@
   "main": "index.js",
   "scripts": {
     "build": "tsc",
-    "start": "node dist/index.js"
+    "benchmark": "ts-node src/index.ts"
+  },
+  "dependencies": {
+    "@ai-sdk/amazon-bedrock": "^1.0.5",
+    "@ai-sdk/anthropic": "^1.0.5",
+    "@ai-sdk/google": "^1.0.10",
+    "@ai-sdk/openai": "^1.0.8",
+    "ai": "^4.0.18",
+    "json-diff": "^1.0.6"
   },
   "devDependencies": {
     "@eslint/js": "^9.17.0",
     "eslint": "^9.17.0",
     "prettier": "^3.4.2",
+    "ts-node": "^10.9.2",
     "typescript": "^5.7.2",
     "typescript-eslint": "^8.18.1"
   },

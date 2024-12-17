@@ -1,2 +1,3 @@
-# benchmark
+# OCR Benchmark
+
 OCR Benchmark

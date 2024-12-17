@@ -1,0 +1,108 @@
+{
+  "fileUrl": "https://omni-demo-data.s3.us-east-1.amazonaws.com/test/prior_auth.pdf",
+  "metadata": {
+    "orientation": 0,
+    "documentQuality": "clean",
+    "resolution": [612, 792],
+    "language": "EN"
+  },
+  "jsonSchema": {
+    "type": "object",
+    "properties": {
+      "patient": {
+        "type": "object",
+        "properties": {
+          "address": {
+            "type": "object",
+            "properties": {
+              "city": { "type": "string", "description": "" },
+              "state": { "type": "string", "description": "" },
+              "street1": { "type": "string", "description": "" },
+              "street2": { "type": "string", "description": "" },
+              "zip_code": { "type": "string", "description": "" }
+            }
+          },
+          "last_name": { "type": "string", "description": "" },
+          "member_id": { "type": "string", "description": "" },
+          "first_name": { "type": "string", "description": "" },
+          "hospitalized": {
+            "type": "boolean",
+            "description": "Whether the patient is currently hospitalized"
+          },
+          "date_of_birth": {
+            "type": "object",
+            "properties": {
+              "day": { "type": "string", "description": "" },
+              "year": { "type": "string", "description": "" },
+              "month": { "type": "string", "description": "" }
+            }
+          }
+        }
+      },
+      "physician": {
+        "type": "object",
+        "properties": {
+          "address": {
+            "type": "object",
+            "properties": {
+              "city": { "type": "string", "description": "" },
+              "state": { "type": "string", "description": "" },
+              "street1": { "type": "string", "description": "" },
+              "street2": { "type": "string", "description": "" },
+              "zip_code": { "type": "string", "description": "" }
+            }
+          },
+          "last_name": { "type": "string", "description": "" },
+          "first_name": { "type": "string", "description": "" }
+        }
+      },
+      "signatures": {
+        "type": "object",
+        "properties": {
+          "patient_signed": { "type": "boolean", "description": "" },
+          "physician_signed": { "type": "boolean", "description": "" },
+          "patient_signature_date": { "type": "string", "description": "" },
+          "physician_signature_date": { "type": "string", "description": "" }
+        }
+      }
+    }
+  },
+  "trueJsonOutput": {
+    "patient": {
+      "address": {
+        "city": "windsor locks",
+        "state": "ct",
+        "street1": "16 chamberlain crossing",
+        "street2": null,
+        "zip_code": "06096"
+      },
+      "last_name": "maran",
+      "member_id": "93322844",
+      "first_name": "tyler",
+      "hospitalized": false,
+      "date_of_birth": {
+        "day": "19",
+        "year": "1992",
+        "month": "03"
+      }
+    },
+    "physician": {
+      "address": {
+        "city": "Cupertino",
+        "state": "CA",
+        "street1": "20395 Pacifica Dr STE 105",
+        "street2": null,
+        "zip_code": "95014"
+      },
+      "last_name": "house",
+      "first_name": "greg"
+    },
+    "signatures": {
+      "patient_signed": null,
+      "physician_signed": true,
+      "patient_signature_date": null,
+      "physician_signature_date": "12/04/2024"
+    }
+  },
+  "trueMarkdownOutput": "# UnitedHealthcare Community Plan\n\n## PRIOR AUTHORIZATION REQUEST FORM\n\n**Complete ENTIRE form and Fax to:** 866-940-7328\n\n---\n\n**Today's Date:** ___\n\n## SECTION A - PATIENT INFORMATION\n\n**First Name:** tyler  \n**Last Name:** maran  \n**Member ID:** 93322844  \n**Address:** 16 chamberlain crossing  \n**City:** windsor locks  \n**State:** ct  \n**Zip:** 06096  \n**Phone:** 6782319992  \n**DOB:** 03191992  \n**Allergies:** ___  \n**Primary Insurance:** aetna  \n**Policy #:** ___  \n**Group #:** grp-44302\n\n**Is the requested medication NEW or a CONTINUATION of THERAPY?**  \nIf so, start date: ___\n\n**Is this patient currently hospitalized?** □ Yes ☑ No\n\n## SECTION B - PHYSICIAN INFORMATION\n\n**First Name:** greg  \n**Last Name:** house  \n**M.D./D.O.:** ___  \n**Address:** 20395 Pacifica Dr STE 105  \n**City:** Cupertino  \n**State:** CA  \n**Zip:** 95014  \n**Phone:** ___  \n**Fax:** ___  \n**NPI #:** ___  \n**Specialty:** ___  \n**Office Contact Name / Fax Attention to:** ___\n\n## SECTION C - MEDICAL INFORMATION\n\n**Medication:** n/a  \n**Strength:** ___  \n**Directions for use:** ___\n\n**Diagnosis** (Please be specific & provide as much information as possible): ___  \n**ICD-9 CODE:** ___\n\n□ Check here if member has diagnosis of HIV/AIDS\n\n**Is this member pregnant?** □ Yes ☑ No  \n**If yes, what is this member's due date?** ___\n\n**Explanation of why the preferred medication(s) would not meet your patient's needs** (Additional documentation may be faxed with this form to assist with the determination of medical necessity): ___\n\n**Other Medications Tried**\n\n| **Medications** | **Strength** | **Directions** | **Dates of Therapy** | **Reason for failure / discontinuation** |\n| --------------- | ------------ | -------------- | -------------------- | --------------------------------------- |\n|                 |              |                |                      |                                         |\n|                 |              |                |                      |                                         |\n|                 |              |                |                      |                                         |\n\n**Physician Signature:** greg house  \n**Date:** 12/04/2024\n\n---\n\n**Confidentiality Notice:** This transmission contains confidential information belonging to the sender and UnitedHealthcare. This information is intended only for the use of UnitedHealthcare. If you are not the intended recipient, you are hereby notified that any disclosure, copying, distribution or action involving the contents of this document is prohibited. If you have received this telecopy in error, please notify the sender immediately.\n\n**Phone:** 800-310-6826  \n**Fax:** 866-940-7328  \n**Website:** [www.uhccommunityplan.com](http://www.uhccommunityplan.com)\n\n**Made fillable by eForms**  \n**Rev 7.28.14 SMB**"
+}
