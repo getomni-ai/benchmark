@@ -1,6 +1,7 @@
 import axios from 'axios';
-import { ExtractionResult, OcrResult, Usage, JsonSchema } from '../types';
-import { BaseModel } from './base';
+
+import { ExtractParams, ExtractionResult, Usage, JsonSchema } from '../types';
+import { writeResultToFile } from '../utils';
 
 interface ExtractResponse {
   jobId: string;
@@ -8,48 +9,46 @@ interface ExtractResponse {
   status: string;
 }
 
-export class OmniAI extends BaseModel {
-  constructor() {
-    if (!process.env.OMNIAI_API_KEY) {
-      throw new Error('Missing OMNIAI_API_KEY in .env');
-    }
+const MAX_ATTEMPTS = 50;
+const POLL_INTERVAL = 1000;
 
-    super();
+export const extractOmniAI = async ({
+  imagePath,
+  schema,
+  outputDir,
+}: ExtractParams): Promise<ExtractionResult> => {
+  if (!process.env.OMNIAI_API_KEY) {
+    throw new Error('Missing OMNIAI_API_KEY in .env');
   }
 
-  async ocr(imagePath: string): Promise<OcrResult> {
-    // Implement OpenAI OCR logic here
-    throw new Error('Method not implemented.');
+  const start = performance.now();
+  const { result: omniResult } = await sendExtractRequest(imagePath, schema);
+  const end = performance.now();
+
+  const usage = calculateTokenUsage(omniResult);
+
+  const result = {
+    text: omniResult.ocr,
+    json: omniResult.extracted || {},
+    usage: {
+      duration: end - start,
+      inputTokens: usage.inputTokens,
+      outputTokens: usage.outputTokens,
+      totalTokens: usage.totalTokens,
+    },
+  };
+
+  if (outputDir) {
+    writeResultToFile(outputDir, result);
   }
 
-  async extract(text: string, schema: JsonSchema): Promise<ExtractionResult> {
-    // Implement OpenAI extraction logic here
-    throw new Error('Method not implemented.');
-  }
+  return result;
+};
 
-  async ocrAndExtract(
-    imagePath: string,
-    schema: JsonSchema,
-  ): Promise<{ json: Record<string, any>; text?: string; usage: Usage }> {
-    const { result } = await extractFromImage(imagePath, schema);
-
-    return {
-      text: result.ocr,
-      json: result.extracted,
-      usage: {
-        duration: 0,
-        promptTokens: 0,
-        completionTokens: 0,
-        totalTokens: 0,
-      },
-    };
-  }
-}
-
-export async function extractFromImage(
+export const sendExtractRequest = async (
   imageUrl: string,
   schema: JsonSchema,
-): Promise<ExtractResponse> {
+): Promise<ExtractResponse> => {
   const apiKey = process.env.OMNIAI_API_KEY;
   if (!apiKey) {
     throw new Error('Missing OMNIAI_API_KEY in .env');
@@ -73,7 +72,7 @@ export async function extractFromImage(
 
     const jobId = response.data.jobId;
 
-    return await pollForResults(jobId, apiKey);
+    return await pollForResults(jobId);
   } catch (error) {
     if (axios.isAxiosError(error)) {
       throw new Error(
@@ -82,17 +81,13 @@ export async function extractFromImage(
     }
     throw error;
   }
-}
+};
 
-async function pollForResults(
-  jobId: string,
-  apiKey: string,
-  maxAttempts = 50,
-  intervalMs = 1000,
-): Promise<ExtractResponse> {
+const pollForResults = async (jobId: string): Promise<ExtractResponse> => {
   let attempts = 0;
+  const apiKey = process.env.OMNIAI_API_KEY;
 
-  while (attempts < maxAttempts) {
+  while (attempts < MAX_ATTEMPTS) {
     try {
       const response = await axios.get(
         `${process.env.OMNIAI_API_URL}/extract?jobId=${jobId}`,
@@ -112,17 +107,34 @@ async function pollForResults(
       }
 
       // Wait before next attempt
-      await new Promise((resolve) => setTimeout(resolve, intervalMs));
+      await new Promise((resolve) => setTimeout(resolve, POLL_INTERVAL));
       attempts++;
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        throw new Error(
-          `Failed to poll results: ${error.response?.data || error.message}`,
-        );
-      }
-      throw error;
+      throw `Failed to poll results: ${error}`;
     }
   }
 
-  throw new Error(`Polling timed out after ${maxAttempts} attempts`);
-}
+  throw new Error(`Polling timed out after ${MAX_ATTEMPTS} attempts`);
+};
+
+const calculateTokenUsage = (result: Record<string, any>): Usage => {
+  const usage = {
+    inputTokens: 0,
+    outputTokens: 0,
+    totalTokens: 0,
+  };
+
+  if (result.ocr) {
+    usage.inputTokens = result.ocr.inputTokens || 0;
+    usage.outputTokens = result.ocr.outputTokens || 0;
+    usage.totalTokens = usage.inputTokens + usage.outputTokens;
+  }
+
+  if (result.extracted) {
+    usage.inputTokens += result.extracted.inputTokens || 0;
+    usage.outputTokens += result.extracted.outputTokens || 0;
+    usage.totalTokens = usage.inputTokens + usage.outputTokens;
+  }
+
+  return usage;
+};

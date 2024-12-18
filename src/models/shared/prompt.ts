@@ -4,7 +4,7 @@ export const OCR_SYSTEM_PROMPT = `
   You must include all information on the page. Do not exclude headers, footers, or subtext.
 `;
 
-export const TEXT_EXTRACTION_SYSTEM_PROMPT = `
+export const JSON_EXTRACTION_SYSTEM_PROMPT = `
   Extract the following JSON schema from the text.
   Return only the JSON with no explanation text.
 `;

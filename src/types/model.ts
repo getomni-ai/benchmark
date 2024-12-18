@@ -1,23 +1,23 @@
-export interface OcrResult {
-  text: string;
-  usage: Usage;
+import { JsonSchema } from './input';
+
+export interface ExtractParams {
+  imagePath: string;
+  directImageExtraction?: boolean;
+  model?: string;
+  schema?: JsonSchema;
+  outputDir?: string;
 }
 
 export interface ExtractionResult {
-  json: Record<string, any>;
+  json?: Record<string, any>;
+  text?: string;
   usage: Usage;
 }
 
 export interface Usage {
-  duration: number;
-  promptTokens?: number;
-  completionTokens?: number;
+  duration?: number;
+  inputTokens?: number;
+  outputTokens?: number;
   totalTokens?: number;
   totalCost?: number;
-}
-
-export interface ModelConfig {
-  apiKey: string;
-  modelId: string;
-  options?: Record<string, any>;
 }
