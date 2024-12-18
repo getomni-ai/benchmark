@@ -13,11 +13,12 @@ dotenv.config();
 const MODEL = 'gpt-4o';
 const extractStrategy: EXTRACT_STRATEGY = EXTRACT_STRATEGY.TEXT_EXTRACTION;
 
+const timestamp = moment(new Date()).format('YYYY-MM-DD HH:mm:ss');
+const resultFolder = createResultFolder(timestamp);
+const results: any[] = [];
+
 const runBenchmark = async () => {
   const data = Data as Input;
-
-  const timestamp = moment(new Date()).format('YYYY-MM-DD HH:mm:ss');
-  const resultFolder = createResultFolder(timestamp);
 
   const model = createModelInstance(MODEL);
   const result = {
@@ -80,7 +81,11 @@ const runBenchmark = async () => {
     result.jsonDiff = accuracy.jsonDiff;
   }
 
+  results.push(result);
+
   writeToFile(path.join(resultFolder, 'result.json'), result);
 };
+
+writeToFile(path.join(resultFolder, 'results.json'), results);
 
 runBenchmark();
