@@ -1,6 +1,7 @@
 import dotenv from 'dotenv';
 import path from 'path';
 import moment from 'moment';
+import cliProgress from 'cli-progress';
 
 import Data from '../data/data.json';
 
@@ -20,6 +21,16 @@ const resultFolder = createResultFolder(timestamp);
 const runBenchmark = async () => {
   const data = Data as Input;
   const results = [];
+
+  // Create a progress bar
+  const progressBar = new cliProgress.SingleBar({
+    format: 'Progress |{bar}| {percentage}% | {value}/{total}',
+    barCompleteChar: '\u2588',
+    barIncompleteChar: '\u2591',
+  });
+
+  // Start the progress bar
+  progressBar.start(MODELS.length, 0);
 
   for (const model of MODELS) {
     const modelProvider = getModelProvider(model);
@@ -58,10 +69,13 @@ const runBenchmark = async () => {
     result.jsonDiff = accuracy.jsonDiff;
 
     results.push(result);
-    console.log(result);
+    // Update progress bar instead of console.log
+    progressBar.increment();
   }
+
+  // Stop the progress bar
+  progressBar.stop();
 
   writeToFile(path.join(resultFolder, 'results.json'), results);
 };
-
 runBenchmark();
