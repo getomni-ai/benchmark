@@ -7,16 +7,35 @@ interface DiffStats {
   total: number;
 }
 
+interface AccuracyResult {
+  score: number;
+  jsonDiff: Record<string, any>;
+}
+
+/**
+ * Calculates accuracy between predicted and actual JSON objects
+ *
+ * The accuracy is calculated as:
+ * 1 - (number of differences / total fields in actual)
+ *
+ * Differences include:
+ * - Additions: Fields present in predicted but not in actual
+ * - Deletions: Fields present in actual but not in predicted
+ * - Modifications: Fields present in both but with different values
+ *
+ * A score of 1.0 means the JSONs are identical
+ * A score of 0.0 means completely different
+ */
 export const calculateJsonAccuracy = (
   predicted: Record<string, any>,
   actual: Record<string, any>,
-): number => {
+): AccuracyResult => {
   // Get the diff result
   const diffResult = diff(predicted, actual, { full: true });
 
   if (!diffResult) {
     // If there's no diff, the JSONs are identical
-    return 1;
+    return { score: 1, jsonDiff: {} };
   }
 
   const stats = countDiffChanges(diffResult);
@@ -25,7 +44,7 @@ export const calculateJsonAccuracy = (
   const totalFields = countTotalFields(actual);
   const accuracy = Math.max(0, 1 - stats.total / totalFields);
 
-  return Number(accuracy.toFixed(4));
+  return { score: Number(accuracy.toFixed(4)), jsonDiff: diffResult };
 };
 
 const countDiffChanges = (diffResult: any): DiffStats => {

@@ -1,67 +1,58 @@
-import { generateText, generateObject } from 'ai';
 import dotenv from 'dotenv';
 import fs from 'fs';
 
 import Data from '../data/data.json';
-import { Input } from './types';
-import { createProviderInstance } from './models';
-import { generateZodSchema, calculateJsonAccuracy } from './utils';
+import { calculateJsonAccuracy, calculateLevenshteinDistance } from './evaluation';
+import { createModelInstance } from './models';
+import { Input, EXTRACT_STRATEGY } from './types';
+import { generateZodSchema } from './utils';
 
 dotenv.config();
 
 const MODEL = 'gpt-4o';
-const API_KEY = process.env.OPENAI_API_KEY;
+const extractStrategy: EXTRACT_STRATEGY = EXTRACT_STRATEGY.IMAGE_EXTRACTION;
 
-const main = async () => {
+const runBenchmark = async () => {
   const data = Data as Input;
 
-  const systemPrompt = `
-    Convert the following PDF page to markdown.
-    Return only the markdown with no explanation text. Do not include deliminators like '''markdown.
-    You must include all information on the page. Do not exclude headers, footers, or subtext.
-  `;
-  const messages: any = [{ role: 'system', content: systemPrompt }];
+  const model = createModelInstance(MODEL);
 
-  messages.push({
-    role: 'user',
-    content: [
-      {
-        type: 'image',
-        image: data.imageUrl,
-      },
-    ],
-  });
+  if (extractStrategy === (EXTRACT_STRATEGY.TEXT_EXTRACTION as EXTRACT_STRATEGY)) {
+    // OCR
+    const { text, usage: ocrUsage } = await model.ocr(data.imageUrl);
 
-  const providerInstance = createProviderInstance(MODEL, API_KEY);
-  // OCR
-  const { text, usage: ocrUsage } = await generateText({
-    model: providerInstance(MODEL),
-    messages,
-  });
+    console.log('ocr completed');
 
-  console.log('ocr text', text);
+    const levenshteinDistance = calculateLevenshteinDistance(
+      data.trueMarkdownOutput,
+      text,
+    );
+    console.log('levenshtein distance', levenshteinDistance);
 
-  const { object, usage: extractionUsage } = await generateObject({
-    model: providerInstance(MODEL),
-    messages: [
-      {
-        role: 'user',
-        content: text,
-      },
-    ],
-    schema: generateZodSchema(data.jsonSchema),
-  });
+    const { json, usage: extractionUsage } = await model.extract(text, data.jsonSchema);
 
-  console.log('json output', object);
+    console.log('true json output', data.trueJsonOutput);
+    console.log('json output', json);
 
-  // evaluate the object
-  const accuracy = calculateJsonAccuracy(object, data.trueJsonOutput);
+    // evaluate the object
+    const accuracy = calculateJsonAccuracy(json, data.trueJsonOutput);
 
-  console.log('accuracy', accuracy);
+    console.log('accuracy', accuracy);
+  } else {
+    const { json, usage: ocrUsage } = await model.ocrAndExtract(
+      data.imageUrl,
+      data.jsonSchema,
+    );
 
-  // write the OCR and extraction results to a file
-  fs.writeFileSync('ocr.txt', text);
-  fs.writeFileSync('extraction.json', JSON.stringify(object, null, 2));
+    console.log('ocr and extraction completed');
+    console.log('json', json);
+    console.log('ocrUsage', ocrUsage);
+
+    // evaluate the object
+    const accuracy = calculateJsonAccuracy(json, data.trueJsonOutput);
+
+    console.log('accuracy', accuracy);
+  }
 };
 
-main();
+runBenchmark();
