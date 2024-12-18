@@ -1,58 +1,86 @@
 import dotenv from 'dotenv';
-import fs from 'fs';
+import path from 'path';
+import moment from 'moment';
 
 import Data from '../data/data.json';
 import { calculateJsonAccuracy, calculateLevenshteinDistance } from './evaluation';
 import { createModelInstance } from './models';
 import { Input, EXTRACT_STRATEGY } from './types';
-import { generateZodSchema } from './utils';
+import { createResultFolder, writeToFile } from './utils';
 
 dotenv.config();
 
 const MODEL = 'gpt-4o';
-const extractStrategy: EXTRACT_STRATEGY = EXTRACT_STRATEGY.IMAGE_EXTRACTION;
+const extractStrategy: EXTRACT_STRATEGY = EXTRACT_STRATEGY.TEXT_EXTRACTION;
 
 const runBenchmark = async () => {
   const data = Data as Input;
 
+  const timestamp = moment(new Date()).format('YYYY-MM-DD HH:mm:ss');
+  const resultFolder = createResultFolder(timestamp);
+
   const model = createModelInstance(MODEL);
+  const result = {
+    fileUrl: data.imageUrl,
+    model: MODEL,
+    extractStrategy,
+    trueMarkdown: data.trueMarkdownOutput,
+    trueJson: data.trueJsonOutput,
+    predictedMarkdown: '',
+    predictedJson: {},
+    levenshteinDistance: 0,
+    jsonAccuracy: 0,
+    jsonDiff: {},
+  };
 
   if (extractStrategy === (EXTRACT_STRATEGY.TEXT_EXTRACTION as EXTRACT_STRATEGY)) {
     // OCR
     const { text, usage: ocrUsage } = await model.ocr(data.imageUrl);
 
-    console.log('ocr completed');
+    result.predictedMarkdown = text;
 
     const levenshteinDistance = calculateLevenshteinDistance(
       data.trueMarkdownOutput,
       text,
     );
-    console.log('levenshtein distance', levenshteinDistance);
+    result.levenshteinDistance = levenshteinDistance;
 
     const { json, usage: extractionUsage } = await model.extract(text, data.jsonSchema);
 
-    console.log('true json output', data.trueJsonOutput);
-    console.log('json output', json);
+    result.predictedJson = json;
 
     // evaluate the object
     const accuracy = calculateJsonAccuracy(json, data.trueJsonOutput);
 
-    console.log('accuracy', accuracy);
+    result.jsonAccuracy = accuracy.score;
+    result.jsonDiff = accuracy.jsonDiff;
   } else {
-    const { json, usage: ocrUsage } = await model.ocrAndExtract(
-      data.imageUrl,
-      data.jsonSchema,
-    );
+    const {
+      text,
+      json,
+      usage: ocrUsage,
+    } = await model.ocrAndExtract(data.imageUrl, data.jsonSchema);
 
-    console.log('ocr and extraction completed');
-    console.log('json', json);
-    console.log('ocrUsage', ocrUsage);
+    if (text) {
+      result.predictedMarkdown = text;
+
+      const levenshteinDistance = calculateLevenshteinDistance(
+        data.trueMarkdownOutput,
+        text,
+      );
+      result.levenshteinDistance = levenshteinDistance;
+    }
+
+    result.predictedJson = json;
 
     // evaluate the object
     const accuracy = calculateJsonAccuracy(json, data.trueJsonOutput);
 
-    console.log('accuracy', accuracy);
+    result.jsonAccuracy = accuracy.score;
+    result.jsonDiff = accuracy.jsonDiff;
   }
+
+  writeToFile(path.join(resultFolder, 'result.json'), result);
 };
 
 runBenchmark();

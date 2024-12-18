@@ -89,7 +89,7 @@ export class OpenAIModel extends BaseModel {
   async ocrAndExtract(
     imagePath: string,
     schema: JsonSchema,
-  ): Promise<{ json: Record<string, any>; usage: Usage }> {
+  ): Promise<{ json: Record<string, any>; text?: string; usage: Usage }> {
     const messages: CoreMessage[] = [
       { role: 'system', content: IMAGE_EXTRACTION_SYSTEM_PROMPT },
       {

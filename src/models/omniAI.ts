@@ -70,7 +70,6 @@ export async function extractFromImage(
         'Content-Type': 'multipart/form-data',
       },
     });
-    console.log('response', response.data);
 
     const jobId = response.data.jobId;
 
