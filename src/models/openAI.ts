@@ -1,0 +1,117 @@
+import { generateText, generateObject, CoreMessage } from 'ai';
+import { createOpenAI } from '@ai-sdk/openai';
+
+import { ExtractParams, ExtractionResult } from '../types';
+import { generateZodSchema, writeResultToFile } from '../utils';
+
+import {
+  OCR_SYSTEM_PROMPT,
+  JSON_EXTRACTION_SYSTEM_PROMPT,
+  IMAGE_EXTRACTION_SYSTEM_PROMPT,
+} from './shared';
+
+export const extractOpenAI = async ({
+  imagePath,
+  schema,
+  outputDir,
+  directImageExtraction = false,
+  model = 'gpt-4o',
+}: ExtractParams): Promise<ExtractionResult> => {
+  const apiKey = process.env.OPENAI_API_KEY;
+  if (!apiKey) {
+    throw new Error('Missing OPENAI_API_KEY in .env');
+  }
+
+  const result: ExtractionResult = {
+    text: '',
+    json: {},
+    usage: {},
+  };
+
+  const openaiProvider = createOpenAI({ apiKey });
+  const start = performance.now();
+
+  if (directImageExtraction) {
+    const messages: CoreMessage[] = [
+      { role: 'system', content: IMAGE_EXTRACTION_SYSTEM_PROMPT },
+      {
+        role: 'user',
+        content: [
+          {
+            type: 'image',
+            image: imagePath,
+          },
+        ],
+      },
+    ];
+    const zodSchema = generateZodSchema(schema);
+    const { object, usage } = await generateObject({
+      model: openaiProvider(model),
+      messages,
+      schema: zodSchema,
+    });
+
+    result.json = object;
+    result.usage = {
+      duration: performance.now() - start,
+      inputTokens: usage.promptTokens,
+      outputTokens: usage.completionTokens,
+      totalTokens: usage.totalTokens,
+    };
+  } else {
+    const ocrMessages: CoreMessage[] = [
+      { role: 'system', content: OCR_SYSTEM_PROMPT },
+      {
+        role: 'user',
+        content: [
+          {
+            type: 'image',
+            image: imagePath,
+          },
+        ],
+      },
+    ];
+
+    const { text, usage: ocrUsage } = await generateText({
+      model: openaiProvider(model),
+      messages: ocrMessages,
+    });
+
+    result.text = text;
+    result.usage = {
+      duration: performance.now() - start,
+      inputTokens: ocrUsage.promptTokens,
+      outputTokens: ocrUsage.completionTokens,
+      totalTokens: ocrUsage.totalTokens,
+    };
+
+    if (schema) {
+      const jsonExtractionMessages: CoreMessage[] = [
+        { role: 'system', content: JSON_EXTRACTION_SYSTEM_PROMPT },
+        { role: 'user', content: text },
+      ];
+
+      const zodSchema = generateZodSchema(schema);
+
+      const { object, usage: extractionUsage } = await generateObject({
+        model: openaiProvider(model),
+        messages: jsonExtractionMessages,
+        schema: zodSchema,
+      });
+
+      result.json = object;
+      result.usage = {
+        duration: performance.now() - start,
+        inputTokens: ocrUsage.promptTokens + extractionUsage.promptTokens,
+        outputTokens: ocrUsage.completionTokens + extractionUsage.completionTokens,
+        totalTokens: ocrUsage.totalTokens + extractionUsage.totalTokens,
+      };
+    }
+  }
+
+  if (outputDir) {
+    writeResultToFile(outputDir, result);
+  }
+
+  return result;
+};
