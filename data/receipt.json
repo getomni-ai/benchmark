@@ -1,0 +1,139 @@
+{
+  "imageUrl": "https://omni-demo-data.s3.us-east-1.amazonaws.com/templates/receipt.png",
+  "metadata": {
+    "orientation": 0,
+    "documentQuality": "clean",
+    "resolution": [612, 792],
+    "language": "EN"
+  },
+  "jsonSchema": {
+    "type": "object",
+    "required": ["merchant", "receipt_details", "totals"],
+    "properties": {
+      "totals": {
+        "type": "object",
+        "required": ["total"],
+        "properties": {
+          "tax": {
+            "type": "number",
+            "description": "Tax amount"
+          },
+          "total": {
+            "type": "number",
+            "description": "Final total amount"
+          },
+          "subtotal": {
+            "type": "number",
+            "description": "Subtotal before tax and fees"
+          }
+        },
+        "description": "Payment totals"
+      },
+      "merchant": {
+        "type": "object",
+        "required": ["name"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Business name"
+          },
+          "phone": {
+            "type": "string",
+            "description": "Contact phone number"
+          },
+          "address": {
+            "type": "string",
+            "description": "Store location address"
+          }
+        },
+        "description": "Basic merchant information"
+      },
+      "line_items": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "required": ["description", "amount"],
+          "properties": {
+            "amount": {
+              "type": "number",
+              "description": "Price of the item"
+            },
+            "description": {
+              "type": "string",
+              "description": "Item name or description"
+            }
+          }
+        },
+        "description": "List of purchased items"
+      },
+      "receipt_details": {
+        "type": "object",
+        "required": ["date"],
+        "properties": {
+          "date": {
+            "type": "string",
+            "description": "Transaction date"
+          },
+          "time": {
+            "type": "string",
+            "description": "Transaction time"
+          },
+          "receipt_number": {
+            "type": "string",
+            "description": "Receipt or ticket number"
+          }
+        },
+        "description": "Transaction details"
+      },
+      "payment": {
+        "type": "object",
+        "properties": {
+          "payment_method": {
+            "type": "string",
+            "description": ""
+          },
+          "card_last_four_digits": {
+            "type": "string",
+            "description": ""
+          }
+        }
+      }
+    }
+  },
+  "trueJsonOutput": {
+    "totals": {
+      "tax": 6.18,
+      "total": 48.43,
+      "subtotal": 42.25
+    },
+    "merchant": {
+      "name": "Nick the Greek Souvlaki & Gyro House",
+      "phone": "(415) 757-0426",
+      "address": "121 Spear Street, Suite B08, San Francisco, CA 94105"
+    },
+    "line_items": [
+      {
+        "amount": 12.5,
+        "description": "Beef/Lamb Gyro Pita"
+      },
+      {
+        "amount": 13.25,
+        "description": "Gyro Bowl"
+      },
+      {
+        "amount": 16.5,
+        "description": "Pork Gyro Pita"
+      }
+    ],
+    "receipt_details": {
+      "date": "November 8, 2024",
+      "time": "2:16 PM",
+      "receipt_number": "NKZ1"
+    },
+    "payment": {
+      "payment_method": "Mastercard",
+      "card_last_four_digits": "0920"
+    }
+  },
+  "trueMarkdownOutput": "**NICK THE GREEK**\n\nSOUVLAKI & GYRO HOUSE\n\n**San Francisco**\n\n121 spear streeet  \nSuite B08  \nsan francisco, CA  \n94105  \n(415) 757-0426  \nwww.nickthegreeksj.com\n\nNovember 8, 2024  \n2:16 PM  \nSamantha\n\nTicket: 17  \nReceipt: NKZ1  \nAuthorization: CF2D4F\n\nMastercard  \nAID A0 00 00 00 04 10 10\n\n**TO GO**\n\nBeef/Lamb Gyro Pita $12.50  \nGyro Bowl $13.25  \nBeef/Lamb Gyro  \nPork Gyro Pita $16.50  \nFries & Drink ($4.00)\n\nSubtotal $42.25  \nSF Mandate (6%) $2.54  \n8.625% (8.625%) $3.64\n\n**Total** $48.43  \nMastercard 0920 (Contactless) $48.43"
+}
