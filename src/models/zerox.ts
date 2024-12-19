@@ -2,7 +2,7 @@ import { zerox } from 'zerox';
 
 import { ExtractParams, ExtractionResult } from '../types';
 
-export const extractZerox = async ({
+export const extractWithZerox = async ({
   imagePath,
   outputDir,
 }: ExtractParams): Promise<ExtractionResult> => {

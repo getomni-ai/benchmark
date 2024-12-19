@@ -22,7 +22,7 @@ export const createModelProvider = (model: string) => {
   throw new Error(`Model '${model}' does not support image inputs`);
 };
 
-export const extractOpenAI = async ({
+export const extractWithAI = async ({
   imagePath,
   schema,
   outputDir,

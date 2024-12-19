@@ -12,7 +12,7 @@ interface ExtractResponse {
 const MAX_ATTEMPTS = 50;
 const POLL_INTERVAL = 1000;
 
-export const extractOmniAI = async ({
+export const extractWithOmniAI = async ({
   imagePath,
   schema,
   outputDir,

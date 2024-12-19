@@ -19,8 +19,9 @@ A benchmarking tool that compares OCR and data extraction capabilities of differ
 
 | Model Provider | Models | Required ENV Variables |
 |---------------|--------|------------------------|
-| OpenAI | `gpt-4o-mini`, `gpt-4o`| `OPENAI_API_KEY` |
 | OmniAI | `omniai` | `OMNIAI_API_KEY`, `OMNIAI_API_URL` |
+| OpenAI | `gpt-4o-mini`, `gpt-4o`| `OPENAI_API_KEY` |
+| Anthropic | `claude-3-5-sonnet-20241022` | `ANTHROPIC_API_KEY` |
 
 ## Evaluation
 

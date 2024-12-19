@@ -1,6 +1,6 @@
-import { extractOmniAI } from './omniAI';
-import { extractOpenAI } from './openAI';
-import { extractZerox } from './zerox';
+import { extractWithAI } from './ai';
+import { extractWithOmniAI } from './omniAI';
+import { extractWithZerox } from './zerox';
 
 export const OPENAI_MODELS = ['gpt-4o-mini', 'gpt-4o'];
 export const ANTHROPIC_MODELS = ['claude-3-5-sonnet-20241022'];
@@ -8,19 +8,19 @@ export const ANTHROPIC_MODELS = ['claude-3-5-sonnet-20241022'];
 export const MODEL_PROVIDERS = {
   openai: {
     models: OPENAI_MODELS,
-    provider: extractOpenAI,
+    provider: extractWithAI,
   },
   omniai: {
     models: ['omniai'],
-    provider: extractOmniAI,
+    provider: extractWithOmniAI,
   },
   zerox: {
     models: ['zerox'],
-    provider: extractZerox,
+    provider: extractWithZerox,
   },
   anthropic: {
     models: ANTHROPIC_MODELS,
-    provider: extractOpenAI,
+    provider: extractWithAI,
   },
 };
 
