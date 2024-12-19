@@ -30,7 +30,7 @@ const timestamp = moment(new Date()).format('YYYY-MM-DD-HH-mm-ss');
 const resultFolder = createResultFolder(timestamp);
 
 const runBenchmark = async () => {
-  const inputs = loadData(DATA_FOLDER) as Input[];
+  const data = loadData(DATA_FOLDER) as Input[];
   const results = [];
 
   // Create a progress bar
@@ -41,18 +41,18 @@ const runBenchmark = async () => {
   });
 
   // Start the progress bar
-  progressBar.start(MODELS.length * inputs.length, 0);
+  progressBar.start(MODELS.length * data.length, 0);
 
   for (const model of MODELS) {
-    for (const data of inputs) {
+    for (const item of data) {
       const modelProvider = getModelProvider(model);
 
       const result = {
-        fileUrl: data.imageUrl,
+        fileUrl: item.imageUrl,
         model,
         directImageExtraction: DIRECT_IMAGE_EXTRACTION,
-        trueMarkdown: data.trueMarkdownOutput,
-        trueJson: data.trueJsonOutput,
+        trueMarkdown: item.trueMarkdownOutput,
+        trueJson: item.trueJsonOutput,
         predictedMarkdown: undefined,
         predictedJson: undefined,
         levenshteinDistance: undefined,
@@ -64,8 +64,8 @@ const runBenchmark = async () => {
 
       // extract text and json
       const extractionResult = await modelProvider({
-        imagePath: data.imageUrl,
-        schema: data.jsonSchema,
+        imagePath: item.imageUrl,
+        schema: item.jsonSchema,
         directImageExtraction: DIRECT_IMAGE_EXTRACTION,
         outputDir: resultFolder,
         model,
@@ -76,7 +76,7 @@ const runBenchmark = async () => {
 
       // evaluate text extraction
       const levenshteinDistance = calculateTextSimilarity(
-        data.trueMarkdownOutput,
+        item.trueMarkdownOutput,
         extractionResult.text,
       );
       result.levenshteinDistance = levenshteinDistance;
@@ -85,7 +85,7 @@ const runBenchmark = async () => {
       if (!isEmpty(extractionResult.json)) {
         const accuracy = calculateJsonAccuracy(
           extractionResult.json,
-          data.trueJsonOutput,
+          item.trueJsonOutput,
         );
         result.jsonAccuracy = accuracy.score;
         result.jsonDiff = accuracy.jsonDiff;
