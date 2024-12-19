@@ -6,7 +6,7 @@ import { isEmpty } from 'lodash';
 
 import { calculateJsonAccuracy, calculateTextSimilarity } from './evaluation';
 import { getModelProvider } from './models';
-import { Input } from './types';
+import { Input, Result } from './types';
 import { createResultFolder, loadData, writeToFile } from './utils';
 
 dotenv.config();
@@ -31,7 +31,7 @@ const resultFolder = createResultFolder(timestamp);
 
 const runBenchmark = async () => {
   const data = loadData(DATA_FOLDER) as Input[];
-  const results = [];
+  const results: Result[] = [];
 
   // Create a progress bar
   const progressBar = new cliProgress.SingleBar({
@@ -47,7 +47,7 @@ const runBenchmark = async () => {
     for (const item of data) {
       const modelProvider = getModelProvider(model);
 
-      const result = {
+      const result: Result = {
         fileUrl: item.imageUrl,
         model,
         directImageExtraction: DIRECT_IMAGE_EXTRACTION,
