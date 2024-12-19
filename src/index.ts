@@ -3,6 +3,7 @@ import path from 'path';
 import moment from 'moment';
 import cliProgress from 'cli-progress';
 import { isEmpty } from 'lodash';
+import pLimit from 'p-limit';
 
 import { calculateJsonAccuracy, calculateTextSimilarity } from './evaluation';
 import { getModelProvider } from './models';
@@ -15,8 +16,14 @@ dotenv.config();
 /*                                Benchmark Config                            */
 /* -------------------------------------------------------------------------- */
 
-// const MODELS = ['gpt-4o', 'omniai', 'claude-3-5-sonnet-20241022'];
-const MODELS = ['gpt-4o'];
+const MODELS = ['gpt-4o', 'omniai', 'claude-3-5-sonnet-20241022'];
+// const MODELS = ['gpt-4o'];
+const MODEL_CONCURRENCY = {
+  'gpt-4o': 50,
+  omniai: 50,
+  'claude-3-5-sonnet-20241022': 50,
+  zerox: 50,
+} as const;
 
 const DIRECT_IMAGE_EXTRACTION = false; // if true, image -> json, otherwise image -> markdown -> json
 
@@ -33,72 +40,99 @@ const runBenchmark = async () => {
   const data = loadData(DATA_FOLDER) as Input[];
   const results: Result[] = [];
 
-  // Create a progress bar
-  const progressBar = new cliProgress.SingleBar({
-    format: 'Progress |{bar}| {percentage}% | {value}/{total}',
+  // Create multiple progress bars
+  const multibar = new cliProgress.MultiBar({
+    format: '{model} |{bar}| {percentage}% | {value}/{total}',
     barCompleteChar: '\u2588',
     barIncompleteChar: '\u2591',
+    clearOnComplete: false,
+    hideCursor: true,
   });
 
-  // Start the progress bar
-  progressBar.start(MODELS.length * data.length, 0);
+  // Create progress bars for each model
+  const progressBars = MODELS.reduce(
+    (acc, model) => ({
+      ...acc,
+      [model]: multibar.create(data.length, 0, { model }),
+    }),
+    {},
+  );
 
-  for (const model of MODELS) {
-    for (const item of data) {
-      const modelProvider = getModelProvider(model);
+  const modelPromises = MODELS.map(async (model) => {
+    // Calculate concurrent requests based on rate limit
+    const concurrency = MODEL_CONCURRENCY[model as keyof typeof MODEL_CONCURRENCY] ?? 50;
+    const limit = pLimit(concurrency);
 
-      const result: Result = {
-        fileUrl: item.imageUrl,
-        model,
-        directImageExtraction: DIRECT_IMAGE_EXTRACTION,
-        trueMarkdown: item.trueMarkdownOutput,
-        trueJson: item.trueJsonOutput,
-        predictedMarkdown: undefined,
-        predictedJson: undefined,
-        levenshteinDistance: undefined,
-        jsonAccuracy: undefined,
-        jsonDiff: undefined,
-        jsonDiffStats: undefined,
-        usage: undefined,
-      };
+    const promises = data.map((item) =>
+      limit(async () => {
+        const modelProvider = getModelProvider(model);
+        const result: Result = {
+          fileUrl: item.imageUrl,
+          model,
+          directImageExtraction: DIRECT_IMAGE_EXTRACTION,
+          trueMarkdown: item.trueMarkdownOutput,
+          trueJson: item.trueJsonOutput,
+          predictedMarkdown: undefined,
+          predictedJson: undefined,
+          levenshteinDistance: undefined,
+          jsonAccuracy: undefined,
+          jsonDiff: undefined,
+          jsonDiffStats: undefined,
+          usage: undefined,
+        };
 
-      // extract text and json
-      const extractionResult = await modelProvider({
-        imagePath: item.imageUrl,
-        schema: item.jsonSchema,
-        directImageExtraction: DIRECT_IMAGE_EXTRACTION,
-        outputDir: resultFolder,
-        model,
-      });
-      result.predictedMarkdown = extractionResult.text;
-      result.predictedJson = extractionResult.json;
-      result.usage = extractionResult.usage;
+        try {
+          // extract text and json
+          const extractionResult = await modelProvider({
+            imagePath: item.imageUrl,
+            schema: item.jsonSchema,
+            directImageExtraction: DIRECT_IMAGE_EXTRACTION,
+            outputDir: resultFolder,
+            model,
+          });
 
-      // evaluate text extraction
-      const levenshteinDistance = calculateTextSimilarity(
-        item.trueMarkdownOutput,
-        extractionResult.text,
-      );
-      result.levenshteinDistance = levenshteinDistance;
+          // ... existing result processing ...
+          result.predictedMarkdown = extractionResult.text;
+          result.predictedJson = extractionResult.json;
+          result.usage = extractionResult.usage;
 
-      // evaluate json extraction
-      if (!isEmpty(extractionResult.json)) {
-        const accuracy = calculateJsonAccuracy(
-          extractionResult.json,
-          item.trueJsonOutput,
-        );
-        result.jsonAccuracy = accuracy.score;
-        result.jsonDiff = accuracy.jsonDiff;
-        result.jsonDiffStats = accuracy.jsonDiffStats;
-      }
+          if (extractionResult.text) {
+            result.levenshteinDistance = calculateTextSimilarity(
+              item.trueMarkdownOutput,
+              extractionResult.text,
+            );
+          }
 
-      results.push(result);
-      progressBar.increment();
-    }
-  }
+          if (!isEmpty(extractionResult.json)) {
+            const accuracy = calculateJsonAccuracy(
+              extractionResult.json,
+              item.trueJsonOutput,
+            );
+            result.jsonAccuracy = accuracy.score;
+            result.jsonDiff = accuracy.jsonDiff;
+            result.jsonDiffStats = accuracy.jsonDiffStats;
+          }
+        } catch (error) {
+          console.error(`Error processing ${item.imageUrl} with ${model}:`, error);
+        }
 
-  // Stop the progress bar
-  progressBar.stop();
+        // Update progress bar for this model
+        progressBars[model].increment();
+        return result;
+      }),
+    );
+
+    // Process items concurrently for this model
+    const modelResults = await Promise.all(promises);
+
+    results.push(...modelResults);
+  });
+
+  // Process each model with its own concurrency limit
+  await Promise.all(modelPromises);
+
+  // Stop all progress bars
+  multibar.stop();
 
   writeToFile(path.join(resultFolder, 'results.json'), results);
 };
