@@ -26,9 +26,8 @@ A benchmarking tool that compares OCR and data extraction capabilities of differ
 
 ### Text similarity
 
-We uses [levenshtein distance](https://en.wikipedia.org/wiki/Levenshtein_distance) to measure text similarity between extracted and ground truth text:
-
-- Score range: 0.0 (completely different) to 1.0 (identical)
+We uses [levenshtein distance](https://en.wikipedia.org/wiki/Levenshtein_distance) to measure text similarity between extracted and ground truth text.
+Lower distance indicates higher similarity.
 
 ### JSON accuracy
 

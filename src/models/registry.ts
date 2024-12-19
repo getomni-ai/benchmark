@@ -1,5 +1,6 @@
 import { extractOmniAI } from './omniAI';
 import { extractOpenAI } from './openAI';
+import { extractZerox } from './zerox';
 
 export const MODEL_PROVIDERS = {
   openai: {
@@ -9,6 +10,10 @@ export const MODEL_PROVIDERS = {
   omniai: {
     models: ['omniai'],
     provider: extractOmniAI,
+  },
+  zerox: {
+    models: ['zerox'],
+    provider: extractZerox,
   },
 };
 

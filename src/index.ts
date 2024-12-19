@@ -2,6 +2,7 @@ import dotenv from 'dotenv';
 import path from 'path';
 import moment from 'moment';
 import cliProgress from 'cli-progress';
+import { isEmpty } from 'lodash';
 
 import Data from '../data/data.json';
 
@@ -12,8 +13,17 @@ import { createResultFolder, writeToFile } from './utils';
 
 dotenv.config();
 
-const MODELS = ['gpt-4o', 'omniai'];
-const DIRECT_IMAGE_EXTRACTION = false;
+/* -------------------------------------------------------------------------- */
+/*                                Benchmark Config                            */
+/* -------------------------------------------------------------------------- */
+
+const MODELS = ['gpt-4o', 'omniai', 'zerox'];
+
+const DIRECT_IMAGE_EXTRACTION = false; // if true, image -> json, otherwise image -> markdown -> json
+
+/* -------------------------------------------------------------------------- */
+/*                                Run Benchmark                               */
+/* -------------------------------------------------------------------------- */
 
 const timestamp = moment(new Date()).format('YYYY-MM-DD-HH-mm-ss');
 const resultFolder = createResultFolder(timestamp);
@@ -41,13 +51,15 @@ const runBenchmark = async () => {
       directImageExtraction: DIRECT_IMAGE_EXTRACTION,
       trueMarkdown: data.trueMarkdownOutput,
       trueJson: data.trueJsonOutput,
-      predictedMarkdown: '',
-      predictedJson: {},
-      levenshteinDistance: 0,
-      jsonAccuracy: 0,
-      jsonDiff: {},
+      predictedMarkdown: undefined,
+      predictedJson: undefined,
+      levenshteinDistance: undefined,
+      jsonAccuracy: undefined,
+      jsonDiff: undefined,
+      usage: undefined,
     };
 
+    // extract text and json
     const extractionResult = await modelProvider({
       imagePath: data.imageUrl,
       schema: data.jsonSchema,
@@ -56,20 +68,23 @@ const runBenchmark = async () => {
     });
     result.predictedMarkdown = extractionResult.text;
     result.predictedJson = extractionResult.json;
+    result.usage = extractionResult.usage;
 
-    // evaluate results
+    // evaluate text extraction
     const levenshteinDistance = calculateLevenshteinDistance(
       data.trueMarkdownOutput,
       extractionResult.text,
     );
     result.levenshteinDistance = levenshteinDistance;
 
-    const accuracy = calculateJsonAccuracy(extractionResult.json, data.trueJsonOutput);
-    result.jsonAccuracy = accuracy.score;
-    result.jsonDiff = accuracy.jsonDiff;
+    // evaluate json extraction
+    if (!isEmpty(extractionResult.json)) {
+      const accuracy = calculateJsonAccuracy(extractionResult.json, data.trueJsonOutput);
+      result.jsonAccuracy = accuracy.score;
+      result.jsonDiff = accuracy.jsonDiff;
+    }
 
     results.push(result);
-    // Update progress bar instead of console.log
     progressBar.increment();
   }
 
