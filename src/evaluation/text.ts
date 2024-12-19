@@ -6,10 +6,7 @@ import { distance } from 'fastest-levenshtein';
  * 1.0 = texts are identical
  * 0.0 = texts are completely different
  */
-export const calculateLevenshteinDistance = (
-  original: string,
-  predicted: string,
-): number => {
+export const calculateTextSimilarity = (original: string, predicted: string): number => {
   if (original === predicted) return 1;
   if (!original.length || !predicted.length) return 0;
 

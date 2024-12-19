@@ -6,7 +6,7 @@ import { isEmpty } from 'lodash';
 
 import Data from '../data/data.json';
 
-import { calculateJsonAccuracy, calculateLevenshteinDistance } from './evaluation';
+import { calculateJsonAccuracy, calculateTextSimilarity } from './evaluation';
 import { getModelProvider } from './models';
 import { Input } from './types';
 import { createResultFolder, writeToFile } from './utils';
@@ -74,7 +74,7 @@ const runBenchmark = async () => {
       result.usage = extractionResult.usage;
 
       // evaluate text extraction
-      const levenshteinDistance = calculateLevenshteinDistance(
+      const levenshteinDistance = calculateTextSimilarity(
         data.trueMarkdownOutput,
         extractionResult.text,
       );
