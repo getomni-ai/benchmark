@@ -66,6 +66,7 @@ const runBenchmark = async () => {
         imagePath: data.imageUrl,
         schema: data.jsonSchema,
         directImageExtraction: DIRECT_IMAGE_EXTRACTION,
+        outputDir: resultFolder,
         model,
       });
       result.predictedMarkdown = extractionResult.text;

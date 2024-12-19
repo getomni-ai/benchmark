@@ -19,9 +19,10 @@ export const writeToFile = (filePath: string, content: any) => {
   fs.writeFileSync(filePath, JSON.stringify(content, null, 2));
 };
 
-export const writeResultToFile = (outputDir: string, result: ExtractionResult) => {
-  fs.writeFileSync(
-    path.join(outputDir, 'extraction.json'),
-    JSON.stringify(result, null, 2),
-  );
+export const writeResultToFile = (
+  outputDir: string,
+  fileName: string,
+  result: ExtractionResult,
+) => {
+  fs.writeFileSync(path.join(outputDir, fileName), JSON.stringify(result, null, 2));
 };

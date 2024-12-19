@@ -1,7 +1,7 @@
 import { generateText, generateObject, CoreMessage } from 'ai';
 import { createOpenAI } from '@ai-sdk/openai';
 import { createAnthropic } from '@ai-sdk/anthropic';
-
+import path from 'path';
 import { ExtractParams, ExtractionResult } from '../types';
 import { generateZodSchema, writeResultToFile } from '../utils';
 
@@ -117,7 +117,11 @@ export const extractWithAI = async ({
   }
 
   if (outputDir) {
-    writeResultToFile(outputDir, result);
+    writeResultToFile(
+      outputDir,
+      path.basename(imagePath, path.extname(imagePath)) + '.json',
+      result,
+    );
   }
 
   return result;

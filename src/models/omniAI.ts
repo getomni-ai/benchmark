@@ -1,4 +1,5 @@
 import axios from 'axios';
+import path from 'path';
 
 import { ExtractParams, ExtractionResult, Usage, JsonSchema } from '../types';
 import { writeResultToFile } from '../utils';
@@ -39,7 +40,11 @@ export const extractWithOmniAI = async ({
   };
 
   if (outputDir) {
-    writeResultToFile(outputDir, result);
+    writeResultToFile(
+      outputDir,
+      path.basename(imagePath, path.extname(imagePath)) + '.json',
+      result,
+    );
   }
 
   return result;
