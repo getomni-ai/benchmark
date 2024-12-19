@@ -1,6 +1,7 @@
 import { generateText, generateObject, CoreMessage } from 'ai';
 import { createOpenAI } from '@ai-sdk/openai';
-
+import { createAnthropic } from '@ai-sdk/anthropic';
+import path from 'path';
 import { ExtractParams, ExtractionResult } from '../types';
 import { generateZodSchema, writeResultToFile } from '../utils';
 
@@ -9,26 +10,32 @@ import {
   JSON_EXTRACTION_SYSTEM_PROMPT,
   IMAGE_EXTRACTION_SYSTEM_PROMPT,
 } from './shared';
+import { OPENAI_MODELS, ANTHROPIC_MODELS } from './registry';
 
-export const extractOpenAI = async ({
+export const createModelProvider = (model: string) => {
+  if (OPENAI_MODELS.includes(model)) {
+    return createOpenAI({ apiKey: process.env.OPENAI_API_KEY });
+  }
+  if (ANTHROPIC_MODELS.includes(model)) {
+    return createAnthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+  }
+  throw new Error(`Model '${model}' does not support image inputs`);
+};
+
+export const extractWithAI = async ({
   imagePath,
   schema,
   outputDir,
   directImageExtraction = false,
   model = 'gpt-4o',
 }: ExtractParams): Promise<ExtractionResult> => {
-  const apiKey = process.env.OPENAI_API_KEY;
-  if (!apiKey) {
-    throw new Error('Missing OPENAI_API_KEY in .env');
-  }
-
   const result: ExtractionResult = {
     text: '',
     json: {},
     usage: {},
   };
 
-  const openaiProvider = createOpenAI({ apiKey });
+  const modelProvider = createModelProvider(model);
   const start = performance.now();
 
   if (directImageExtraction) {
@@ -46,7 +53,7 @@ export const extractOpenAI = async ({
     ];
     const zodSchema = generateZodSchema(schema);
     const { object, usage } = await generateObject({
-      model: openaiProvider(model),
+      model: modelProvider(model),
       messages,
       schema: zodSchema,
     });
@@ -73,7 +80,7 @@ export const extractOpenAI = async ({
     ];
 
     const { text, usage: ocrUsage } = await generateText({
-      model: openaiProvider(model),
+      model: modelProvider(model),
       messages: ocrMessages,
     });
 
@@ -94,7 +101,7 @@ export const extractOpenAI = async ({
       const zodSchema = generateZodSchema(schema);
 
       const { object, usage: extractionUsage } = await generateObject({
-        model: openaiProvider(model),
+        model: modelProvider(model),
         messages: jsonExtractionMessages,
         schema: zodSchema,
       });
@@ -110,7 +117,11 @@ export const extractOpenAI = async ({
   }
 
   if (outputDir) {
-    writeResultToFile(outputDir, result);
+    writeResultToFile(
+      outputDir,
+      path.basename(imagePath, path.extname(imagePath)) + '.json',
+      result,
+    );
   }
 
   return result;

@@ -10,6 +10,7 @@ interface DiffStats {
 interface AccuracyResult {
   score: number;
   jsonDiff: Record<string, any>;
+  jsonDiffStats?: DiffStats;
 }
 
 /**
@@ -35,7 +36,7 @@ export const calculateJsonAccuracy = (
 
   if (!diffResult) {
     // If there's no diff, the JSONs are identical
-    return { score: 1, jsonDiff: {} };
+    return { score: 1, jsonDiff: {}, jsonDiffStats: undefined };
   }
 
   const stats = countDiffChanges(diffResult);
@@ -44,7 +45,11 @@ export const calculateJsonAccuracy = (
   const totalFields = countTotalFields(actual);
   const accuracy = Math.max(0, 1 - stats.total / totalFields);
 
-  return { score: Number(accuracy.toFixed(4)), jsonDiff: diffResult };
+  return {
+    score: Number(accuracy.toFixed(4)),
+    jsonDiff: diffResult,
+    jsonDiffStats: stats,
+  };
 };
 
 const countDiffChanges = (diffResult: any): DiffStats => {

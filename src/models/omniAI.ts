@@ -1,4 +1,5 @@
 import axios from 'axios';
+import path from 'path';
 
 import { ExtractParams, ExtractionResult, Usage, JsonSchema } from '../types';
 import { writeResultToFile } from '../utils';
@@ -12,7 +13,7 @@ interface ExtractResponse {
 const MAX_ATTEMPTS = 50;
 const POLL_INTERVAL = 1000;
 
-export const extractOmniAI = async ({
+export const extractWithOmniAI = async ({
   imagePath,
   schema,
   outputDir,
@@ -39,7 +40,11 @@ export const extractOmniAI = async ({
   };
 
   if (outputDir) {
-    writeResultToFile(outputDir, result);
+    writeResultToFile(
+      outputDir,
+      path.basename(imagePath, path.extname(imagePath)) + '.json',
+      result,
+    );
   }
 
   return result;
