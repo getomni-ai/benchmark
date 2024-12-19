@@ -26,10 +26,11 @@ export const extractWithOmniAI = async ({
   const { result: omniResult } = await sendExtractRequest(imagePath, schema);
   const end = performance.now();
 
+  const text = omniResult.ocr.pages.map((page) => page.content).join('\n');
   const usage = calculateTokenUsage(omniResult);
 
   const result = {
-    text: omniResult.ocr,
+    text,
     json: omniResult.extracted || {},
     usage: {
       duration: end - start,
