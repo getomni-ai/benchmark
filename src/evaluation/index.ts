@@ -1,2 +1,2 @@
-export * from './levenshteinDistance';
-export * from './jsonDiff';
+export * from './text';
+export * from './json';

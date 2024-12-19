@@ -4,12 +4,10 @@ import moment from 'moment';
 import cliProgress from 'cli-progress';
 import { isEmpty } from 'lodash';
 
-import Data from '../data/data.json';
-
-import { calculateJsonAccuracy, calculateLevenshteinDistance } from './evaluation';
+import { calculateJsonAccuracy, calculateTextSimilarity } from './evaluation';
 import { getModelProvider } from './models';
-import { Input } from './types';
-import { createResultFolder, writeToFile } from './utils';
+import { Input, Result } from './types';
+import { createResultFolder, loadData, writeToFile } from './utils';
 
 dotenv.config();
 
@@ -17,9 +15,12 @@ dotenv.config();
 /*                                Benchmark Config                            */
 /* -------------------------------------------------------------------------- */
 
-const MODELS = ['gpt-4o', 'omniai', 'claude-3-5-sonnet-20241022'];
+// const MODELS = ['gpt-4o', 'omniai', 'claude-3-5-sonnet-20241022'];
+const MODELS = ['gpt-4o'];
 
 const DIRECT_IMAGE_EXTRACTION = false; // if true, image -> json, otherwise image -> markdown -> json
+
+const DATA_FOLDER = path.join(__dirname, '../data');
 
 /* -------------------------------------------------------------------------- */
 /*                                Run Benchmark                               */
@@ -29,8 +30,8 @@ const timestamp = moment(new Date()).format('YYYY-MM-DD-HH-mm-ss');
 const resultFolder = createResultFolder(timestamp);
 
 const runBenchmark = async () => {
-  const inputs = [Data] as Input[];
-  const results = [];
+  const data = loadData(DATA_FOLDER) as Input[];
+  const results: Result[] = [];
 
   // Create a progress bar
   const progressBar = new cliProgress.SingleBar({
@@ -40,18 +41,18 @@ const runBenchmark = async () => {
   });
 
   // Start the progress bar
-  progressBar.start(MODELS.length * inputs.length, 0);
+  progressBar.start(MODELS.length * data.length, 0);
 
   for (const model of MODELS) {
-    for (const data of inputs) {
+    for (const item of data) {
       const modelProvider = getModelProvider(model);
 
-      const result = {
-        fileUrl: data.imageUrl,
+      const result: Result = {
+        fileUrl: item.imageUrl,
         model,
         directImageExtraction: DIRECT_IMAGE_EXTRACTION,
-        trueMarkdown: data.trueMarkdownOutput,
-        trueJson: data.trueJsonOutput,
+        trueMarkdown: item.trueMarkdownOutput,
+        trueJson: item.trueJsonOutput,
         predictedMarkdown: undefined,
         predictedJson: undefined,
         levenshteinDistance: undefined,
@@ -63,8 +64,8 @@ const runBenchmark = async () => {
 
       // extract text and json
       const extractionResult = await modelProvider({
-        imagePath: data.imageUrl,
-        schema: data.jsonSchema,
+        imagePath: item.imageUrl,
+        schema: item.jsonSchema,
         directImageExtraction: DIRECT_IMAGE_EXTRACTION,
         outputDir: resultFolder,
         model,
@@ -74,8 +75,8 @@ const runBenchmark = async () => {
       result.usage = extractionResult.usage;
 
       // evaluate text extraction
-      const levenshteinDistance = calculateLevenshteinDistance(
-        data.trueMarkdownOutput,
+      const levenshteinDistance = calculateTextSimilarity(
+        item.trueMarkdownOutput,
         extractionResult.text,
       );
       result.levenshteinDistance = levenshteinDistance;
@@ -84,7 +85,7 @@ const runBenchmark = async () => {
       if (!isEmpty(extractionResult.json)) {
         const accuracy = calculateJsonAccuracy(
           extractionResult.json,
-          data.trueJsonOutput,
+          item.trueJsonOutput,
         );
         result.jsonAccuracy = accuracy.score;
         result.jsonDiff = accuracy.jsonDiff;

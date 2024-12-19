@@ -1,4 +1,4 @@
-import { JsonSchema } from './input';
+import { JsonSchema } from './data';
 
 export interface ExtractParams {
   imagePath: string;
