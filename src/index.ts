@@ -4,12 +4,10 @@ import moment from 'moment';
 import cliProgress from 'cli-progress';
 import { isEmpty } from 'lodash';
 
-import Data from '../data/data.json';
-
 import { calculateJsonAccuracy, calculateTextSimilarity } from './evaluation';
 import { getModelProvider } from './models';
 import { Input } from './types';
-import { createResultFolder, writeToFile } from './utils';
+import { createResultFolder, loadData, writeToFile } from './utils';
 
 dotenv.config();
 
@@ -17,9 +15,12 @@ dotenv.config();
 /*                                Benchmark Config                            */
 /* -------------------------------------------------------------------------- */
 
-const MODELS = ['gpt-4o', 'omniai', 'claude-3-5-sonnet-20241022'];
+// const MODELS = ['gpt-4o', 'omniai', 'claude-3-5-sonnet-20241022'];
+const MODELS = ['gpt-4o'];
 
 const DIRECT_IMAGE_EXTRACTION = false; // if true, image -> json, otherwise image -> markdown -> json
+
+const DATA_FOLDER = path.join(__dirname, '../data');
 
 /* -------------------------------------------------------------------------- */
 /*                                Run Benchmark                               */
@@ -29,7 +30,7 @@ const timestamp = moment(new Date()).format('YYYY-MM-DD-HH-mm-ss');
 const resultFolder = createResultFolder(timestamp);
 
 const runBenchmark = async () => {
-  const inputs = [Data] as Input[];
+  const inputs = loadData(DATA_FOLDER) as Input[];
   const results = [];
 
   // Create a progress bar
