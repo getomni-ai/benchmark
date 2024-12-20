@@ -3,6 +3,7 @@ import path from 'path';
 
 import { ExtractParams, ExtractionResult, Usage, JsonSchema } from '../types';
 import { writeResultToFile } from '../utils';
+import { calculateTokenCost } from './shared';
 
 interface ExtractResponse {
   jobId: string;
@@ -28,6 +29,8 @@ export const extractWithOmniAI = async ({
 
   const text = omniResult.ocr.pages.map((page) => page.content).join('\n');
   const usage = calculateTokenUsage(omniResult);
+  const inputCost = calculateTokenCost('omniai', 'input', usage.inputTokens);
+  const outputCost = calculateTokenCost('omniai', 'output', usage.outputTokens);
 
   const result = {
     text,
@@ -37,6 +40,9 @@ export const extractWithOmniAI = async ({
       inputTokens: usage.inputTokens,
       outputTokens: usage.outputTokens,
       totalTokens: usage.totalTokens,
+      inputCost,
+      outputCost,
+      totalCost: inputCost + outputCost,
     },
   };
 
@@ -125,22 +131,17 @@ const pollForResults = async (jobId: string): Promise<ExtractResponse> => {
 
 const calculateTokenUsage = (result: Record<string, any>): Usage => {
   const usage = {
-    inputTokens: 0,
-    outputTokens: 0,
+    inputTokens: result.inputTokens || 0,
+    outputTokens: result.outputTokens || 0,
     totalTokens: 0,
   };
 
   if (result.ocr) {
-    usage.inputTokens = result.ocr.inputTokens || 0;
-    usage.outputTokens = result.ocr.outputTokens || 0;
-    usage.totalTokens = usage.inputTokens + usage.outputTokens;
+    usage.inputTokens += result.ocr.inputTokens || 0;
+    usage.outputTokens += result.ocr.outputTokens || 0;
   }
 
-  if (result.extracted) {
-    usage.inputTokens += result.extracted.inputTokens || 0;
-    usage.outputTokens += result.extracted.outputTokens || 0;
-    usage.totalTokens = usage.inputTokens + usage.outputTokens;
-  }
+  usage.totalTokens = usage.inputTokens + usage.outputTokens;
 
   return usage;
 };

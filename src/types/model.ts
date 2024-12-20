@@ -19,5 +19,7 @@ export interface Usage {
   inputTokens?: number;
   outputTokens?: number;
   totalTokens?: number;
+  inputCost?: number;
+  outputCost?: number;
   totalCost?: number;
 }
