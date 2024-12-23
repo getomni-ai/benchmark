@@ -60,12 +60,18 @@ export const extractWithAI = async ({
       schema: zodSchema,
     });
 
+    const inputCost = calculateTokenCost(model, 'input', usage.promptTokens);
+    const outputCost = calculateTokenCost(model, 'output', usage.completionTokens);
+
     result.json = object;
     result.usage = {
       duration: performance.now() - start,
       inputTokens: usage.promptTokens,
       outputTokens: usage.completionTokens,
       totalTokens: usage.totalTokens,
+      inputCost,
+      outputCost,
+      totalCost: inputCost + outputCost,
     };
   } else {
     const ocrMessages: CoreMessage[] = [
@@ -85,6 +91,8 @@ export const extractWithAI = async ({
       model: modelProvider(model),
       messages: ocrMessages,
     });
+    const ocrInputCost = calculateTokenCost(model, 'input', ocrUsage.promptTokens);
+    const ocrOutputCost = calculateTokenCost(model, 'output', ocrUsage.completionTokens);
 
     result.text = text;
     result.usage = {
@@ -92,6 +100,9 @@ export const extractWithAI = async ({
       inputTokens: ocrUsage.promptTokens,
       outputTokens: ocrUsage.completionTokens,
       totalTokens: ocrUsage.totalTokens,
+      inputCost: ocrInputCost,
+      outputCost: ocrOutputCost,
+      totalCost: ocrInputCost + ocrOutputCost,
     };
 
     if (schema) {
@@ -108,12 +119,26 @@ export const extractWithAI = async ({
         schema: zodSchema,
       });
 
+      const jsonInputCost = calculateTokenCost(
+        model,
+        'input',
+        extractionUsage.promptTokens,
+      );
+      const jsonOutputCost = calculateTokenCost(
+        model,
+        'output',
+        extractionUsage.completionTokens,
+      );
+
       result.json = object;
       result.usage = {
         duration: performance.now() - start,
         inputTokens: ocrUsage.promptTokens + extractionUsage.promptTokens,
         outputTokens: ocrUsage.completionTokens + extractionUsage.completionTokens,
         totalTokens: ocrUsage.totalTokens + extractionUsage.totalTokens,
+        inputCost: ocrInputCost + jsonInputCost,
+        outputCost: ocrOutputCost + jsonOutputCost,
+        totalCost: ocrInputCost + ocrOutputCost + jsonInputCost + jsonOutputCost,
       };
     }
   }
