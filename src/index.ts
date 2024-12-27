@@ -17,15 +17,22 @@ dotenv.config();
 /* -------------------------------------------------------------------------- */
 
 const MODELS = ['gpt-4o', 'omniai', 'claude-3-5-sonnet-20241022'];
-// const MODELS = ['gpt-4o'];
+
 const MODEL_CONCURRENCY = {
   'gpt-4o': 50,
   omniai: 50,
   'claude-3-5-sonnet-20241022': 50,
   zerox: 50,
-} as const;
+};
 
-const DIRECT_IMAGE_EXTRACTION = false; // if true, image -> json, otherwise image -> markdown -> json
+const MODEL_CONFIGS = [
+  { ocr: 'gpt-4o', extraction: 'gpt-4o' },
+  { ocr: 'omniai', extraction: 'omniai' },
+  { ocr: 'claude-3-5-sonnet-20241022', extraction: 'claude-3-5-sonnet-20241022' },
+];
+
+// if true, image -> json, otherwise image -> markdown -> json
+const DIRECT_IMAGE_EXTRACTION = false;
 
 const DATA_FOLDER = path.join(__dirname, '../data');
 
@@ -136,4 +143,5 @@ const runBenchmark = async () => {
 
   writeToFile(path.join(resultFolder, 'results.json'), results);
 };
+
 runBenchmark();

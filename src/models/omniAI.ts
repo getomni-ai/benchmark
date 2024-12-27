@@ -4,6 +4,7 @@ import path from 'path';
 import { ExtractParams, ExtractionResult, Usage, JsonSchema } from '../types';
 import { writeResultToFile } from '../utils';
 import { calculateTokenCost } from './shared';
+import { ModelProvider } from './base';
 
 interface ExtractResponse {
   jobId: string;
@@ -145,3 +146,9 @@ const calculateTokenUsage = (result: Record<string, any>): Usage => {
 
   return usage;
 };
+
+export class OmniAIProvider extends ModelProvider {
+  constructor(model: string) {
+    super(model);
+  }
+}
