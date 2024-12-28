@@ -20,7 +20,7 @@ export class ModelProvider {
     text: string,
     schema: JsonSchema,
   ): Promise<{
-    object: Record<string, any>;
+    json: Record<string, any>;
     usage: Usage;
   }> {
     throw new Error('Not implemented');
@@ -30,7 +30,7 @@ export class ModelProvider {
     imagePath: string,
     schema: JsonSchema,
   ): Promise<{
-    object: Record<string, any>;
+    json: Record<string, any>;
     usage: Usage;
   }> {
     throw new Error('Not implemented');

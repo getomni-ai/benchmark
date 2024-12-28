@@ -25,7 +25,8 @@ export interface JsonSchema {
 
 export interface Result {
   fileUrl: string;
-  model: string;
+  ocrModel: string;
+  extractionModel: string;
   directImageExtraction?: boolean;
   trueMarkdown: string;
   trueJson: Record<string, any>;

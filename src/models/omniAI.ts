@@ -1,7 +1,7 @@
 import axios from 'axios';
 import path from 'path';
 
-import { ExtractParams, ExtractionResult, Usage, JsonSchema } from '../types';
+import { ExtractionResult, Usage, JsonSchema } from '../types';
 import { writeResultToFile } from '../utils';
 import { calculateTokenCost } from './shared';
 import { ModelProvider } from './base';
@@ -15,52 +15,9 @@ interface ExtractResponse {
 const MAX_ATTEMPTS = 50;
 const POLL_INTERVAL = 1000;
 
-export const extractWithOmniAI = async ({
-  imagePath,
-  schema,
-  outputDir,
-}: ExtractParams): Promise<ExtractionResult> => {
-  if (!process.env.OMNIAI_API_KEY) {
-    throw new Error('Missing OMNIAI_API_KEY in .env');
-  }
-
-  const start = performance.now();
-  const { result: omniResult } = await sendExtractRequest(imagePath, schema);
-  const end = performance.now();
-
-  const text = omniResult.ocr.pages.map((page) => page.content).join('\n');
-  const usage = calculateTokenUsage(omniResult);
-  const inputCost = calculateTokenCost('omniai', 'input', usage.inputTokens);
-  const outputCost = calculateTokenCost('omniai', 'output', usage.outputTokens);
-
-  const result = {
-    text,
-    json: omniResult.extracted || {},
-    usage: {
-      duration: end - start,
-      inputTokens: usage.inputTokens,
-      outputTokens: usage.outputTokens,
-      totalTokens: usage.totalTokens,
-      inputCost,
-      outputCost,
-      totalCost: inputCost + outputCost,
-    },
-  };
-
-  if (outputDir) {
-    writeResultToFile(
-      outputDir,
-      path.basename(imagePath, path.extname(imagePath)) + '.json',
-      result,
-    );
-  }
-
-  return result;
-};
-
 export const sendExtractRequest = async (
   imageUrl: string,
-  schema: JsonSchema,
+  schema?: JsonSchema,
 ): Promise<ExtractResponse> => {
   const apiKey = process.env.OMNIAI_API_KEY;
   if (!apiKey) {
@@ -130,25 +87,57 @@ const pollForResults = async (jobId: string): Promise<ExtractResponse> => {
   throw new Error(`Polling timed out after ${MAX_ATTEMPTS} attempts`);
 };
 
-const calculateTokenUsage = (result: Record<string, any>): Usage => {
-  const usage = {
-    inputTokens: result.inputTokens || 0,
-    outputTokens: result.outputTokens || 0,
-    totalTokens: 0,
-  };
-
-  if (result.ocr) {
-    usage.inputTokens += result.ocr.inputTokens || 0;
-    usage.outputTokens += result.ocr.outputTokens || 0;
-  }
-
-  usage.totalTokens = usage.inputTokens + usage.outputTokens;
-
-  return usage;
-};
-
 export class OmniAIProvider extends ModelProvider {
   constructor(model: string) {
     super(model);
+  }
+
+  async ocr(imagePath: string) {
+    const start = performance.now();
+    const { result } = await sendExtractRequest(imagePath);
+    const end = performance.now();
+
+    const text = result.ocr.pages.map((page) => page.content).join('\n');
+    const inputTokens = result.ocr.inputTokens;
+    const outputTokens = result.ocr.outputTokens;
+    const inputCost = calculateTokenCost('omniai', 'input', inputTokens);
+    const outputCost = calculateTokenCost('omniai', 'output', outputTokens);
+
+    return {
+      text,
+      usage: {
+        duration: end - start,
+        inputTokens,
+        outputTokens,
+        totalTokens: inputTokens + outputTokens,
+        inputCost,
+        outputCost,
+        totalCost: inputCost + outputCost,
+      },
+    };
+  }
+
+  async extractFromImage(imagePath: string, schema?: JsonSchema) {
+    const start = performance.now();
+    const { result } = await sendExtractRequest(imagePath, schema);
+    const end = performance.now();
+
+    const inputToken = result.inputTokens;
+    const outputToken = result.outputTokens;
+    const inputCost = calculateTokenCost('omniai', 'input', inputToken);
+    const outputCost = calculateTokenCost('omniai', 'output', outputToken);
+
+    return {
+      json: result.extracted || {},
+      usage: {
+        duration: end - start,
+        inputTokens: inputToken,
+        outputTokens: outputToken,
+        totalTokens: inputToken + outputToken,
+        inputCost,
+        outputCost,
+        totalCost: inputCost + outputCost,
+      },
+    };
   }
 }
