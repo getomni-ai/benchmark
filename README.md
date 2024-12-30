@@ -17,7 +17,7 @@ A benchmarking tool that compares OCR and data extraction capabilities of differ
 
 ## Supported models
 
-| Model Provider | Models                       | Required ENV Variables             |
+| Model Provider | Models                       | Re quired ENV Variables            |
 | -------------- | ---------------------------- | ---------------------------------- |
 | OmniAI         | `omniai`                     | `OMNIAI_API_KEY`, `OMNIAI_API_URL` |
 | OpenAI         | `gpt-4o-mini`, `gpt-4o`      | `OPENAI_API_KEY`                   |
