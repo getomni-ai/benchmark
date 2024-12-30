@@ -1,0 +1,89 @@
+{
+  "imageUrl": "https://omniai-prod-v2.s3.amazonaws.com/zerox/input/c0ee381d-c863-488b-be49-3a9ee96e8253_page_2",
+  "metadata": {
+    "orientation": 0,
+    "documentQuality": "clean",
+    "resolution": [761, 992],
+    "language": "EN"
+  },
+  "jsonSchema": {
+    "type": "object",
+    "properties": {
+      "company_name": {
+        "type": "string",
+        "description": ""
+      },
+      "ytd_2023_earnings": {
+        "type": "number",
+        "description": "YTD 2023 earnings (US GAAP)"
+      },
+      "structural_cost_savings": {
+        "type": "number",
+        "description": "Structural cost savings in YTD 2024"
+      },
+      "ytd_2024_earnings": {
+        "type": "number",
+        "description": "YTD 2024 earnings (US GAAP)"
+      },
+      "cashflow": {
+        "type": "array",
+        "description": "",
+        "items": {
+          "type": "object",
+          "properties": {
+            "description": {
+              "type": "string",
+              "description": ""
+            },
+            "amount": {
+              "type": "number",
+              "description": ""
+            }
+          }
+        }
+      },
+      "debt_capital_ratio": {
+        "type": "number",
+        "description": "Debt to capital ratio as of 3Q 2024"
+      }
+    }
+  },
+  "trueJsonOutput": {
+    "cashflow": [
+      {
+        "amount": 31.6,
+        "description": "Year-End 2023 Cash (U.S. GAAP)"
+      },
+      {
+        "amount": 42.8,
+        "description": "CFO"
+      },
+      {
+        "amount": -18.2,
+        "description": "Cash Capex"
+      },
+      {
+        "amount": 1.8,
+        "description": "Asset Sales"
+      },
+      {
+        "amount": -26.1,
+        "description": "Shareholder Distributions"
+      },
+      {
+        "amount": -4.8,
+        "description": "Debt Repayment / Other"
+      },
+      {
+        "amount": 27,
+        "description": "3Q24 Cash (U.S. GAAP)"
+      }
+    ],
+    "company_name": "ExxonMobil",
+    "ytd_2023_earnings": 28380,
+    "ytd_2024_earnings": 26070,
+    "debt_capital_ratio": 0.13,
+    "structural_cost_savings": 1170
+  },
+  "trueMarkdownOutput": "## Year-to-date Earnings Factor Analysis¹\n\n### Earnings/(Loss) ($M)\n\n| **28,380**                    | **+229**         | **28,609**                                          | **-3,890**     | **+3270**                | **-1,510**                           | **+1,170**               | **-2,010** | **-570** | **+1,000**     | **26,070**                                          | **0**            | **26,070**                    |\n| ----------------------------- | ---------------- | --------------------------------------------------- | -------------- | ------------------------ | ------------------------------------ | ------------------------ | ---------- | -------- | -------------- | --------------------------------------------------- | ---------------- | ----------------------------- |\n| YTD 2023 Earnings (U.S. GAAP) | Identified Items | YTD 2023 Earnings Excl. Identified Items (non-GAAP) | Price / Margin | Advantaged Volume Growth | Base Volume [---- Volume / Mix ----] | Structural Costs Savings | Expenses   | Other    | Timing Effects | YTD 2024 Earnings Excl. Identified Items (non-GAAP) | Identified Items | YTD 2024 Earnings (U.S. GAAP) |\n\n## YE23 to 3Q24 Cash Flow\n\n### Cash Flow ($G)\n\n| **31.6**                       | **+42.8** | **-18.2**  | **+1.8**    | **-26.1**                 | **-4.8**               | **27.0**              |\n| ------------------------------ | --------- | ---------- | ----------- | ------------------------- | ---------------------- | --------------------- |\n| Year-End 2023 Cash (U.S. GAAP) | CFO       | Cash Capex | Asset Sales | Shareholder Distributions | Debt Repayment / Other | 3Q24 Cash (U.S. GAAP) |\n\n## Financial Highlights\n\n- Year-to-date earnings were $26.1 billion versus $28.4 billion in the same period last year. Earnings decreased as industry refining margins and natural gas prices declined from last year's historically high levels, partially offset by favorable timing effects mainly from derivatives mark-to-market impacts. Strong advantaged volume growth from Guyana and Permian assets including Pioneer, and increased high-value product sales more than offset lower base volumes from divestments of non-strategic assets and scheduled maintenance. Structural cost savings partially offset higher expenses from depreciation, scheduled maintenance, development of new businesses and 2025 project start-ups.\n- Achieved $11.3 billion of cumulative Structural Cost Savings versus 2019, including an additional $1.6 billion of savings during the year and $0.6 billion during the quarter. The company is on track to deliver cumulative savings totaling $15 billion through the end of 2027 versus 2019.\n- Generated strong cash flow from operations of $42.8 billion and free cash flow of $26.4 billion in the first nine months of the year. Industry leading year-to-date shareholder distributions² of $26.1 billion included $12.3 billion of dividends and $13.8 billion of share repurchases. The company plans to repurchase over $19 billion of shares in 2024. ExxonMobil leads industry with total shareholder return of 20% year-to-date³, and also for the past three, five and ten-year periods.\n- The Corporation declared a fourth-quarter dividend of $0.99 per share, an increase of 4%, payable on December 10, 2024, to shareholders of record of Common Stock at the close of business on November 14, 2024. The company has increased its annual dividend for 42 consecutive years, a claim that less than 4% of the S&P 500 companies can make.\n- The company's debt-to-capital ratio was 13% and the net-debt-to-capital ratio was 5%⁴, reflecting year-to-date debt repayment of $4.7 billion and a period-end cash balance of $27.0 billion.\n\n---\n\n¹ The updated earnings factors introduced in the first quarter of 2024 provide additional visibility into drivers of our business results. The company evaluates these factors periodically to determine if any enhancements may provide helpful insights to the market. See page 9 for definitions of these new factors.\n² Leading measures for the IOCs are actuals for companies that reported results on or before October 31, 2024, or estimated using Bloomberg consensus as of October 31. IOCs include each of BP, Chevron, Shell and TotalEnergies.\n³ Year-to-date total shareholder return is as of the last business day of the most recent fiscal quarter.\n⁴ Net-debt is total debt of $42.6 billion less $26.9 billion of cash and cash equivalents excluding restricted cash. Net-debt-to-capital ratio is net debt divided by the sum of net debt and total equity of $276.4 billion.\n\n2"
+}

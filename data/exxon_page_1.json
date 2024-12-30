@@ -1,0 +1,80 @@
+{
+  "imageUrl": "https://omniai-prod-v2.s3.amazonaws.com/zerox/input/c0ee381d-c863-488b-be49-3a9ee96e8253_page_1",
+  "metadata": {
+    "orientation": 0,
+    "documentQuality": "clean",
+    "resolution": [761, 992],
+    "language": "EN"
+  },
+  "jsonSchema": {
+    "type": "object",
+    "properties": {
+      "company_name": {
+        "type": "string",
+        "description": ""
+      },
+      "document_date": {
+        "type": "string",
+        "description": ""
+      },
+      "results_summary": {
+        "type": "array",
+        "description": "",
+        "items": {
+          "type": "object",
+          "properties": {
+            "description": {
+              "type": "string",
+              "description": ""
+            },
+            "ytd_2023": {
+              "type": "number",
+              "description": "Year to date 2023 earnings"
+            },
+            "ytd_2024": {
+              "type": "number",
+              "description": "Year to date 2024 earnings"
+            }
+          }
+        }
+      },
+      "fourth_quarter_dividend": {
+        "type": "number",
+        "description": "Fourth quarter dividend in dollars per share"
+      }
+    }
+  },
+  "trueJsonOutput": {
+    "company_name": "ExxonMobil",
+    "document_date": "November 1, 2024",
+    "results_summary": [
+      {
+        "ytd_2023": 28380,
+        "ytd_2024": 26070,
+        "description": "Earnings (U.S. GAAP)"
+      },
+      {
+        "ytd_2023": 28609,
+        "ytd_2024": 26070,
+        "description": "Earnings Excluding Identified Items (non-GAAP)"
+      },
+      {
+        "ytd_2023": 6.98,
+        "ytd_2024": 6.12,
+        "description": "Earnings Per Common Share"
+      },
+      {
+        "ytd_2023": 7.04,
+        "ytd_2024": 6.12,
+        "description": "Earnings Excl. Identified Items Per Common Share (non-GAAP)"
+      },
+      {
+        "ytd_2023": 18568,
+        "ytd_2024": 20037,
+        "description": "Capital and Exploration Expenditures"
+      }
+    ],
+    "fourth_quarter_dividend": 0.99
+  },
+  "trueMarkdownOutput": "# ExxonMobil\n\n## 3Q 2024 Earnings Release\n\nNovember 1, 2024\n\n## FOR IMMEDIATE RELEASE\n\n## ExxonMobil Announces Third-Quarter 2024 Results\n\n- Improved earnings power from enterprise-wide transformation drove industry-leading third-quarter earnings of $8.6 billion¹\n- Achieved highest liquids production in over 40 years with 3.2 million barrels per day²\n- Delivered record high-value product sales volumes in Product Solutions, up 10% over prior year-to-date\n- Returned $9.8 billion to shareholders in the quarter and increased fourth-quarter dividend to $0.99 per share\n- Leading carbon capture and storage development; new customer agreement increases CO₂ offtake under contract to 6.7 million metric tons per year, more committed volume than any other company has announced³\n\n## Results Summary\n\n| 3Q24  | 2Q24  | Change vs 2Q24 | Dollars in millions (except per share data)                  | YTD 2024 | YTD 2023 | Change vs YTD 2023 |\n| ----- | ----- | -------------- | ------------------------------------------------------------ | -------- | -------- | ------------------ |\n| 8,610 | 9,240 | -630           | Earnings (U.S. GAAP)                                         | 26,070   | 28,380   | -2,310             |\n| 8,610 | 9,240 | -630           | Earnings Excluding Identified Items (non-GAAP)               | 26,070   | 28,609   | -2,539             |\n| 1.92  | 2.14  | -0.22          | Earnings Per Common Share⁴                                   | 6.12     | 6.98     | -0.86              |\n| 1.92  | 2.14  | -0.22          | Earnings Excl. Identified Items Per Common Share (non-GAAP)⁴ | 6.12     | 7.04     | -0.92              |\n| 7,159 | 7,039 | +120           | Capital and Exploration Expenditures                         | 20,037   | 18,568   | +1,469             |\n\n**SPRING, Texas – November 1, 2024** – Exxon Mobil Corporation today announced third-quarter 2024 earnings of $8.6 billion, or $1.92 per share assuming dilution. Cash flow from operating activities was $17.6 billion and free cash flow was $11.3 billion. Capital and exploration expenditures were $7.2 billion in the third quarter, bringing year-to-date 2024 expenditures to $20 billion, in line with the company's full-year guidance of $28 billion.\n\n“We delivered one of our strongest third quarters in a decade,” said Darren Woods, chairman and chief executive officer.\n\n“Our industry-leading results¹ continue to demonstrate how our enterprise-wide transformation is improving the structural earnings power of the company. In the Upstream, we've doubled the profitability of the barrels we produce on a constant price basis⁵. In Product Solutions, we've high-graded our refining footprint and increased high-value product sales. And across the entire company, we’ve achieved $11.3 billion of structural cost savings since 2019. Our strategy is delivering leading returns of 20% so far this year for our shareholders, and we are continuing that growth with a 4% increase in our quarterly dividend payment announced today. We’ve now increased our annual dividend for 42 years in a row, a claim that less than 4% of the S&P 500 companies can make. Furthermore, we lead industry in total shareholder returns for the past 3, 5 and 10 years.”\n\n¹ Earnings and cash flow for the IOCs are actuals for companies that reported results on or before October 31, 2024, or estimated using Bloomberg consensus as of October 31. IOCs include each of BP, Chevron, Shell and TotalEnergies.\n² Upstream 3Q production compared to historical annual production from 1984 to 2024.\n³ Based on contracts to move up to 6.7 MTA CO₂ starting in 2025, subject to additional investment by ExxonMobil and receipt of government permitting for carbon capture and storage projects.\n⁴ Assuming dilution.\n⁵ Upstream unit earnings ($/oeb), which doubled since 2019, exclude identified items and are adjusted to 2022 $60/bbl real Brent; Upstream unit earnings exclude Pioneer contributions."
+}
