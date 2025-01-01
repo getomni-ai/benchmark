@@ -1,6 +1,6 @@
-import { extractWithAI } from './ai';
-import { extractWithOmniAI } from './omniAI';
-import { extractWithZerox } from './zerox';
+import { LLMProvider } from './llm';
+import { OmniAIProvider } from './omniAI';
+import { ZeroxProvider } from './zerox';
 
 export const OPENAI_MODELS = ['gpt-4o-mini', 'gpt-4o'];
 export const ANTHROPIC_MODELS = ['claude-3-5-sonnet-20241022'];
@@ -8,19 +8,19 @@ export const ANTHROPIC_MODELS = ['claude-3-5-sonnet-20241022'];
 export const MODEL_PROVIDERS = {
   openai: {
     models: OPENAI_MODELS,
-    provider: extractWithAI,
-  },
-  omniai: {
-    models: ['omniai'],
-    provider: extractWithOmniAI,
-  },
-  zerox: {
-    models: ['zerox'],
-    provider: extractWithZerox,
+    provider: LLMProvider,
   },
   anthropic: {
     models: ANTHROPIC_MODELS,
-    provider: extractWithAI,
+    provider: LLMProvider,
+  },
+  omniai: {
+    models: ['omniai'],
+    provider: OmniAIProvider,
+  },
+  zerox: {
+    models: ['zerox'],
+    provider: ZeroxProvider,
   },
 };
 
@@ -30,8 +30,9 @@ export const getModelProvider = (model: string) => {
   );
 
   if (foundProvider) {
-    return foundProvider.provider;
+    const provider = new foundProvider.provider(model);
+    return provider;
   }
 
-  throw new Error(`Model '${model}' does not support image inputs`);
+  throw new Error(`Model '${model}' is not supported.`);
 };

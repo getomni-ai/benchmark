@@ -16,16 +16,21 @@ dotenv.config();
 /*                                Benchmark Config                            */
 /* -------------------------------------------------------------------------- */
 
-const MODELS = ['gpt-4o', 'omniai', 'claude-3-5-sonnet-20241022'];
-// const MODELS = ['gpt-4o'];
 const MODEL_CONCURRENCY = {
   'gpt-4o': 50,
   omniai: 50,
   'claude-3-5-sonnet-20241022': 50,
   zerox: 50,
-} as const;
+};
 
-const DIRECT_IMAGE_EXTRACTION = false; // if true, image -> json, otherwise image -> markdown -> json
+const MODELS = [
+  { ocr: 'gpt-4o', extraction: 'gpt-4o' },
+  { ocr: 'omniai', extraction: 'omniai' },
+  { ocr: 'claude-3-5-sonnet-20241022', extraction: 'claude-3-5-sonnet-20241022' },
+];
+
+// if true, image -> json, otherwise image -> markdown -> json
+const DIRECT_IMAGE_EXTRACTION = false;
 
 const DATA_FOLDER = path.join(__dirname, '../data');
 
@@ -53,80 +58,101 @@ const runBenchmark = async () => {
   const progressBars = MODELS.reduce(
     (acc, model) => ({
       ...acc,
-      [model]: multibar.create(data.length, 0, { model }),
+      [`${model.ocr}-${model.extraction}`]: multibar.create(data.length, 0, {
+        model: `${model.ocr} -> ${model.extraction}`,
+      }),
     }),
     {},
   );
 
-  const modelPromises = MODELS.map(async (model) => {
-    // Calculate concurrent requests based on rate limit
-    const concurrency = MODEL_CONCURRENCY[model as keyof typeof MODEL_CONCURRENCY] ?? 50;
-    const limit = pLimit(concurrency);
+  const modelPromises = MODELS.map(
+    async ({ ocr: ocrModel, extraction: extractionModel }) => {
+      // Calculate concurrent requests based on rate limit
+      const concurrency = Math.min(
+        MODEL_CONCURRENCY[ocrModel as keyof typeof MODEL_CONCURRENCY] ?? 50,
+        MODEL_CONCURRENCY[extractionModel as keyof typeof MODEL_CONCURRENCY] ?? 50,
+      );
+      const limit = pLimit(concurrency);
 
-    const promises = data.map((item) =>
-      limit(async () => {
-        const modelProvider = getModelProvider(model);
-        const result: Result = {
-          fileUrl: item.imageUrl,
-          model,
-          directImageExtraction: DIRECT_IMAGE_EXTRACTION,
-          trueMarkdown: item.trueMarkdownOutput,
-          trueJson: item.trueJsonOutput,
-          predictedMarkdown: undefined,
-          predictedJson: undefined,
-          levenshteinDistance: undefined,
-          jsonAccuracy: undefined,
-          jsonDiff: undefined,
-          jsonDiffStats: undefined,
-          usage: undefined,
-        };
+      const promises = data.map((item) =>
+        limit(async () => {
+          const ocrModelProvider = getModelProvider(ocrModel);
+          const extractionModelProvider = getModelProvider(extractionModel);
 
-        try {
-          // extract text and json
-          const extractionResult = await modelProvider({
-            imagePath: item.imageUrl,
-            schema: item.jsonSchema,
+          const result: Result = {
+            fileUrl: item.imageUrl,
+            ocrModel,
+            extractionModel,
             directImageExtraction: DIRECT_IMAGE_EXTRACTION,
-            outputDir: resultFolder,
-            model,
-          });
+            trueMarkdown: item.trueMarkdownOutput,
+            trueJson: item.trueJsonOutput,
+            predictedMarkdown: undefined,
+            predictedJson: undefined,
+            levenshteinDistance: undefined,
+            jsonAccuracy: undefined,
+            jsonDiff: undefined,
+            jsonDiffStats: undefined,
+            usage: undefined,
+          };
 
-          // ... existing result processing ...
-          result.predictedMarkdown = extractionResult.text;
-          result.predictedJson = extractionResult.json;
-          result.usage = extractionResult.usage;
+          try {
+            const start = performance.now();
+            const ocrResult = await ocrModelProvider.ocr(item.imageUrl);
 
-          if (extractionResult.text) {
-            result.levenshteinDistance = calculateTextSimilarity(
-              item.trueMarkdownOutput,
-              extractionResult.text,
+            result.predictedMarkdown = ocrResult.text;
+            result.usage = ocrResult.usage;
+
+            let extractionResult;
+            if (extractionModel === 'omniai') {
+              extractionResult = await extractionModelProvider.extractFromImage(
+                item.imageUrl,
+                item.jsonSchema,
+              );
+            } else {
+              extractionResult = await extractionModelProvider.extractFromText(
+                ocrResult.text,
+                item.jsonSchema,
+              );
+            }
+
+            result.predictedJson = extractionResult.json;
+            result.usage = extractionResult.usage;
+
+            if (ocrResult.text) {
+              result.levenshteinDistance = calculateTextSimilarity(
+                item.trueMarkdownOutput,
+                ocrResult.text,
+              );
+            }
+
+            if (!isEmpty(extractionResult.json)) {
+              const accuracy = calculateJsonAccuracy(
+                extractionResult.json,
+                item.trueJsonOutput,
+              );
+              result.jsonAccuracy = accuracy.score;
+              result.jsonDiff = accuracy.jsonDiff;
+              result.jsonDiffStats = accuracy.jsonDiffStats;
+            }
+          } catch (error) {
+            console.error(
+              `Error processing ${item.imageUrl} with ${ocrModel} and ${extractionModel}:`,
+              error,
             );
           }
 
-          if (!isEmpty(extractionResult.json)) {
-            const accuracy = calculateJsonAccuracy(
-              extractionResult.json,
-              item.trueJsonOutput,
-            );
-            result.jsonAccuracy = accuracy.score;
-            result.jsonDiff = accuracy.jsonDiff;
-            result.jsonDiffStats = accuracy.jsonDiffStats;
-          }
-        } catch (error) {
-          console.error(`Error processing ${item.imageUrl} with ${model}:`, error);
-        }
+          // Update progress bar for this model
+          progressBars[`${ocrModel}-${extractionModel}`].increment();
+          return result;
+        }),
+      );
 
-        // Update progress bar for this model
-        progressBars[model].increment();
-        return result;
-      }),
-    );
+      // Process items concurrently for this model
+      const modelResults = await Promise.all(promises);
 
-    // Process items concurrently for this model
-    const modelResults = await Promise.all(promises);
-
-    results.push(...modelResults);
-  });
+      results.push(...modelResults);
+    },
+  );
 
   // Process each model with its own concurrency limit
   await Promise.all(modelPromises);
@@ -136,4 +162,5 @@ const runBenchmark = async () => {
 
   writeToFile(path.join(resultFolder, 'results.json'), results);
 };
+
 runBenchmark();
