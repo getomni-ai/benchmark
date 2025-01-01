@@ -4,8 +4,8 @@ import { ModelProvider } from './base';
 import { calculateTokenCost } from './shared';
 
 export class ZeroxProvider extends ModelProvider {
-  constructor(model: string) {
-    super(model);
+  constructor() {
+    super('zerox');
   }
 
   async ocr(imagePath: string) {
@@ -18,14 +18,17 @@ export class ZeroxProvider extends ModelProvider {
 
     const text = result.pages.map((page) => page.content).join('\n');
 
+    const inputCost = calculateTokenCost(this.model, 'input', result.inputTokens);
+    const outputCost = calculateTokenCost(this.model, 'output', result.outputTokens);
+
     const usage = {
       duration: performance.now() - startTime,
       inputTokens: result.inputTokens,
       outputTokens: result.outputTokens,
       totalTokens: result.inputTokens + result.outputTokens,
-      inputCost: calculateTokenCost(this.model, 'input', result.inputTokens),
-      outputCost: calculateTokenCost(this.model, 'output', result.outputTokens),
-      totalCost: result.inputTokens + result.outputTokens,
+      inputCost,
+      outputCost,
+      totalCost: inputCost + outputCost,
     };
 
     return {

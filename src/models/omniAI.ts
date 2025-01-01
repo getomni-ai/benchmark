@@ -100,8 +100,8 @@ export class OmniAIProvider extends ModelProvider {
     const text = result.ocr.pages.map((page) => page.content).join('\n');
     const inputTokens = result.ocr.inputTokens;
     const outputTokens = result.ocr.outputTokens;
-    const inputCost = calculateTokenCost('omniai', 'input', inputTokens);
-    const outputCost = calculateTokenCost('omniai', 'output', outputTokens);
+    const inputCost = calculateTokenCost(this.model, 'input', inputTokens);
+    const outputCost = calculateTokenCost(this.model, 'output', outputTokens);
 
     return {
       text,
@@ -124,8 +124,8 @@ export class OmniAIProvider extends ModelProvider {
 
     const inputToken = result.inputTokens;
     const outputToken = result.outputTokens;
-    const inputCost = calculateTokenCost('omniai', 'input', inputToken);
-    const outputCost = calculateTokenCost('omniai', 'output', outputToken);
+    const inputCost = calculateTokenCost(this.model, 'input', inputToken);
+    const outputCost = calculateTokenCost(this.model, 'output', outputToken);
 
     return {
       json: result.extracted || {},

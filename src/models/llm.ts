@@ -51,14 +51,21 @@ export class LLMProvider extends ModelProvider {
       messages,
     });
 
+    const inputCost = calculateTokenCost(this.model, 'input', ocrUsage.promptTokens);
+    const outputCost = calculateTokenCost(
+      this.model,
+      'output',
+      ocrUsage.completionTokens,
+    );
+
     const usage = {
       duration: performance.now() - start,
       inputTokens: ocrUsage.promptTokens,
       outputTokens: ocrUsage.completionTokens,
       totalTokens: ocrUsage.totalTokens,
-      inputCost: calculateTokenCost(this.model, 'input', ocrUsage.promptTokens),
-      outputCost: calculateTokenCost(this.model, 'output', ocrUsage.completionTokens),
-      totalCost: ocrUsage.promptTokens + ocrUsage.completionTokens,
+      inputCost,
+      outputCost,
+      totalCost: inputCost + outputCost,
     };
 
     return {
@@ -85,18 +92,25 @@ export class LLMProvider extends ModelProvider {
       schema: zodSchema,
     });
 
+    const inputCost = calculateTokenCost(
+      this.model,
+      'input',
+      extractionUsage.promptTokens,
+    );
+    const outputCost = calculateTokenCost(
+      this.model,
+      'output',
+      extractionUsage.completionTokens,
+    );
+
     const usage = {
       duration: performance.now() - start,
       inputTokens: extractionUsage.promptTokens,
       outputTokens: extractionUsage.completionTokens,
       totalTokens: extractionUsage.totalTokens,
-      inputCost: calculateTokenCost(this.model, 'input', extractionUsage.promptTokens),
-      outputCost: calculateTokenCost(
-        this.model,
-        'output',
-        extractionUsage.completionTokens,
-      ),
-      totalCost: extractionUsage.promptTokens + extractionUsage.completionTokens,
+      inputCost,
+      outputCost,
+      totalCost: inputCost + outputCost,
     };
 
     return {

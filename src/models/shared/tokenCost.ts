@@ -16,6 +16,11 @@ export const TOKEN_COST = {
     input: 3,
     output: 15,
   },
+  // Zerox uses GPT-4o
+  zerox: {
+    input: 2.5,
+    output: 10,
+  },
 };
 
 export const calculateTokenCost = (
