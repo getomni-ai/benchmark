@@ -23,10 +23,11 @@ const MODEL_CONCURRENCY = {
   zerox: 50,
 };
 
-const MODELS = [
-  { ocr: 'gpt-4o', extraction: 'gpt-4o' },
-  { ocr: 'omniai', extraction: 'omniai' },
-  { ocr: 'claude-3-5-sonnet-20241022', extraction: 'claude-3-5-sonnet-20241022' },
+const MODELS: { ocr: string; extraction?: string }[] = [
+  // { ocr: 'gpt-4o', extraction: 'gpt-4o' },
+  // { ocr: 'omniai', extraction: 'omniai' },
+  // { ocr: 'claude-3-5-sonnet-20241022', extraction: 'claude-3-5-sonnet-20241022' },
+  { ocr: 'aws-text-extract', extraction: 'gpt-4o' },
 ];
 
 // if true, image -> json, otherwise image -> markdown -> json
@@ -77,7 +78,9 @@ const runBenchmark = async () => {
       const promises = data.map((item) =>
         limit(async () => {
           const ocrModelProvider = getModelProvider(ocrModel);
-          const extractionModelProvider = getModelProvider(extractionModel);
+          const extractionModelProvider = extractionModel
+            ? getModelProvider(extractionModel)
+            : undefined;
 
           const result: Result = {
             fileUrl: item.imageUrl,
@@ -103,20 +106,21 @@ const runBenchmark = async () => {
             result.usage = ocrResult.usage;
 
             let extractionResult;
-            if (extractionModel === 'omniai') {
-              extractionResult = await extractionModelProvider.extractFromImage(
-                item.imageUrl,
-                item.jsonSchema,
-              );
-            } else {
-              extractionResult = await extractionModelProvider.extractFromText(
-                ocrResult.text,
-                item.jsonSchema,
-              );
+            if (extractionModelProvider) {
+              if (extractionModel === 'omniai') {
+                extractionResult = await extractionModelProvider.extractFromImage(
+                  item.imageUrl,
+                  item.jsonSchema,
+                );
+              } else {
+                extractionResult = await extractionModelProvider.extractFromText(
+                  ocrResult.text,
+                  item.jsonSchema,
+                );
+              }
+              result.predictedJson = extractionResult.json;
+              result.usage = extractionResult.usage;
             }
-
-            result.predictedJson = extractionResult.json;
-            result.usage = extractionResult.usage;
 
             if (ocrResult.text) {
               result.levenshteinDistance = calculateTextSimilarity(
@@ -125,9 +129,9 @@ const runBenchmark = async () => {
               );
             }
 
-            if (!isEmpty(extractionResult.json)) {
+            if (!isEmpty(result.predictedJson)) {
               const accuracy = calculateJsonAccuracy(
-                extractionResult.json,
+                result.predictedJson,
                 item.trueJsonOutput,
               );
               result.jsonAccuracy = accuracy.score;
@@ -136,7 +140,7 @@ const runBenchmark = async () => {
             }
           } catch (error) {
             console.error(
-              `Error processing ${item.imageUrl} with ${ocrModel} and ${extractionModel}:`,
+              `Error processing ${item.imageUrl} with ${ocrModel} and ${extractionModel}:\n`,
               error,
             );
           }
