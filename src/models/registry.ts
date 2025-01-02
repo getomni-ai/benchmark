@@ -1,3 +1,4 @@
+import { AWSTextractProvider } from './awsTextExtract';
 import { LLMProvider } from './llm';
 import { OmniAIProvider } from './omniAI';
 import { ZeroxProvider } from './zerox';
@@ -6,17 +7,21 @@ export const OPENAI_MODELS = ['gpt-4o-mini', 'gpt-4o'];
 export const ANTHROPIC_MODELS = ['claude-3-5-sonnet-20241022'];
 
 export const MODEL_PROVIDERS = {
-  openai: {
-    models: OPENAI_MODELS,
-    provider: LLMProvider,
-  },
   anthropic: {
     models: ANTHROPIC_MODELS,
     provider: LLMProvider,
   },
+  aws: {
+    models: ['aws-text-extract'],
+    provider: AWSTextractProvider,
+  },
   omniai: {
     models: ['omniai'],
     provider: OmniAIProvider,
+  },
+  openai: {
+    models: OPENAI_MODELS,
+    provider: LLMProvider,
   },
   zerox: {
     models: ['zerox'],
