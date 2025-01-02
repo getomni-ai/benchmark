@@ -2,6 +2,7 @@ import { AWSTextractProvider } from './awsTextExtract';
 import { LLMProvider } from './llm';
 import { OmniAIProvider } from './omniAI';
 import { ZeroxProvider } from './zerox';
+import { GoogleDocumentAIProvider } from './googleDocumentAI';
 
 export const OPENAI_MODELS = ['gpt-4o-mini', 'gpt-4o'];
 export const ANTHROPIC_MODELS = ['claude-3-5-sonnet-20241022'];
@@ -14,6 +15,10 @@ export const MODEL_PROVIDERS = {
   aws: {
     models: ['aws-text-extract'],
     provider: AWSTextractProvider,
+  },
+  google: {
+    models: ['google-document-ai'],
+    provider: GoogleDocumentAIProvider,
   },
   omniai: {
     models: ['omniai'],

@@ -12,6 +12,7 @@
     "@ai-sdk/google": "^1.0.10",
     "@ai-sdk/openai": "^1.0.10",
     "@aws-sdk/client-textract": "^3.716.0",
+    "@google-cloud/documentai": "^8.12.0",
     "ai": "^4.0.18",
     "axios": "^1.7.9",
     "cli-progress": "^3.12.0",
