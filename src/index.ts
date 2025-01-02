@@ -27,7 +27,8 @@ const MODELS: { ocr: string; extraction?: string }[] = [
   // { ocr: 'gpt-4o', extraction: 'gpt-4o' },
   // { ocr: 'omniai', extraction: 'omniai' },
   // { ocr: 'claude-3-5-sonnet-20241022', extraction: 'claude-3-5-sonnet-20241022' },
-  { ocr: 'aws-text-extract', extraction: 'gpt-4o' },
+  // { ocr: 'aws-text-extract', extraction: 'gpt-4o' },
+  { ocr: 'google-document-ai' },
 ];
 
 // if true, image -> json, otherwise image -> markdown -> json
