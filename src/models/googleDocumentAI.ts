@@ -29,11 +29,14 @@ export class GoogleDocumentAIProvider extends ModelProvider {
       const arrayBuffer = await response.arrayBuffer();
       const imageContent = Buffer.from(arrayBuffer).toString('base64');
 
+      // Determine MIME type from URL
+      const mimeType = this.getMimeType(imagePath);
+
       const request = {
         name: this.processorPath,
         rawDocument: {
           content: imageContent,
-          //   mimeType: 'application/pdf', // Adjust based on your input type
+          mimeType: mimeType,
         },
       };
 
@@ -52,6 +55,28 @@ export class GoogleDocumentAIProvider extends ModelProvider {
     } catch (error) {
       console.error('Google Document AI Error:', error);
       throw error;
+    }
+  }
+
+  private getMimeType(url: string): string {
+    const extension = url.split('.').pop()?.toLowerCase();
+    switch (extension) {
+      case 'pdf':
+        return 'application/pdf';
+      case 'png':
+        return 'image/png';
+      case 'jpg':
+      case 'jpeg':
+        return 'image/jpeg';
+      case 'tiff':
+      case 'tif':
+        return 'image/tiff';
+      case 'gif':
+        return 'image/gif';
+      case 'bmp':
+        return 'image/bmp';
+      default:
+        return 'image/png'; // default to PNG
     }
   }
 }
