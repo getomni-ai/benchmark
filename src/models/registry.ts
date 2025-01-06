@@ -3,6 +3,7 @@ import { LLMProvider } from './llm';
 import { OmniAIProvider } from './omniAI';
 import { ZeroxProvider } from './zerox';
 import { GoogleDocumentAIProvider } from './googleDocumentAI';
+import { AzureDocumentIntelligenceProvider } from './azure';
 
 export const OPENAI_MODELS = ['gpt-4o-mini', 'gpt-4o'];
 export const ANTHROPIC_MODELS = ['claude-3-5-sonnet-20241022'];
@@ -19,6 +20,10 @@ export const MODEL_PROVIDERS = {
   google: {
     models: ['google-document-ai'],
     provider: GoogleDocumentAIProvider,
+  },
+  azure: {
+    models: ['azure'],
+    provider: AzureDocumentIntelligenceProvider,
   },
   omniai: {
     models: ['omniai'],
