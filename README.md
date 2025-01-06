@@ -20,6 +20,7 @@ A benchmarking tool that compares OCR and data extraction capabilities of differ
 | Model Provider | Models                          | OCR | JSON Extraction | Required ENV Variables |
 | -------------- | ------------------------------ | --- | --------------- | ----------------------- |
 | Anthropic      | `claude-3-5-sonnet-20241022`   | ✅   | ✅              | `ANTHROPIC_API_KEY`                                                   |
+| Gemini         | `gemini-2.0-flash-exp`, `gemini-1.5-pro`, `gemini-1.5-flash` | ✅   | ✅              | `GOOGLE_GENERATIVE_AI_API_KEY`                                                   |
 | OpenAI         | `gpt-4o-mini`, `gpt-4o`        | ✅   | ✅              | `OPENAI_API_KEY`                                                      |
 | OmniAI         | `omniai`                       | ✅   | ✅              | `OMNIAI_API_KEY`, `OMNIAI_API_URL`                                   |
 | ZeroX          | `zerox`                        | ✅   | ❌              | `OPENAI_API_KEY`                                                      |

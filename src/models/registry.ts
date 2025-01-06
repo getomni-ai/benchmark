@@ -7,6 +7,11 @@ import { AzureDocumentIntelligenceProvider } from './azure';
 
 export const OPENAI_MODELS = ['gpt-4o-mini', 'gpt-4o'];
 export const ANTHROPIC_MODELS = ['claude-3-5-sonnet-20241022'];
+export const GOOGLE_GENERATIVE_AI_MODELS = [
+  'gemini-2.0-flash-exp',
+  'gemini-1.5-pro',
+  'gemini-1.5-flash',
+];
 
 export const MODEL_PROVIDERS = {
   anthropic: {
@@ -16,6 +21,10 @@ export const MODEL_PROVIDERS = {
   aws: {
     models: ['aws-text-extract'],
     provider: AWSTextractProvider,
+  },
+  gemini: {
+    models: GOOGLE_GENERATIVE_AI_MODELS,
+    provider: LLMProvider,
   },
   google: {
     models: ['google-document-ai'],

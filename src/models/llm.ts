@@ -1,6 +1,7 @@
 import { generateText, generateObject, CoreMessage } from 'ai';
 import { createOpenAI } from '@ai-sdk/openai';
 import { createAnthropic } from '@ai-sdk/anthropic';
+import { createGoogleGenerativeAI } from '@ai-sdk/google';
 import path from 'path';
 
 import { ExtractionResult, JsonSchema } from '../types';
@@ -12,7 +13,7 @@ import {
   JSON_EXTRACTION_SYSTEM_PROMPT,
   IMAGE_EXTRACTION_SYSTEM_PROMPT,
 } from './shared';
-import { OPENAI_MODELS, ANTHROPIC_MODELS } from './registry';
+import { OPENAI_MODELS, ANTHROPIC_MODELS, GOOGLE_GENERATIVE_AI_MODELS } from './registry';
 
 export const createModelProvider = (model: string) => {
   if (OPENAI_MODELS.includes(model)) {
@@ -20,6 +21,9 @@ export const createModelProvider = (model: string) => {
   }
   if (ANTHROPIC_MODELS.includes(model)) {
     return createAnthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+  }
+  if (GOOGLE_GENERATIVE_AI_MODELS.includes(model)) {
+    return createGoogleGenerativeAI({ apiKey: process.env.GEMINI_API_KEY });
   }
   throw new Error(`Model '${model}' does not support image inputs`);
 };

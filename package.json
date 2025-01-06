@@ -9,7 +9,7 @@
   },
   "dependencies": {
     "@ai-sdk/anthropic": "^1.0.5",
-    "@ai-sdk/google": "^1.0.10",
+    "@ai-sdk/google": "^1.0.12",
     "@ai-sdk/openai": "^1.0.10",
     "@aws-sdk/client-textract": "^3.716.0",
     "@azure-rest/ai-document-intelligence": "^1.0.0",
