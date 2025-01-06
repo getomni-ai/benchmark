@@ -22,7 +22,7 @@ export const MODEL_PROVIDERS = {
     provider: GoogleDocumentAIProvider,
   },
   azure: {
-    models: ['azure'],
+    models: ['azure-document-intelligence'],
     provider: AzureDocumentIntelligenceProvider,
   },
   omniai: {

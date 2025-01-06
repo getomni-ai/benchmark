@@ -17,11 +17,15 @@ A benchmarking tool that compares OCR and data extraction capabilities of differ
 
 ## Supported models
 
-| Model Provider | Models                       | Re quired ENV Variables            |
-| -------------- | ---------------------------- | ---------------------------------- |
-| OmniAI         | `omniai`                     | `OMNIAI_API_KEY`, `OMNIAI_API_URL` |
-| OpenAI         | `gpt-4o-mini`, `gpt-4o`      | `OPENAI_API_KEY`                   |
-| Anthropic      | `claude-3-5-sonnet-20241022` | `ANTHROPIC_API_KEY`                |
+| Model Provider | Models                          | OCR | JSON Extraction | Required ENV Variables |
+| -------------- | ------------------------------ | --- | --------------- | ----------------------- |
+| Anthropic      | `claude-3-5-sonnet-20241022`   | ✅   | ✅              | `ANTHROPIC_API_KEY`                                                   |
+| OpenAI         | `gpt-4o-mini`, `gpt-4o`        | ✅   | ✅              | `OPENAI_API_KEY`                                                      |
+| OmniAI         | `omniai`                       | ✅   | ✅              | `OMNIAI_API_KEY`, `OMNIAI_API_URL`                                   |
+| ZeroX          | `zerox`                        | ✅   | ❌              | `OPENAI_API_KEY`                                                      |
+| Azure          | `azure-document-intelligence`   | ✅   | ❌              | `AZURE_DOCUMENT_INTELLIGENCE_ENDPOINT`, `AZURE_DOCUMENT_INTELLIGENCE_KEY` |
+| AWS            | `aws-text-extract`             | ✅   | ❌              | `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_REGION`           |
+| Google         | `google-document-ai`           | ✅   | ❌              | `GOOGLE_APPLICATION_CREDENTIALS`                                      |
 
 ## Evaluation
 

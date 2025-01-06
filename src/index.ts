@@ -29,7 +29,7 @@ const MODELS: { ocr: string; extraction?: string }[] = [
   // { ocr: 'claude-3-5-sonnet-20241022', extraction: 'claude-3-5-sonnet-20241022' },
   // { ocr: 'aws-text-extract', extraction: 'gpt-4o' },
   // { ocr: 'google-document-ai' },
-  { ocr: 'azure' },
+  { ocr: 'azure-document-intelligence' },
 ];
 
 // if true, image -> json, otherwise image -> markdown -> json
