@@ -1,4 +1,4 @@
-import { TextractClient, AnalyzeDocumentCommand } from '@aws-sdk/client-textract';
+import { TextractClient, DetectDocumentTextCommand } from '@aws-sdk/client-textract';
 import { ModelProvider } from './base';
 
 export class AWSTextractProvider extends ModelProvider {
@@ -24,11 +24,10 @@ export class AWSTextractProvider extends ModelProvider {
       const arrayBuffer = await response.arrayBuffer();
       const buffer = Buffer.from(arrayBuffer);
 
-      const command = new AnalyzeDocumentCommand({
+      const command = new DetectDocumentTextCommand({
         Document: {
           Bytes: buffer,
         },
-        FeatureTypes: ['FORMS', 'TABLES', 'SIGNATURES', 'LAYOUT'],
       });
 
       const result = await this.client.send(command);
