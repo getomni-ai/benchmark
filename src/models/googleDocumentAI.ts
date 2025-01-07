@@ -1,6 +1,10 @@
 import { DocumentProcessorServiceClient } from '@google-cloud/documentai';
 import { ModelProvider } from './base';
 
+// https://cloud.google.com/document-ai/pricing
+// $1.5 per 1000 pages for the first 5M pages
+const COST_PER_PAGE = 1.5 / 1000;
+
 export class GoogleDocumentAIProvider extends ModelProvider {
   private client: DocumentProcessorServiceClient;
   private processorPath: string;
@@ -50,6 +54,7 @@ export class GoogleDocumentAIProvider extends ModelProvider {
         text,
         usage: {
           duration: performance.now() - start,
+          totalCost: COST_PER_PAGE, // the input is always 1 page.
         },
       };
     } catch (error) {

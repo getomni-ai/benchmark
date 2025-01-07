@@ -8,6 +8,10 @@ import DocumentIntelligence, {
 
 import { ModelProvider } from './base';
 
+// https://azure.microsoft.com/en-us/pricing/details/ai-document-intelligence/
+// $10 per 1000 pages for the first 1M pages, Prebuilt-Layout model
+const COST_PER_PAGE = 10 / 1000;
+
 export class AzureDocumentIntelligenceProvider extends ModelProvider {
   private client: DocumentIntelligenceClient;
 
@@ -52,6 +56,7 @@ export class AzureDocumentIntelligenceProvider extends ModelProvider {
         text,
         usage: {
           duration: performance.now() - start,
+          totalCost: COST_PER_PAGE, // the input is always 1 page.
         },
       };
     } catch (error) {

@@ -1,8 +1,20 @@
 // token cost in USD per 1M tokens
 export const TOKEN_COST = {
-  omniai: {
-    input: 2.5,
-    output: 10,
+  'claude-3-5-sonnet-20241022': {
+    input: 3,
+    output: 15,
+  },
+  'gemini-2.0-flash-exp': {
+    input: 0, // TODO: check this, currently not available
+    output: 0, // TODO: check this, currently not available
+  },
+  'gemini-1.5-pro': {
+    input: 1.25,
+    output: 5,
+  },
+  'gemini-1.5-flash': {
+    input: 0.075,
+    output: 0.3,
   },
   'gpt-4o': {
     input: 2.5,
@@ -12,9 +24,9 @@ export const TOKEN_COST = {
     input: 0.15,
     output: 0.6,
   },
-  'claude-3-5-sonnet-20241022': {
-    input: 3,
-    output: 15,
+  omniai: {
+    input: 2.5,
+    output: 10,
   },
   // Zerox uses GPT-4o
   zerox: {

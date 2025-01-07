@@ -1,5 +1,9 @@
-import { TextractClient, DetectDocumentTextCommand } from '@aws-sdk/client-textract';
+import { TextractClient, AnalyzeDocumentCommand } from '@aws-sdk/client-textract';
 import { ModelProvider } from './base';
+
+// https://aws.amazon.com/textract/pricing/
+// $4 per 1000 pages for the first 1M pages, Layout model
+const COST_PER_PAGE = 4 / 1000;
 
 export class AWSTextractProvider extends ModelProvider {
   private client: TextractClient;
@@ -24,10 +28,11 @@ export class AWSTextractProvider extends ModelProvider {
       const arrayBuffer = await response.arrayBuffer();
       const buffer = Buffer.from(arrayBuffer);
 
-      const command = new DetectDocumentTextCommand({
+      const command = new AnalyzeDocumentCommand({
         Document: {
           Bytes: buffer,
         },
+        FeatureTypes: ['LAYOUT'],
       });
 
       const result = await this.client.send(command);
@@ -42,6 +47,7 @@ export class AWSTextractProvider extends ModelProvider {
         text,
         usage: {
           duration: performance.now() - start,
+          totalCost: COST_PER_PAGE, // the input is always 1 page.
         },
       };
     } catch (error) {
