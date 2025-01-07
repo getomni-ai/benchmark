@@ -14,4 +14,6 @@ export interface Usage {
   inputCost?: number;
   outputCost?: number;
   totalCost?: number;
+  ocr?: Usage;
+  extraction?: Usage;
 }
