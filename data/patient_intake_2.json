@@ -1,0 +1,94 @@
+{
+  "imageUrl": "https://omni-demo-data.s3.us-east-1.amazonaws.com/test/patient_intake_2.png",
+  "metadata": {
+    "fontFamily": "ARIAL",
+    "format": "PATIENT_INTAKE"
+  },
+  "jsonSchema": {
+    "type": "object",
+    "properties": {
+      "patient": {
+        "type": "object",
+        "properties": {
+          "dob": {
+            "type": "string",
+            "description": "Date of birth"
+          },
+          "firstName": {
+            "type": "string",
+            "description": "Patient's first name"
+          },
+          "lastName": {
+            "type": "string",
+            "description": "Patient's last name"
+          },
+          "address": {
+            "type": "string",
+            "description": "Patient's address"
+          },
+          "city": {
+            "type": "string",
+            "description": "City"
+          },
+          "state": {
+            "type": "string",
+            "description": "State"
+          },
+          "zip": {
+            "type": "string",
+            "description": "ZIP code"
+          },
+          "phone": {
+            "type": "string",
+            "description": "Phone number"
+          },
+          "insurance": {
+            "type": "string",
+            "description": "Primary insurance"
+          },
+          "memberId": {
+            "type": "string",
+            "description": "Member ID"
+          },
+          "isHospitalized": {
+            "type": "boolean",
+            "description": "Is the patient currently hospitalized?"
+          },
+          "isNewTherapy": {
+            "type": "boolean",
+            "description": "Is the requested medicine new?"
+          }
+        },
+        "required": [
+          "address",
+          "city",
+          "dob",
+          "firstName",
+          "isHospitalized",
+          "isNewTherapy",
+          "lastName",
+          "phone",
+          "state",
+          "zip"
+        ]
+      }
+    }
+  },
+  "trueJsonOutput": {
+    "patient": {
+      "dob": "August 19, 1990",
+      "firstName": "Matthew",
+      "lastName": "Doe",
+      "address": "9591 Swan Rd",
+      "city": "Abiquiu",
+      "state": "NM",
+      "zip": "87510",
+      "phone": "(604) 927-6206",
+      "insurance": "",
+      "memberId": "T5YkUdjyYa",
+      "isHospitalized": false,
+      "isNewTherapy": true
+    }
+  },
+  "trueMarkdownOutput": "## SECTION A - PATIENT INFORMATION\n\n<table><tbody><tr><td colspan=\"1\"><div>First Name:<div><div>Matthew</div></div></div></td><td colspan=\"1\"><div>Last Name:<div><div>Doe</div></div></div></td><td colspan=\"1\"><div>Member ID:<div><div>T5YkUdjyYa</div></div></div></td></tr><tr><td colspan=\"3\"><div>Address:<div><div>9591 Swan Rd</div></div></div></td></tr><tr><td colspan=\"1\"><div>City:<div><div>Abiquiu</div></div></div></td><td colspan=\"1\"><div>State:<div><div>NM</div></div></div></td><td colspan=\"1\"><div>Zip:<div><div>87510</div></div></div></td></tr><tr><td colspan=\"1\"><div>Phone:<div><div>(604) 927-6206</div></div></div></td><td colspan=\"1\"><div>DOB:<div><div>August 19, 1990</div></div></div></td><td colspan=\"1\"><div>Allergies:<div><div>&nbsp;</div></div></div></td></tr><tr><td colspan=\"1\"><div>Primary Insurance:<div><div>&nbsp;</div></div></div></td><td colspan=\"1\"><div>Policy #:<div><div>&nbsp;</div></div></div></td><td colspan=\"1\"><div>Group #:<div><div>&nbsp;</div></div></div></td></tr></tbody></table>\n\nIs the requested medication NEW or a CONTINUATION of THERAPY? If so, start date: _____________\n\nIs this patient currently hospitalized? Yes No"
+}

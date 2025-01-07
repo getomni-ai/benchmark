@@ -1,0 +1,84 @@
+{
+  "imageUrl": "https://omni-demo-data.s3.us-east-1.amazonaws.com/test/patient_intake_1.png",
+  "metadata": {
+    "fontFamily": "ARIAL",
+    "format": "PATIENT_INTAKE"
+  },
+  "jsonSchema": {
+    "type": "object",
+    "properties": {
+      "patient": {
+        "type": "object",
+        "properties": {
+          "dob": {
+            "type": "string",
+            "description": "Date of birth"
+          },
+          "firstName": {
+            "type": "string",
+            "description": "Patient's first name"
+          },
+          "lastName": {
+            "type": "string",
+            "description": "Patient's last name"
+          },
+          "address": {
+            "type": "string",
+            "description": "Patient's address"
+          },
+          "city": {
+            "type": "string",
+            "description": "City"
+          },
+          "state": {
+            "type": "string",
+            "description": "State"
+          },
+          "zip": {
+            "type": "string",
+            "description": "ZIP code"
+          },
+          "phone": {
+            "type": "string",
+            "description": "Phone number"
+          },
+          "isHospitalized": {
+            "type": "boolean",
+            "description": "Is the patient currently hospitalized?"
+          },
+          "isNewTherapy": {
+            "type": "boolean",
+            "description": "Is the requested medicine new?"
+          }
+        },
+        "required": [
+          "address",
+          "city",
+          "dob",
+          "firstName",
+          "isHospitalized",
+          "isNewTherapy",
+          "lastName",
+          "phone",
+          "state",
+          "zip"
+        ]
+      }
+    }
+  },
+  "trueJsonOutput": {
+    "patient": {
+      "dob": "June 2, 1978",
+      "firstName": "Michael",
+      "lastName": "Doe",
+      "address": "4636A East Winter Rd",
+      "city": "Abiquiu",
+      "state": "New Mexico",
+      "zip": "87510",
+      "phone": "2329289272",
+      "isHospitalized": true,
+      "isNewTherapy": false
+    }
+  },
+  "trueMarkdownOutput": "## SECTION A - PATIENT INFORMATION\n\n<table><tbody><tr><td colspan=\"1\"><div><div><div>Michael</div>First Name:</div></div></td><td colspan=\"1\"><div><div><div>Doe</div>Last Name:</div></div></td><td colspan=\"1\"><div><div><div>&nbsp;</div>Member ID:</div></div></td></tr><tr><td colspan=\"3\"><div><div><div>4636A East Winter Rd</div>Address:</div></div></td></tr><tr><td colspan=\"1\"><div><div><div>Abiquiu</div>City:</div></div></td><td colspan=\"1\"><div><div><div>New Mexico</div>State:</div></div></td><td colspan=\"1\"><div><div><div>87510</div>Zip:</div></div></td></tr><tr><td colspan=\"1\"><div><div><div>2329289272</div>Phone:</div></div></td><td colspan=\"1\"><div><div><div>June 2, 1978</div>DOB:</div></div></td><td colspan=\"1\"><div><div><div>&nbsp;</div>Allergies:</div></div></td></tr><tr><td colspan=\"1\"><div><div><div>&nbsp;</div>Primary Insurance:</div></div></td><td colspan=\"1\"><div><div><div>&nbsp;</div>Policy #:</div></div></td><td colspan=\"1\"><div><div><div>&nbsp;</div>Group #:</div></div></td></tr></tbody></table>\n\nIs the requested medication NEW or a CONTINUATION of THERAPY? If so, start date: _____________\n\nIs this patient currently hospitalized? Yes No"
+}
