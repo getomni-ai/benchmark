@@ -51,6 +51,10 @@ Some JSON schemas contain arrays. This metrics is useful for evaluating how well
 \text{Accuracy} = \frac{\text{number of matched items}}{\text{total items}}
 ```
 
+## Benchmark Dashboard
+
+Check out the [dashboard documentation](dashboard/README.md) for more details.
+
 ## License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
