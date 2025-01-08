@@ -5,7 +5,11 @@ import cliProgress from 'cli-progress';
 import { isEmpty } from 'lodash';
 import pLimit from 'p-limit';
 
-import { calculateJsonAccuracy, calculateTextSimilarity } from './evaluation';
+import {
+  calculateJsonAccuracy,
+  calculateJsonArrayAccuracies,
+  calculateTextSimilarity,
+} from './evaluation';
 import { getModelProvider } from './models';
 import { Input, Result } from './types';
 import { createResultFolder, loadData, writeToFile } from './utils';
@@ -24,13 +28,13 @@ const MODEL_CONCURRENCY = {
 };
 
 const MODELS: { ocr: string; extraction?: string }[] = [
-  { ocr: 'gpt-4o', extraction: 'gpt-4o' },
+  // { ocr: 'gpt-4o', extraction: 'gpt-4o' },
   { ocr: 'omniai', extraction: 'omniai' },
-  { ocr: 'claude-3-5-sonnet-20241022', extraction: 'claude-3-5-sonnet-20241022' },
+  // { ocr: 'claude-3-5-sonnet-20241022', extraction: 'claude-3-5-sonnet-20241022' },
   // { ocr: 'gemini-1.5-pro', extraction: 'gemini-1.5-pro' },
-  { ocr: 'aws-text-extract', extraction: 'gpt-4o' },
-  { ocr: 'google-document-ai', extraction: 'gpt-4o' },
-  { ocr: 'azure-document-intelligence', extraction: 'gpt-4o' },
+  // { ocr: 'aws-text-extract', extraction: 'gpt-4o' },
+  // { ocr: 'google-document-ai', extraction: 'gpt-4o' },
+  // { ocr: 'azure-document-intelligence', extraction: 'gpt-4o' },
 ];
 
 // if true, image -> json, otherwise image -> markdown -> json
@@ -159,6 +163,13 @@ const runBenchmark = async () => {
               result.jsonAccuracy = accuracy.score;
               result.jsonDiff = accuracy.jsonDiff;
               result.jsonDiffStats = accuracy.jsonDiffStats;
+
+              const arrayAccuracies = calculateJsonArrayAccuracies(
+                result.predictedJson,
+                item.trueJsonOutput,
+                item.jsonSchema,
+              );
+              result.arrayAccuracies = arrayAccuracies;
             }
           } catch (error) {
             result.error = error;

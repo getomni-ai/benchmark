@@ -1,5 +1,3 @@
-import { JsonSchema } from './data';
-
 export interface ExtractionResult {
   json?: Record<string, any>;
   text?: string;
