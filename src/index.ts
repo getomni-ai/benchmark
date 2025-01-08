@@ -161,6 +161,7 @@ const runBenchmark = async () => {
               result.jsonDiffStats = accuracy.jsonDiffStats;
             }
           } catch (error) {
+            result.error = error;
             console.error(
               `Error processing ${item.imageUrl} with ${ocrModel} and ${extractionModel}:\n`,
               error,

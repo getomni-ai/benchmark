@@ -37,4 +37,5 @@ export interface Result {
   jsonDiff?: Record<string, any>;
   jsonDiffStats?: Record<string, any>;
   usage?: Usage;
+  error?: any;
 }
