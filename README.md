@@ -43,6 +43,14 @@ We uses [json-diff](https://github.com/zgrossbart/jdd) to identify differences b
 \text{Accuracy} = 1 - \frac{\text{number of difference fields}}{\text{total fields}}
 ```
 
+### Array accuracy
+
+Some JSON schemas contain arrays. This metrics is useful for evaluating how well the model extract tables and lists from a document. Accuracy is calculated as:
+
+```math
+\text{Accuracy} = \frac{\text{number of matched items}}{\text{total items}}
+```
+
 ## License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
