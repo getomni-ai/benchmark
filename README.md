@@ -5,15 +5,15 @@ A benchmarking tool that compares OCR and data extraction capabilities of differ
 ## Getting started
 
 1. Clone the repository: `git clone https://github.com/getomni-ai/benchmark.git`
-2. Navigate to the project directory: `cd benchmark`
-3. Install dependencies: `npm install`
-4. Set up API keys in `.env` for the models you want to test. Check out the [supported models](#supported-models) here. You can check `.env.example` for the required variables.
+2. Install dependencies: `npm install`
+3. Set up API keys in `.env` for the models you want to test. Check out the [supported models](#supported-models) here. You can check `.env.example` for the required variables.
 
 ## Running the benchmark
 
 1. Prepare your test data in `data` folder.
-2. Run the benchmark: `npm run benchmark`
-3. Results will be saved in the `results/<timestamp>/results.json` file.
+2. In `index.ts` file, set the `MODELS` array to the models you want to test.
+3. Run the benchmark: `npm run benchmark`
+4. Results will be saved in the `results/<timestamp>/results.json` file.
 
 ## Supported models
 

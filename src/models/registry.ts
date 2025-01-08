@@ -1,4 +1,4 @@
-import { AWSTextractProvider } from './awsTextExtract';
+import { AWSTextractProvider } from './awsTextract';
 import { LLMProvider } from './llm';
 import { OmniAIProvider } from './omniAI';
 import { ZeroxProvider } from './zerox';
@@ -19,7 +19,7 @@ export const MODEL_PROVIDERS = {
     provider: LLMProvider,
   },
   aws: {
-    models: ['aws-text-extract'],
+    models: ['aws-textract'],
     provider: AWSTextractProvider,
   },
   gemini: {

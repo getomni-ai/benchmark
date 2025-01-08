@@ -32,7 +32,7 @@ const MODELS: { ocr: string; extraction?: string }[] = [
   { ocr: 'omniai', extraction: 'omniai' },
   // { ocr: 'claude-3-5-sonnet-20241022', extraction: 'claude-3-5-sonnet-20241022' },
   // { ocr: 'gemini-1.5-pro', extraction: 'gemini-1.5-pro' },
-  // { ocr: 'aws-text-extract', extraction: 'gpt-4o' },
+  // { ocr: 'aws-textract', extraction: 'gpt-4o' },
   // { ocr: 'google-document-ai', extraction: 'gpt-4o' },
   // { ocr: 'azure-document-intelligence', extraction: 'gpt-4o' },
 ];

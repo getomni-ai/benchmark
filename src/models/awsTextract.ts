@@ -9,7 +9,7 @@ export class AWSTextractProvider extends ModelProvider {
   private client: TextractClient;
 
   constructor() {
-    super('aws-text-extract');
+    super('aws-textract');
     this.client = new TextractClient({
       region: process.env.AWS_REGION,
       credentials: {
