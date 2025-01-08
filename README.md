@@ -28,6 +28,8 @@ A benchmarking tool that compares OCR and data extraction capabilities of differ
 | AWS            | `aws-text-extract`             | ✅   | ❌              | `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_REGION`           |
 | Google         | `google-document-ai`           | ✅   | ❌              | `GOOGLE_APPLICATION_CREDENTIALS`                                      |
 
+- For Google Document AI, you need to run `gcloud auth application-default login` to authenticate first before running the benchmark.
+
 ## Evaluation
 
 ### Text similarity
