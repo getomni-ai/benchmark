@@ -1,5 +1,7 @@
 # OCR Benchmark Dashboard
 
+![dashboard](../assets/dashboard-gif.gif)
+
 This dashboard is used to view the results of the OCR Benchmark.
 
 ## Getting started
