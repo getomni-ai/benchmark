@@ -8,6 +8,7 @@ This dashboard is used to view the results of the OCR Benchmark.
 
     ```bash
     python3 -m venv venv
+    source venv/bin/activate
     ```
 
 2. Install python dependencies

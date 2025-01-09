@@ -1,9 +1,11 @@
 from datetime import datetime
 import json
 from pathlib import Path
+import plotly.express as px
 import pandas as pd
 import streamlit as st
-import numpy as np
+
+# st.set_page_config(layout="wide")
 
 
 def load_results(results_dir="results"):
@@ -19,7 +21,6 @@ def load_results(results_dir="results"):
         if json_path.exists():
             with open(json_path) as f:
                 results = json.load(f)
-                print(results)
                 results_dict[timestamp] = results
 
     return results_dict
@@ -51,10 +52,10 @@ def create_results_table(results):
             "Image": test["fileUrl"],
             "OCR Model": test["ocrModel"],
             "Extraction Model": test["extractionModel"],
-            "Levenshtein Score": test["levenshteinDistance"],
-            "JSON Accuracy": test["jsonAccuracy"],
-            "Total Cost": test["usage"]["totalCost"],
-            "Duration (ms)": test["usage"]["duration"],
+            "Levenshtein Score": test.get("levenshteinDistance"),
+            "JSON Accuracy": test.get("jsonAccuracy"),
+            "Total Cost": test.get("usage", {}).get("totalCost"),
+            "Duration (ms)": test.get("usage", {}).get("duration"),
         }
         rows.append(row)
 
@@ -85,6 +86,9 @@ def create_model_comparison_table(results):
     model_stats = {}
 
     for test in results:
+        if "error" in test:
+            continue
+
         model_key = f"{test['ocrModel']} → {test['extractionModel']}"
         if model_key not in model_stats:
             model_stats[model_key] = {
@@ -100,13 +104,15 @@ def create_model_comparison_table(results):
         stats["json_accuracy"] += test["jsonAccuracy"]
         stats["text_accuracy"] += test["levenshteinDistance"]
         stats["total_cost"] += test["usage"]["totalCost"]
-        stats["avg_latency"] += test["usage"]["duration"]
+        stats["avg_latency"] += (
+            test["usage"]["duration"] / 1000
+        )  # Convert ms to seconds
 
     # Calculate averages
     for stats in model_stats.values():
         stats["json_accuracy"] /= stats["count"]
         stats["text_accuracy"] /= stats["count"]
-        stats["avg_latency"] /= stats["count"]  # Convert to seconds
+        stats["avg_latency"] /= stats["count"]
 
     # Convert to DataFrame
     df = pd.DataFrame.from_dict(model_stats, orient="index")
@@ -119,6 +125,9 @@ def create_accuracy_comparison_charts(results):
     model_accuracies = {}
 
     for test in results:
+        if "error" in test:
+            continue
+
         model_key = f"{test['ocrModel']} → {test['extractionModel']}"
         if model_key not in model_accuracies:
             model_accuracies[model_key] = {
@@ -180,7 +189,7 @@ def create_accuracy_comparison_charts(results):
 
 
 def main():
-    st.title("OCR Benchmark Results")
+    st.title("OCR Benchmark Dashboard")
 
     # Load all results from the results directory
     results_dict = load_results()
@@ -202,23 +211,41 @@ def main():
     results = results_dict[selected_timestamp]
 
     # Accuracy Charts
-    st.header("Accuracy Metrics by Model")
+    st.header("Evaluation Metrics by Model")
 
     json_df, text_df, array_df = create_accuracy_comparison_charts(results)
+    fig1 = px.bar(
+        json_df.reset_index().sort_values("JSON Accuracy", ascending=False),
+        x="Model",
+        y="JSON Accuracy",
+        title="JSON Accuracy by Model",
+        height=600,
+    )
+    fig1.update_layout(showlegend=False)
+    fig1.update_traces(texttemplate="%{y:.1%}", textposition="outside")
+    st.plotly_chart(fig1)
 
-    col1, col2, col3 = st.columns(3)
+    fig2 = px.bar(
+        array_df.reset_index().sort_values("Array Accuracy", ascending=False),
+        x="Model",
+        y="Array Accuracy",
+        title="Array Accuracy by Model",
+        height=600,
+    )
+    fig2.update_layout(showlegend=False)
+    fig2.update_traces(texttemplate="%{y:.1%}", textposition="outside")
+    st.plotly_chart(fig2)
 
-    with col1:
-        st.subheader("JSON Accuracy")
-        st.bar_chart(json_df)
-
-    with col2:
-        st.subheader("Text Similarity")
-        st.bar_chart(text_df)
-
-    with col3:
-        st.subheader("Array Accuracy")
-        st.bar_chart(array_df)
+    fig3 = px.bar(
+        text_df.reset_index().sort_values("Text Similarity", ascending=False),
+        x="Model",
+        y="Text Similarity",
+        title="Text Similarity by Model",
+        height=600,
+    )
+    fig3.update_layout(showlegend=False)
+    fig3.update_traces(texttemplate="%{y:.1%}", textposition="outside")
+    st.plotly_chart(fig3)
 
     # Model Statistics Table
     st.header("Model Performance Statistics")
@@ -235,6 +262,35 @@ def main():
             }
         )
     )
+
+    # Cost and Latency Charts
+    st.header("Cost and Latency Analysis")
+
+    cost_df = pd.DataFrame(model_stats["total_cost"]).reset_index()
+    cost_df.columns = ["Model", "Total Cost"]
+    fig4 = px.bar(
+        cost_df.sort_values("Total Cost", ascending=True),
+        x="Model",
+        y="Total Cost",
+        title="Total Cost by Model Combination",
+        height=600,
+    )
+    fig4.update_layout(showlegend=False)
+    fig4.update_traces(texttemplate="$%{y:.4f}", textposition="outside")
+    st.plotly_chart(fig4)
+
+    latency_df = pd.DataFrame(model_stats["avg_latency"]).reset_index()
+    latency_df.columns = ["Model", "Average Latency"]
+    fig5 = px.bar(
+        latency_df.sort_values("Average Latency", ascending=True),
+        x="Model",
+        y="Average Latency",
+        title="Average Latency by Model Combination",
+        height=600,
+    )
+    fig5.update_layout(showlegend=False)
+    fig5.update_traces(texttemplate="%{y:.2f} s", textposition="outside")
+    st.plotly_chart(fig5)
 
     # Detailed Results Table
     st.header("Test Results")

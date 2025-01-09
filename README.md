@@ -55,6 +55,8 @@ Some JSON schemas contain arrays. This metrics is useful for evaluating how well
 
 ## Benchmark Dashboard
 
+![dashboard](./assets/dashboard-gif.gif)
+
 Check out the [dashboard documentation](dashboard/README.md) for more details.
 
 ## License
