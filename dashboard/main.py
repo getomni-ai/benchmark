@@ -26,23 +26,6 @@ def load_results(results_dir="results"):
     return results_dict
 
 
-def display_metrics(results):
-    """Display key metrics in Streamlit"""
-    metrics = calculate_metrics(results)
-
-    col1, col2 = st.columns(2)
-
-    with col1:
-        st.metric("JSON Accuracy", f"{metrics['accuracy']['json_accuracy']:.2%}")
-        st.metric("Text Accuracy", f"{metrics['accuracy']['text_accuracy']:.2%}")
-
-    with col2:
-        st.metric(
-            "Average Latency", f"{metrics['latency']['average_latency']:.2f} seconds"
-        )
-        st.metric("Total Cost", f"${metrics['cost']['total_cost']:.4f}")
-
-
 def create_results_table(results):
     """Create a DataFrame from test results"""
     rows = []
@@ -60,25 +43,6 @@ def create_results_table(results):
         rows.append(row)
 
     return pd.DataFrame(rows)
-
-
-def calculate_metrics(results):
-    """Calculate average metrics from results"""
-    metrics = {
-        "accuracy": {
-            "json_accuracy": sum(test["jsonAccuracy"] for test in results)
-            / len(results),
-            "text_accuracy": sum(test["levenshteinDistance"] for test in results)
-            / len(results),
-        },
-        "latency": {
-            "average_latency": sum(test["usage"]["duration"] for test in results)
-            / len(results)
-            / 1000  # Convert to seconds
-        },
-        "cost": {"total_cost": sum(test["usage"]["totalCost"] for test in results)},
-    }
-    return metrics
 
 
 def create_model_comparison_table(results):
@@ -220,6 +184,7 @@ def main():
         y="JSON Accuracy",
         title="JSON Accuracy by Model",
         height=600,
+        color_discrete_sequence=["#636EFA"],
     )
     fig1.update_layout(showlegend=False)
     fig1.update_traces(texttemplate="%{y:.1%}", textposition="outside")
@@ -231,6 +196,7 @@ def main():
         y="Array Accuracy",
         title="Array Accuracy by Model",
         height=600,
+        color_discrete_sequence=["#636EFA"],
     )
     fig2.update_layout(showlegend=False)
     fig2.update_traces(texttemplate="%{y:.1%}", textposition="outside")
@@ -242,6 +208,7 @@ def main():
         y="Text Similarity",
         title="Text Similarity by Model",
         height=600,
+        color_discrete_sequence=["#636EFA"],
     )
     fig3.update_layout(showlegend=False)
     fig3.update_traces(texttemplate="%{y:.1%}", textposition="outside")
@@ -274,6 +241,7 @@ def main():
         y="Total Cost",
         title="Total Cost by Model Combination",
         height=600,
+        color_discrete_sequence=["#EE553B"],
     )
     fig4.update_layout(showlegend=False)
     fig4.update_traces(texttemplate="$%{y:.4f}", textposition="outside")
@@ -287,6 +255,7 @@ def main():
         y="Average Latency",
         title="Average Latency by Model Combination",
         height=600,
+        color_discrete_sequence=["#EE553B"],
     )
     fig5.update_layout(showlegend=False)
     fig5.update_traces(texttemplate="%{y:.2f} s", textposition="outside")
