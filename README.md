@@ -57,7 +57,7 @@ Some JSON schemas contain arrays. This metrics is useful for evaluating how well
 
 ![dashboard](./assets/dashboard-gif.gif)
 
-Check out the [dashboard documentation](dashboard/README.md) for more details.
+You can use benchmark dashboard to easily view the results of each test run. Check out the [dashboard documentation](dashboard/README.md) for more details.
 
 ## License
 
