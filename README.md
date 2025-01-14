@@ -10,23 +10,25 @@ A benchmarking tool that compares OCR and data extraction capabilities of differ
 
 ## Running the benchmark
 
-1. Prepare your test data in `data` folder.
+1. Prepare your test data
+   1. For local data, add individual files to the `data` folder.
+   2. To pull from a DB, add `DATABASE_URL` in your `.env`
 2. In `index.ts` file, set the `MODELS` array to the models you want to test.
 3. Run the benchmark: `npm run benchmark`
 4. Results will be saved in the `results/<timestamp>/results.json` file.
 
 ## Supported models
 
-| Model Provider | Models                          | OCR | JSON Extraction | Required ENV Variables |
-| -------------- | ------------------------------ | --- | --------------- | ----------------------- |
-| Anthropic      | `claude-3-5-sonnet-20241022`   | ✅   | ✅              | `ANTHROPIC_API_KEY`                                                   |
-| Gemini         | `gemini-2.0-flash-exp`, `gemini-1.5-pro`, `gemini-1.5-flash` | ✅   | ✅              | `GOOGLE_GENERATIVE_AI_API_KEY`                                                   |
-| OpenAI         | `gpt-4o-mini`, `gpt-4o`        | ✅   | ✅              | `OPENAI_API_KEY`                                                      |
-| OmniAI         | `omniai`                       | ✅   | ✅              | `OMNIAI_API_KEY`, `OMNIAI_API_URL`                                   |
-| ZeroX          | `zerox`                        | ✅   | ❌              | `OPENAI_API_KEY`                                                      |
-| Azure          | `azure-document-intelligence`   | ✅   | ❌              | `AZURE_DOCUMENT_INTELLIGENCE_ENDPOINT`, `AZURE_DOCUMENT_INTELLIGENCE_KEY` |
-| AWS            | `aws-text-extract`             | ✅   | ❌              | `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_REGION`           |
-| Google         | `google-document-ai`           | ✅   | ❌              | `GOOGLE_APPLICATION_CREDENTIALS`                                      |
+| Model Provider | Models                                                       | OCR | JSON Extraction | Required ENV Variables                                                    |
+| -------------- | ------------------------------------------------------------ | --- | --------------- | ------------------------------------------------------------------------- |
+| Anthropic      | `claude-3-5-sonnet-20241022`                                 | ✅  | ✅              | `ANTHROPIC_API_KEY`                                                       |
+| Gemini         | `gemini-2.0-flash-exp`, `gemini-1.5-pro`, `gemini-1.5-flash` | ✅  | ✅              | `GOOGLE_GENERATIVE_AI_API_KEY`                                            |
+| OpenAI         | `gpt-4o-mini`, `gpt-4o`                                      | ✅  | ✅              | `OPENAI_API_KEY`                                                          |
+| OmniAI         | `omniai`                                                     | ✅  | ✅              | `OMNIAI_API_KEY`, `OMNIAI_API_URL`                                        |
+| ZeroX          | `zerox`                                                      | ✅  | ❌              | `OPENAI_API_KEY`                                                          |
+| Azure          | `azure-document-intelligence`                                | ✅  | ❌              | `AZURE_DOCUMENT_INTELLIGENCE_ENDPOINT`, `AZURE_DOCUMENT_INTELLIGENCE_KEY` |
+| AWS            | `aws-text-extract`                                           | ✅  | ❌              | `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_REGION`                |
+| Google         | `google-document-ai`                                         | ✅  | ❌              | `GOOGLE_APPLICATION_CREDENTIALS`                                          |
 
 - For Google Document AI, you need to run `gcloud auth application-default login` to authenticate first before running the benchmark.
 

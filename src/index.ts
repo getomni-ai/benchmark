@@ -11,8 +11,8 @@ import {
   calculateTextSimilarity,
 } from './evaluation';
 import { getModelProvider } from './models';
-import { Input, Result } from './types';
-import { createResultFolder, loadData, writeToFile } from './utils';
+import { Result } from './types';
+import { createResultFolder, loadLocalData, writeToFile, loadFromDb } from './utils';
 
 dotenv.config();
 
@@ -42,6 +42,8 @@ const DIRECT_IMAGE_EXTRACTION = false;
 
 const DATA_FOLDER = path.join(__dirname, '../data');
 
+const DATABASE_URL = process.env.DATABASE_URL;
+
 /* -------------------------------------------------------------------------- */
 /*                                Run Benchmark                               */
 /* -------------------------------------------------------------------------- */
@@ -50,7 +52,7 @@ const timestamp = moment(new Date()).format('YYYY-MM-DD-HH-mm-ss');
 const resultFolder = createResultFolder(timestamp);
 
 const runBenchmark = async () => {
-  const data = loadData(DATA_FOLDER) as Input[];
+  const data = DATABASE_URL ? await loadFromDb() : loadLocalData(DATA_FOLDER);
   const results: Result[] = [];
 
   // Create multiple progress bars
