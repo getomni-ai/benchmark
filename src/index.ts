@@ -159,8 +159,8 @@ const runBenchmark = async () => {
 
             if (!isEmpty(result.predictedJson)) {
               const accuracy = calculateJsonAccuracy(
-                result.predictedJson,
                 item.trueJsonOutput,
+                result.predictedJson,
               );
               result.jsonAccuracy = accuracy.score;
               result.jsonDiff = accuracy.jsonDiff;

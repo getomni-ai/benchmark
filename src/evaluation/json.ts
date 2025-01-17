@@ -28,11 +28,11 @@ interface AccuracyResult {
  * A score of 0.0 means completely different
  */
 export const calculateJsonAccuracy = (
-  predicted: Record<string, any>,
   actual: Record<string, any>,
+  predicted: Record<string, any>,
 ): AccuracyResult => {
   // Get the diff result
-  const diffResult = diff(predicted, actual, { full: true });
+  const diffResult = diff(actual, predicted, { full: true });
 
   if (!diffResult) {
     // If there's no diff, the JSONs are identical
