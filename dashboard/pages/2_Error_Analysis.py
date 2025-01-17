@@ -11,7 +11,14 @@ st.markdown(SIDEBAR_STYLE, unsafe_allow_html=True)
 
 def display_json_diff(test_case, container):
     """Display JSON differences in a readable format"""
-    if "jsonDiff" in test_case:
+    # First check for errors
+    if "error" in test_case:
+        container.subheader("Error Message")
+        container.error(test_case["error"])
+        return
+
+    # If no errors, display JSON diff as before
+    if "jsonDiff" in test_case or "fullJsonDiff" in test_case:
         container.subheader("JSON Differences")
 
         # Display diff stats
@@ -22,8 +29,20 @@ def display_json_diff(test_case, container):
         cols[2].metric("Modifications", stats["modifications"])
         cols[3].metric("Total Changes", stats["total"])
 
-        # Display detailed diff
-        container.json(test_case["jsonDiff"])
+        # Create tabs for different diff views
+        tab_summary, tab_full = container.tabs(["Summary Diff", "Full Diff"])
+
+        with tab_summary:
+            if "jsonDiff" in test_case:
+                tab_summary.json(test_case["jsonDiff"])
+            else:
+                tab_summary.warning("Summary diff not available")
+
+        with tab_full:
+            if "fullJsonDiff" in test_case:
+                tab_full.json(test_case["fullJsonDiff"])
+            else:
+                tab_full.warning("Full diff not available")
 
 
 def display_file_preview(test_case, container):

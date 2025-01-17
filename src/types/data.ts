@@ -36,6 +36,7 @@ export interface Result {
   levenshteinDistance?: number;
   jsonAccuracy?: number;
   jsonDiff?: Record<string, any>;
+  fullJsonDiff?: Record<string, any>;
   jsonDiffStats?: Record<string, any>;
   arrayAccuracies?: Record<string, ArrayAccuracyResult>;
   usage?: Usage;

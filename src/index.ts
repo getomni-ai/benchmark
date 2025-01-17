@@ -104,6 +104,7 @@ const runBenchmark = async () => {
             levenshteinDistance: undefined,
             jsonAccuracy: undefined,
             jsonDiff: undefined,
+            fullJsonDiff: undefined,
             jsonDiffStats: undefined,
             usage: undefined,
           };
@@ -164,6 +165,7 @@ const runBenchmark = async () => {
               );
               result.jsonAccuracy = accuracy.score;
               result.jsonDiff = accuracy.jsonDiff;
+              result.fullJsonDiff = accuracy.fullJsonDiff;
               result.jsonDiffStats = accuracy.jsonDiffStats;
 
               const arrayAccuracies = calculateJsonArrayAccuracies(

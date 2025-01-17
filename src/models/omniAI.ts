@@ -131,7 +131,7 @@ export class OmniAIProvider extends ModelProvider {
         inputTokens: inputToken,
         outputTokens: outputToken,
         totalTokens: inputToken + outputToken,
-        totalCost: COST_PER_PAGE,
+        totalCost: 0, // TODO: extraction cost is included in the OCR cost, 1 cent per page
       },
     };
   }
