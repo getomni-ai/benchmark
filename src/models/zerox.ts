@@ -16,13 +16,15 @@ export class ZeroxProvider extends ModelProvider {
       openaiAPIKey: process.env.OPENAI_API_KEY,
     });
 
+    const endTime = performance.now();
+
     const text = result.pages.map((page) => page.content).join('\n');
 
     const inputCost = calculateTokenCost(this.model, 'input', result.inputTokens);
     const outputCost = calculateTokenCost(this.model, 'output', result.outputTokens);
 
     const usage = {
-      duration: performance.now() - startTime,
+      duration: endTime - startTime,
       inputTokens: result.inputTokens,
       outputTokens: result.outputTokens,
       totalTokens: result.inputTokens + result.outputTokens,

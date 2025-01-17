@@ -25,8 +25,6 @@ export class GoogleDocumentAIProvider extends ModelProvider {
   }
 
   async ocr(imagePath: string) {
-    const start = performance.now();
-
     try {
       // Download the image
       const response = await fetch(imagePath);
@@ -44,8 +42,10 @@ export class GoogleDocumentAIProvider extends ModelProvider {
         },
       };
 
+      const start = performance.now();
       const [result] = await this.client.processDocument(request);
       const { document } = result;
+      const end = performance.now();
 
       // Extract text from the document
       const text = document?.text || '';
@@ -53,7 +53,7 @@ export class GoogleDocumentAIProvider extends ModelProvider {
       return {
         text,
         usage: {
-          duration: performance.now() - start,
+          duration: end - start,
           totalCost: COST_PER_PAGE, // the input is always 1 page.
         },
       };

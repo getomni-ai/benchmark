@@ -29,9 +29,9 @@ export class AzureDocumentIntelligenceProvider extends ModelProvider {
   }
 
   async ocr(imagePath: string) {
-    const start = performance.now();
-
     try {
+      const start = performance.now();
+
       const initialResponse = await this.client
         .path('/documentModels/{modelId}:analyze', 'prebuilt-layout')
         .post({
@@ -49,13 +49,14 @@ export class AzureDocumentIntelligenceProvider extends ModelProvider {
       const poller = getLongRunningPoller(this.client, initialResponse);
       const result = (await poller.pollUntilDone()).body as AnalyzeOperationOutput;
       const analyzeResult = result.analyzeResult;
-
       const text = analyzeResult?.content;
+
+      const end = performance.now();
 
       return {
         text,
         usage: {
-          duration: performance.now() - start,
+          duration: end - start,
           totalCost: COST_PER_PAGE, // the input is always 1 page.
         },
       };

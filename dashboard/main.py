@@ -23,6 +23,8 @@ def load_results(results_dir="results"):
                 results = json.load(f)
                 results_dict[timestamp] = results
 
+    # Sort the dictionary by timestamp keys in descending order (newest first)
+    results_dict = dict(sorted(results_dict.items(), reverse=True))
     return results_dict
 
 
@@ -60,23 +62,36 @@ def create_model_comparison_table(results):
                 "json_accuracy": 0,
                 "text_accuracy": 0,
                 "total_cost": 0,
-                "avg_latency": 0,
+                "ocr_latency": 0,
+                "extraction_latency": 0,
+                "extraction_count": 0,
             }
 
         stats = model_stats[model_key]
         stats["count"] += 1
-        stats["json_accuracy"] += test["jsonAccuracy"]
         stats["text_accuracy"] += test["levenshteinDistance"]
         stats["total_cost"] += test["usage"]["totalCost"]
-        stats["avg_latency"] += (
-            test["usage"]["duration"] / 1000
+        stats["ocr_latency"] += (
+            test["usage"]["ocr"]["duration"] / 1000
         )  # Convert ms to seconds
+
+        # Only add JSON accuracy and extraction latency if extraction was performed
+        if "jsonAccuracy" in test and test["usage"].get("extraction"):
+            stats["extraction_count"] += 1
+            stats["json_accuracy"] += test["jsonAccuracy"]
+            stats["extraction_latency"] += (
+                test["usage"]["extraction"]["duration"] / 1000
+            )
 
     # Calculate averages
     for stats in model_stats.values():
-        stats["json_accuracy"] /= stats["count"]
         stats["text_accuracy"] /= stats["count"]
-        stats["avg_latency"] /= stats["count"]
+        stats["ocr_latency"] /= stats["count"]
+
+        # Calculate extraction-related averages only if there were extractions
+        if stats["extraction_count"] > 0:
+            stats["json_accuracy"] /= stats["extraction_count"]
+            stats["extraction_latency"] /= stats["extraction_count"]
 
     # Convert to DataFrame
     df = pd.DataFrame.from_dict(model_stats, orient="index")
@@ -101,12 +116,17 @@ def create_accuracy_comparison_charts(results):
                 "total_matched_items": 0,
                 "total_items": 0,
                 "array_count": 0,
+                "extraction_count": 0,
             }
 
         stats = model_accuracies[model_key]
         stats["count"] += 1
-        stats["json_accuracy"] += test["jsonAccuracy"]
         stats["text_similarity"] += test["levenshteinDistance"]
+
+        # Handle JSON accuracy if present
+        if "jsonAccuracy" in test:
+            stats["extraction_count"] += 1
+            stats["json_accuracy"] += test["jsonAccuracy"]
 
         # Handle array accuracies if present
         if "arrayAccuracies" in test and test["arrayAccuracies"]:
@@ -118,9 +138,15 @@ def create_accuracy_comparison_charts(results):
 
     # Calculate final averages
     for stats in model_accuracies.values():
-        stats["json_accuracy"] /= stats["count"]
         stats["text_similarity"] /= stats["count"]
-        # Calculate array accuracy as total matched items divided by total items
+
+        # Calculate JSON accuracy only if there were extractions
+        if stats["extraction_count"] > 0:
+            stats["json_accuracy"] /= stats["extraction_count"]
+        else:
+            stats["json_accuracy"] = 0
+
+        # Calculate array accuracy only if there were arrays
         stats["array_accuracy"] = (
             stats["total_matched_items"] / stats["total_items"]
             if stats["total_items"] > 0
@@ -253,19 +279,58 @@ def main():
     fig4.update_traces(texttemplate="$%{y:.4f}", textposition="outside")
     st.plotly_chart(fig4)
 
-    latency_df = pd.DataFrame(model_stats["avg_latency"]).reset_index()
-    latency_df.columns = ["Model", "Average Latency"]
-    fig5 = px.bar(
-        latency_df.sort_values("Average Latency", ascending=True),
-        x="Model",
-        y="Average Latency",
-        title="Average Latency by Model Combination",
-        height=600,
-        color_discrete_sequence=["#EE553B"],
+    # Create stacked bar chart for latency
+    latency_df = pd.DataFrame(
+        {
+            "Model": model_stats.index,
+            "OCR": model_stats["ocr_latency"],
+            "Extraction": model_stats["extraction_latency"],
+        }
     )
-    fig5.update_layout(showlegend=False)
-    fig5.update_traces(texttemplate="%{y:.2f} s", textposition="outside")
+
+    # Calculate total latency for labels
+    latency_df["Total"] = latency_df["OCR"] + latency_df["Extraction"]
+    fig5 = px.bar(
+        latency_df.sort_values("Total", ascending=True),
+        x="Model",
+        y=["OCR", "Extraction"],
+        title="Latency by Model Combination (OCR + Extraction)",
+        height=600,
+        color_discrete_sequence=["#636EFA", "#EF553B"],
+    )
+    fig5.update_layout(
+        barmode="stack",
+        showlegend=True,
+        legend_title="Phase",
+        yaxis=dict(
+            range=[
+                0,
+                latency_df["Total"].max() * 1.2,
+            ]  # Set y-axis range to 120% of max value
+        ),
+    )
+    fig5.update_traces(texttemplate="%{y:.2f}s", textposition="inside")
     st.plotly_chart(fig5)
+
+    # Total latency chart
+    total_latency_df = pd.DataFrame(
+        {
+            "Model": model_stats.index,
+            "Total Latency": model_stats["ocr_latency"]
+            + model_stats["extraction_latency"],
+        }
+    )
+    fig6 = px.bar(
+        total_latency_df.sort_values("Total Latency", ascending=True),
+        x="Model",
+        y="Total Latency",
+        title="Total Latency by Model Combination",
+        height=600,
+        color_discrete_sequence=["#636EFA"],
+    )
+    fig6.update_layout(showlegend=False)
+    fig6.update_traces(texttemplate="%{y:.2f}s", textposition="outside")
+    st.plotly_chart(fig6)
 
     # Detailed Results Table
     st.header("Test Results")

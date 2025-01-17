@@ -20,14 +20,13 @@ export class AWSTextractProvider extends ModelProvider {
   }
 
   async ocr(imagePath: string) {
-    const start = performance.now();
-
     try {
       // Convert image URL to base64
       const response = await fetch(imagePath);
       const arrayBuffer = await response.arrayBuffer();
       const buffer = Buffer.from(arrayBuffer);
 
+      const start = performance.now();
       const command = new AnalyzeDocumentCommand({
         Document: {
           Bytes: buffer,
@@ -36,6 +35,7 @@ export class AWSTextractProvider extends ModelProvider {
       });
 
       const result = await this.client.send(command);
+      const end = performance.now();
 
       // Extract text from blocks
       const text =
@@ -46,7 +46,7 @@ export class AWSTextractProvider extends ModelProvider {
       return {
         text,
         usage: {
-          duration: performance.now() - start,
+          duration: end - start,
           totalCost: COST_PER_PAGE, // the input is always 1 page.
         },
       };

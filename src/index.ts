@@ -109,7 +109,6 @@ const runBenchmark = async () => {
           };
 
           try {
-            const start = performance.now();
             const ocrResult = await ocrModelProvider.ocr(item.imageUrl);
 
             result.predictedMarkdown = ocrResult.text;
@@ -135,6 +134,7 @@ const runBenchmark = async () => {
               result.predictedJson = extractionResult.json;
 
               const mergeUsage = (base: any, additional: any) => ({
+                duration: (base?.duration ?? 0) + (additional?.duration ?? 0),
                 inputTokens: (base?.inputTokens ?? 0) + (additional?.inputTokens ?? 0),
                 outputTokens: (base?.outputTokens ?? 0) + (additional?.outputTokens ?? 0),
                 totalTokens: (base?.totalTokens ?? 0) + (additional?.totalTokens ?? 0),
@@ -144,7 +144,6 @@ const runBenchmark = async () => {
               });
 
               result.usage = {
-                duration: performance.now() - start,
                 ocr: ocrResult.usage,
                 extraction: extractionResult.usage,
                 ...mergeUsage(result.usage, extractionResult.usage),
