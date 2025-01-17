@@ -98,7 +98,8 @@ def create_accuracy_comparison_charts(results):
                 "count": 0,
                 "json_accuracy": 0,
                 "text_similarity": 0,
-                "array_accuracy": 0,
+                "total_matched_items": 0,
+                "total_items": 0,
                 "array_count": 0,
             }
 
@@ -110,18 +111,23 @@ def create_accuracy_comparison_charts(results):
         # Handle array accuracies if present
         if "arrayAccuracies" in test and test["arrayAccuracies"]:
             stats["array_count"] += 1
-            # Average all array scores in the test
-            array_scores = [v["score"] for v in test["arrayAccuracies"].values()]
-            stats["array_accuracy"] += sum(array_scores) / len(array_scores)
+            # Sum up matchedItems and totalItems for all arrays in the test
+            for array_result in test["arrayAccuracies"].values():
+                stats["total_matched_items"] += array_result["matchedItems"]
+                stats["total_items"] += array_result["totalItems"]
 
-    # Calculate averages
+    # Calculate final averages
     for stats in model_accuracies.values():
         stats["json_accuracy"] /= stats["count"]
         stats["text_similarity"] /= stats["count"]
-        if stats["array_count"] > 0:
-            stats["array_accuracy"] /= stats["array_count"]
+        # Calculate array accuracy as total matched items divided by total items
+        stats["array_accuracy"] = (
+            stats["total_matched_items"] / stats["total_items"]
+            if stats["total_items"] > 0
+            else 0
+        )
 
-    # Create separate DataFrames for each metric
+    # Create DataFrames
     json_df = pd.DataFrame(
         {
             "Model": model_accuracies.keys(),
