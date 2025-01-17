@@ -24,10 +24,6 @@ export const TOKEN_COST = {
     input: 0.15,
     output: 0.6,
   },
-  omniai: {
-    input: 2.5,
-    output: 10,
-  },
   // Zerox uses GPT-4o
   zerox: {
     input: 2.5,

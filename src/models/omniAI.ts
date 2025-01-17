@@ -3,8 +3,11 @@ import path from 'path';
 
 import { ExtractionResult, Usage, JsonSchema } from '../types';
 import { writeResultToFile } from '../utils';
-import { calculateTokenCost } from './shared';
 import { ModelProvider } from './base';
+
+// https://getomni.ai/pricing
+// 1 cent per page
+const COST_PER_PAGE = 0.01;
 
 interface ExtractResponse {
   jobId: string;
@@ -100,8 +103,6 @@ export class OmniAIProvider extends ModelProvider {
     const text = result.ocr.pages.map((page) => page.content).join('\n');
     const inputTokens = result.ocr.inputTokens;
     const outputTokens = result.ocr.outputTokens;
-    const inputCost = calculateTokenCost(this.model, 'input', inputTokens);
-    const outputCost = calculateTokenCost(this.model, 'output', outputTokens);
 
     return {
       text,
@@ -110,9 +111,7 @@ export class OmniAIProvider extends ModelProvider {
         inputTokens,
         outputTokens,
         totalTokens: inputTokens + outputTokens,
-        inputCost,
-        outputCost,
-        totalCost: inputCost + outputCost,
+        totalCost: COST_PER_PAGE,
       },
     };
   }
@@ -124,8 +123,6 @@ export class OmniAIProvider extends ModelProvider {
 
     const inputToken = result.inputTokens;
     const outputToken = result.outputTokens;
-    const inputCost = calculateTokenCost(this.model, 'input', inputToken);
-    const outputCost = calculateTokenCost(this.model, 'output', outputToken);
 
     return {
       json: result.extracted || {},
@@ -134,9 +131,7 @@ export class OmniAIProvider extends ModelProvider {
         inputTokens: inputToken,
         outputTokens: outputToken,
         totalTokens: inputToken + outputToken,
-        inputCost,
-        outputCost,
-        totalCost: inputCost + outputCost,
+        totalCost: COST_PER_PAGE,
       },
     };
   }
