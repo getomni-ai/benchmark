@@ -22,7 +22,7 @@ This dashboard is used to view the results of the OCR Benchmark.
 3. Run the dashboard:
 
     ```bash
-    streamlit run dashboard/main.py
+    streamlit run dashboard/Home.py
     ```
 
 4. The dashboard will open in your browser and show:
