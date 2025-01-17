@@ -5,25 +5,34 @@ from difflib import HtmlDiff
 from utils.style import SIDEBAR_STYLE
 
 
-st.set_page_config(page_title="Error Analysis")
+st.set_page_config(page_title="Error Analysis", layout="wide")
 st.markdown(SIDEBAR_STYLE, unsafe_allow_html=True)
 
 
-def display_json_diff(test_case):
+def display_json_diff(test_case, container):
     """Display JSON differences in a readable format"""
     if "jsonDiff" in test_case:
-        st.subheader("JSON Differences")
+        container.subheader("JSON Differences")
 
         # Display diff stats
         stats = test_case["jsonDiffStats"]
-        cols = st.columns(4)
+        cols = container.columns(4)
         cols[0].metric("Additions", stats["additions"])
         cols[1].metric("Deletions", stats["deletions"])
         cols[2].metric("Modifications", stats["modifications"])
         cols[3].metric("Total Changes", stats["total"])
 
         # Display detailed diff
-        st.json(test_case["jsonDiff"])
+        container.json(test_case["jsonDiff"])
+
+
+def display_file_preview(test_case, container):
+    """Display the original file preview"""
+    container.subheader("File Preview")
+    if "fileUrl" in test_case:
+        container.image(test_case["fileUrl"], width=400)
+    else:
+        container.warning("No file preview available")
 
 
 def display_markdown_diff(test_case):
@@ -76,10 +85,8 @@ def main():
     results = results_dict[selected_timestamp]
 
     with col2:
-        # Create list of test cases with their basic info
         test_cases = [
-            f"{test['ocrModel']} → {test['extractionModel']} ({test.get('jsonAccuracy', 'N/A')}% accuracy)"
-            for test in results
+            f"{test['ocrModel']} → {test['extractionModel']}" for test in results
         ]
         selected_test_idx = st.selectbox(
             "Select Test Case",
@@ -93,14 +100,20 @@ def main():
     # Display file URL
     st.markdown(f"**File URL:** [{test_case['fileUrl']}]({test_case['fileUrl']})")
 
-    # Create tabs for different types of analysis
-    tab1, tab2 = st.tabs(["JSON Analysis", "Markdown Analysis"])
+    # Create two columns for file preview and JSON diff
+    left_col, right_col = st.columns(2)
 
-    with tab1:
-        display_json_diff(test_case)
+    # Display file preview on the left
+    with left_col:
+        display_file_preview(test_case, left_col)
 
-    with tab2:
-        display_markdown_diff(test_case)
+    # Display JSON diff on the right
+    with right_col:
+        display_json_diff(test_case, right_col)
+
+    # Display markdown diff at the bottom
+    st.markdown("---")  # Add a separator
+    display_markdown_diff(test_case)
 
 
 if __name__ == "__main__":
