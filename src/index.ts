@@ -23,7 +23,7 @@ dotenv.config();
 const MODEL_CONCURRENCY = {
   'gpt-4o': 50,
   omniai: 50,
-  'claude-3-5-sonnet-20241022': 50,
+  'claude-3-5-sonnet-20241022': 20,
   zerox: 50,
 };
 
