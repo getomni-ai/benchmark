@@ -96,6 +96,7 @@ const runBenchmark = async () => {
 
           const result: Result = {
             fileUrl: item.imageUrl,
+            metadata: item.metadata,
             ocrModel,
             extractionModel,
             directImageExtraction: DIRECT_IMAGE_EXTRACTION,

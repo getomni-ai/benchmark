@@ -23,6 +23,7 @@ def create_results_table(results):
             "JSON Accuracy": test.get("jsonAccuracy"),
             "Total Cost": test.get("usage", {}).get("totalCost"),
             "Duration (ms)": test.get("usage", {}).get("duration"),
+            "Metadata": test.get("metadata"),
         }
         rows.append(row)
 
