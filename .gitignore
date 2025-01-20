@@ -9,3 +9,5 @@ eng.traineddata
 
 .DS_Store
 venv
+
+google_credentials.json

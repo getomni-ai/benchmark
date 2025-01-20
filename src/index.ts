@@ -21,9 +21,11 @@ dotenv.config();
 /* -------------------------------------------------------------------------- */
 
 const MODEL_CONCURRENCY = {
+  'aws-textract': 50,
+  'azure-document-intelligence': 10,
+  'claude-3-5-sonnet-20241022': 25,
   'gpt-4o': 50,
   omniai: 50,
-  'claude-3-5-sonnet-20241022': 50,
   zerox: 50,
 };
 
@@ -81,8 +83,8 @@ const runBenchmark = async () => {
     async ({ ocr: ocrModel, extraction: extractionModel }) => {
       // Calculate concurrent requests based on rate limit
       const concurrency = Math.min(
-        MODEL_CONCURRENCY[ocrModel as keyof typeof MODEL_CONCURRENCY] ?? 50,
-        MODEL_CONCURRENCY[extractionModel as keyof typeof MODEL_CONCURRENCY] ?? 50,
+        MODEL_CONCURRENCY[ocrModel as keyof typeof MODEL_CONCURRENCY] ?? 20,
+        MODEL_CONCURRENCY[extractionModel as keyof typeof MODEL_CONCURRENCY] ?? 20,
       );
       const limit = pLimit(concurrency);
 
@@ -95,6 +97,7 @@ const runBenchmark = async () => {
 
           const result: Result = {
             fileUrl: item.imageUrl,
+            metadata: item.metadata,
             ocrModel,
             extractionModel,
             directImageExtraction: DIRECT_IMAGE_EXTRACTION,

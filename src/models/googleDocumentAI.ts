@@ -1,3 +1,4 @@
+import fs from 'fs';
 import { DocumentProcessorServiceClient } from '@google-cloud/documentai';
 import { ModelProvider } from './base';
 
@@ -20,7 +21,13 @@ export class GoogleDocumentAIProvider extends ModelProvider {
       throw new Error('Missing required Google Document AI configuration');
     }
 
-    this.client = new DocumentProcessorServiceClient();
+    const credentials = JSON.parse(
+      fs.readFileSync(process.env.GOOGLE_APPLICATION_CREDENTIALS_PATH || '', 'utf8'),
+    );
+    this.client = new DocumentProcessorServiceClient({
+      credentials,
+    });
+
     this.processorPath = `projects/${projectId}/locations/${location}/processors/${processorId}`;
   }
 
