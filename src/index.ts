@@ -37,7 +37,7 @@ const MODELS: { ocr: string; extraction?: string }[] = [
   // { ocr: 'gemini-1.5-pro', extraction: 'gemini-1.5-pro' },
   { ocr: 'aws-textract', extraction: 'gpt-4o' },
   { ocr: 'google-document-ai', extraction: 'gpt-4o' },
-  { ocr: 'azure-document-intelligence', extraction: 'gpt-4o-mini' },
+  { ocr: 'azure-document-intelligence', extraction: 'gpt-4o' },
 ];
 
 // if true, image -> json, otherwise image -> markdown -> json
