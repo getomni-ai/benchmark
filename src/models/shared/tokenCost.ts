@@ -20,6 +20,10 @@ export const TOKEN_COST = {
     input: 2.5,
     output: 10,
   },
+  'ft:gpt-4o-2024-08-06:omniai::Ac6gscab': {
+    input: 2.5,
+    output: 10,
+  },
   'gpt-4o-mini': {
     input: 0.15,
     output: 0.6,

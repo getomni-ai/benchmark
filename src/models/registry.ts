@@ -5,7 +5,11 @@ import { ZeroxProvider } from './zerox';
 import { GoogleDocumentAIProvider } from './googleDocumentAI';
 import { AzureDocumentIntelligenceProvider } from './azure';
 
-export const OPENAI_MODELS = ['gpt-4o-mini', 'gpt-4o'];
+export const OPENAI_MODELS = [
+  'gpt-4o-mini',
+  'gpt-4o',
+  'ft:gpt-4o-2024-08-06:omniai::Ac6gscab',
+];
 export const ANTHROPIC_MODELS = ['claude-3-5-sonnet-20241022'];
 export const GOOGLE_GENERATIVE_AI_MODELS = [
   'gemini-2.0-flash-exp',

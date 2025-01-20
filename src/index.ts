@@ -29,9 +29,10 @@ const MODEL_CONCURRENCY = {
 
 const MODELS: { ocr: string; extraction?: string }[] = [
   { ocr: 'gpt-4o', extraction: 'gpt-4o' },
+  { ocr: 'ft:gpt-4o-2024-08-06:omniai::Ac6gscab', extraction: 'gpt-4o' },
   { ocr: 'gpt-4o-mini', extraction: 'gpt-4o' },
   { ocr: 'omniai', extraction: 'omniai' },
-  { ocr: 'claude-3-5-sonnet-20241022', extraction: 'claude-3-5-sonnet-20241022' },
+  { ocr: 'claude-3-5-sonnet-20241022', extraction: 'gpt-4o' },
   // { ocr: 'gemini-1.5-pro', extraction: 'gemini-1.5-pro' },
   { ocr: 'aws-textract', extraction: 'gpt-4o' },
   { ocr: 'google-document-ai', extraction: 'gpt-4o' },
