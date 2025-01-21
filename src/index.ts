@@ -23,7 +23,7 @@ dotenv.config();
 const MODEL_CONCURRENCY = {
   'aws-textract': 50,
   'azure-document-intelligence': 50,
-  'claude-3-5-sonnet-20241022': 25,
+  'claude-3-5-sonnet-20241022': 10,
   'gpt-4o': 50,
   omniai: 50,
   zerox: 50,
