@@ -46,6 +46,10 @@ export const MODEL_PROVIDERS = {
     models: ['zerox'],
     provider: ZeroxProvider,
   },
+  groundTruth: {
+    models: ['ground-truth'],
+    provider: undefined,
+  },
 };
 
 export const getModelProvider = (model: string) => {
@@ -54,6 +58,9 @@ export const getModelProvider = (model: string) => {
   );
 
   if (foundProvider) {
+    if (model === 'ground-truth') {
+      return undefined;
+    }
     const provider = new foundProvider.provider(model);
     return provider;
   }

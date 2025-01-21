@@ -37,6 +37,7 @@ const MODELS: { ocr: string; extraction?: string }[] = [
   { ocr: 'aws-textract', extraction: 'gpt-4o' },
   { ocr: 'google-document-ai', extraction: 'gpt-4o' },
   { ocr: 'azure-document-intelligence', extraction: 'gpt-4o' },
+  { ocr: 'ground-truth', extraction: 'gpt-4o' },
 ];
 
 // if true, image -> json, otherwise image -> markdown -> json
@@ -112,14 +113,17 @@ const runBenchmark = async () => {
           };
 
           try {
-            const ocrResult = await ocrModelProvider.ocr(item.imageUrl);
-
-            result.predictedMarkdown = ocrResult.text;
-            result.usage = {
-              ...ocrResult.usage,
-              ocr: ocrResult.usage,
-              extraction: undefined,
-            };
+            if (ocrModel === 'ground-truth') {
+              result.predictedMarkdown = item.trueMarkdownOutput;
+            } else {
+              const ocrResult = await ocrModelProvider.ocr(item.imageUrl);
+              result.predictedMarkdown = ocrResult.text;
+              result.usage = {
+                ...ocrResult.usage,
+                ocr: ocrResult.usage,
+                extraction: undefined,
+              };
+            }
 
             let extractionResult;
             if (extractionModelProvider) {
@@ -130,7 +134,7 @@ const runBenchmark = async () => {
                 );
               } else {
                 extractionResult = await extractionModelProvider.extractFromText(
-                  ocrResult.text,
+                  result.predictedMarkdown,
                   item.jsonSchema,
                 );
               }
@@ -147,16 +151,16 @@ const runBenchmark = async () => {
               });
 
               result.usage = {
-                ocr: ocrResult.usage,
+                ocr: result.usage?.ocr ?? {},
                 extraction: extractionResult.usage,
                 ...mergeUsage(result.usage, extractionResult.usage),
               };
             }
 
-            if (ocrResult.text) {
+            if (result.predictedMarkdown) {
               result.levenshteinDistance = calculateTextSimilarity(
                 item.trueMarkdownOutput,
-                ocrResult.text,
+                result.predictedMarkdown,
               );
             }
 

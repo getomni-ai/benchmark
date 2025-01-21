@@ -55,7 +55,7 @@ def create_model_comparison_table(results):
         stats["text_accuracy"] += test["levenshteinDistance"]
         stats["total_cost"] += test["usage"]["totalCost"]
         stats["ocr_latency"] += (
-            test["usage"]["ocr"]["duration"] / 1000
+            test["usage"]["ocr"].get("duration", 0) / 1000
         )  # Convert ms to seconds
 
         # Only add JSON accuracy and extraction latency if extraction was performed
@@ -63,7 +63,7 @@ def create_model_comparison_table(results):
             stats["extraction_count"] += 1
             stats["json_accuracy"] += test["jsonAccuracy"]
             stats["extraction_latency"] += (
-                test["usage"]["extraction"]["duration"] / 1000
+                test["usage"]["extraction"].get("duration", 0) / 1000
             )
 
     # Calculate averages
