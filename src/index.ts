@@ -23,7 +23,7 @@ dotenv.config();
 const MODEL_CONCURRENCY = {
   'aws-textract': 50,
   'azure-document-intelligence': 50,
-  'claude-3-5-sonnet-20241022': 25,
+  'claude-3-5-sonnet-20241022': 10,
   'gpt-4o': 50,
   omniai: 50,
   zerox: 50,
@@ -39,6 +39,7 @@ const MODELS: { ocr: string; extraction?: string }[] = [
   { ocr: 'azure-document-intelligence', extraction: 'gpt-4o' },
   { ocr: 'unstructured', extraction: 'gpt-4o' },
   { ocr: 'ground-truth', extraction: 'gpt-4o' },
+  { ocr: 'ground-truth', extraction: 'claude-3-5-sonnet-20241022' },
 ];
 
 // if true, image -> json, otherwise image -> markdown -> json
