@@ -22,7 +22,7 @@ dotenv.config();
 
 const MODEL_CONCURRENCY = {
   'aws-textract': 50,
-  'azure-document-intelligence': 10,
+  'azure-document-intelligence': 50,
   'claude-3-5-sonnet-20241022': 25,
   'gpt-4o': 50,
   omniai: 50,
@@ -34,7 +34,6 @@ const MODELS: { ocr: string; extraction?: string }[] = [
   { ocr: 'gpt-4o-mini', extraction: 'gpt-4o' },
   { ocr: 'omniai', extraction: 'omniai' },
   { ocr: 'claude-3-5-sonnet-20241022', extraction: 'claude-3-5-sonnet-20241022' },
-  // { ocr: 'gemini-1.5-pro', extraction: 'gemini-1.5-pro' },
   { ocr: 'aws-textract', extraction: 'gpt-4o' },
   { ocr: 'google-document-ai', extraction: 'gpt-4o' },
   { ocr: 'azure-document-intelligence', extraction: 'gpt-4o' },
