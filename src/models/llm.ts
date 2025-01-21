@@ -13,9 +13,13 @@ import {
   IMAGE_EXTRACTION_SYSTEM_PROMPT,
 } from './shared';
 import { OPENAI_MODELS, ANTHROPIC_MODELS, GOOGLE_GENERATIVE_AI_MODELS } from './registry';
+import { FINETUNED_MODELS } from '../index';
 
 export const createModelProvider = (model: string) => {
   if (OPENAI_MODELS.includes(model)) {
+    return createOpenAI({ apiKey: process.env.OPENAI_API_KEY });
+  }
+  if (FINETUNED_MODELS.includes(model)) {
     return createOpenAI({ apiKey: process.env.OPENAI_API_KEY });
   }
   if (ANTHROPIC_MODELS.includes(model)) {
@@ -124,6 +128,7 @@ export class LLMProvider extends ModelProvider {
       model: modelProvider(this.model),
       messages,
       schema: zodSchema,
+      temperature: 0,
     });
 
     const end = performance.now();

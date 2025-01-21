@@ -49,7 +49,7 @@ def display_file_preview(test_case, container):
     """Display the original file preview"""
     container.subheader("File Preview")
     if "fileUrl" in test_case:
-        container.image(test_case["fileUrl"], width=400)
+        container.image(test_case["fileUrl"], width=700)
     else:
         container.warning("No file preview available")
 
@@ -93,7 +93,7 @@ def main():
         st.warning("No results found in the results directory.")
         return
 
-    # Create dropdowns for test run and test case selection
+    # 1. Select which test run (timestamp)
     col1, col2 = st.columns(2)
     with col1:
         timestamps = list(results_dict.keys())
@@ -101,23 +101,37 @@ def main():
             "Select Test Run", timestamps, format_func=format_timestamp
         )
 
-    results = results_dict[selected_timestamp]
+    # 2. Filter test cases for ones that have a non-empty JSON diff
+    #    i.e. test["jsonDiffStats"]["total"] > 0
+    all_test_cases = results_dict[selected_timestamp]
+    results_with_diffs = [
+        test for test in all_test_cases
+        if test.get("jsonDiffStats", {}).get("total", 0) > 0
+    ]
 
+    if not results_with_diffs:
+        # If no test cases have any JSON differences, let the user know
+        st.warning("No test cases have JSON differences for this run.")
+        return
+
+    # 3. Build the dropdown items from only those filtered test cases
+    test_case_labels = [
+        f"{test['ocrModel']} → {test['extractionModel']}"
+        for test in results_with_diffs
+    ]
     with col2:
-        test_cases = [
-            f"{test['ocrModel']} → {test['extractionModel']}" for test in results
-        ]
         selected_test_idx = st.selectbox(
-            "Select Test Case",
-            range(len(test_cases)),
-            format_func=lambda x: test_cases[x],
+            "Select Test Case (Only Cases with Differences)",
+            range(len(test_case_labels)),
+            format_func=lambda x: test_case_labels[x],
         )
 
-    # Display selected test case details
-    test_case = results[selected_test_idx]
+    # 4. Display the selected test case
+    test_case = results_with_diffs[selected_test_idx]
 
     # Display file URL
-    st.markdown(f"**File URL:** [{test_case['fileUrl']}]({test_case['fileUrl']})")
+    st.markdown(
+        f"**File URL:** [{test_case['fileUrl']}]({test_case['fileUrl']})")
 
     # Create two columns for file preview and JSON diff
     left_col, right_col = st.columns(2)

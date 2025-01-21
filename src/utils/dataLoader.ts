@@ -30,7 +30,9 @@ export const loadFromDb = async (): Promise<Input[]> => {
         schema AS "jsonSchema",
         extracted_json AS "trueJsonOutput",
         markdown AS "trueMarkdownOutput"
-      FROM documents;
+      FROM documents
+      WHERE include_in_training = FALSE
+      AND config ->> 'format' = 'FORM_1040';
     `);
 
     return result.rows as Input[];

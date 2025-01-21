@@ -1,3 +1,5 @@
+import { FINETUNED_MODELS } from '../..';
+
 // token cost in USD per 1M tokens
 export const TOKEN_COST = {
   'claude-3-5-sonnet-20241022': {
@@ -36,7 +38,12 @@ export const calculateTokenCost = (
   type: 'input' | 'output',
   tokens: number,
 ) => {
-  const modelInfo = TOKEN_COST[model];
+  // Add default OpenAI Finetune cost
+  const fineTuneCost = FINETUNED_MODELS.map((el) => {
+    return { [el]: { input: 3.75, output: 15.0 } };
+  });
+  const combinedCost = { ...TOKEN_COST, ...fineTuneCost };
+  const modelInfo = combinedCost[model];
 
   if (!modelInfo) {
     throw new Error(`Model '${model}' not found`);
