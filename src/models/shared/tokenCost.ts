@@ -20,10 +20,6 @@ export const TOKEN_COST = {
     input: 2.5,
     output: 10,
   },
-  'ft:gpt-4o-2024-08-06:omniai::Ac6gscab': {
-    input: 2.5,
-    output: 10,
-  },
   'gpt-4o-mini': {
     input: 0.15,
     output: 0.6,
@@ -32,6 +28,37 @@ export const TOKEN_COST = {
   zerox: {
     input: 2.5,
     output: 10,
+  },
+  // Fine tuned models
+  // 25
+  'ft:gpt-4o-2024-08-06:omniai::Arxk5CGQ': {
+    input: 3.75,
+    output: 15.0,
+  },
+  // 50
+  'ft:gpt-4o-2024-08-06:omniai::ArxtYMva': {
+    input: 3.75,
+    output: 15.0,
+  },
+  // 100
+  'ft:gpt-4o-2024-08-06:omniai::ArxvfLvw': {
+    input: 3.75,
+    output: 15.0,
+  },
+  // 250
+  'ft:gpt-4o-2024-08-06:omniai::AryLM0UQ': {
+    input: 3.75,
+    output: 15.0,
+  },
+  // 500
+  'ft:gpt-4o-2024-08-06:omniai::Arz2HbeO': {
+    input: 3.75,
+    output: 15.0,
+  },
+  // 1000
+  'ft:gpt-4o-2024-08-06:omniai::Arzh2QBC': {
+    input: 3.75,
+    output: 15.0,
   },
 };
 

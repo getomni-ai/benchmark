@@ -94,6 +94,7 @@ export class LLMProvider extends ModelProvider {
       model: modelProvider(this.model),
       messages,
       schema: zodSchema,
+      temperature: 0,
     });
 
     const end = performance.now();

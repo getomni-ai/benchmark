@@ -31,14 +31,19 @@ const MODEL_CONCURRENCY = {
 
 const MODELS: { ocr: string; extraction?: string }[] = [
   { ocr: 'gpt-4o', extraction: 'gpt-4o' },
-  { ocr: 'ft:gpt-4o-2024-08-06:omniai::Ac6gscab', extraction: 'gpt-4o' },
-  { ocr: 'gpt-4o-mini', extraction: 'gpt-4o' },
-  { ocr: 'omniai', extraction: 'omniai' },
-  { ocr: 'claude-3-5-sonnet-20241022', extraction: 'gpt-4o' },
+  // { ocr: 'ft:gpt-4o-2024-08-06:omniai::Arxk5CGQ', extraction: 'gpt-4o' }, // 25
+  // { ocr: 'ft:gpt-4o-2024-08-06:omniai::ArxtYMva', extraction: 'gpt-4o' }, // 50
+  // { ocr: 'ft:gpt-4o-2024-08-06:omniai::ArxvfLvw', extraction: 'gpt-4o' }, // 100
+  // { ocr: 'ft:gpt-4o-2024-08-06:omniai::AryLM0UQ', extraction: 'gpt-4o' }, // 250
+  // { ocr: 'ft:gpt-4o-2024-08-06:omniai::Arz2HbeO', extraction: 'gpt-4o' }, // 500
+  { ocr: 'ft:gpt-4o-2024-08-06:omniai::Arzh2QBC', extraction: 'gpt-4o' }, // 1000
+  // { ocr: 'gpt-4o-mini', extraction: 'gpt-4o' },
+  // { ocr: 'omniai', extraction: 'omniai' },
+  // { ocr: 'claude-3-5-sonnet-20241022', extraction: 'gpt-4o' },
   // { ocr: 'gemini-1.5-pro', extraction: 'gemini-1.5-pro' },
-  { ocr: 'aws-textract', extraction: 'gpt-4o' },
-  { ocr: 'google-document-ai', extraction: 'gpt-4o' },
-  { ocr: 'azure-document-intelligence', extraction: 'gpt-4o' },
+  // { ocr: 'aws-textract', extraction: 'gpt-4o' },
+  // { ocr: 'google-document-ai', extraction: 'gpt-4o' },
+  // { ocr: 'azure-document-intelligence', extraction: 'gpt-4o' },
 ];
 
 // if true, image -> json, otherwise image -> markdown -> json
