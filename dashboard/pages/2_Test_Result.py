@@ -5,7 +5,7 @@ from difflib import HtmlDiff
 from utils.style import SIDEBAR_STYLE
 
 
-st.set_page_config(page_title="Error Analysis", layout="wide")
+st.set_page_config(page_title="Test Results", layout="wide")
 st.markdown(SIDEBAR_STYLE, unsafe_allow_html=True)
 
 
