@@ -43,13 +43,13 @@ export const MODEL_PROVIDERS = {
     models: OPENAI_MODELS,
     provider: LLMProvider,
   },
-  zerox: {
-    models: ['zerox'],
-    provider: ZeroxProvider,
-  },
   unstructured: {
     models: ['unstructured'],
     provider: UnstructuredProvider,
+  },
+  zerox: {
+    models: ['zerox'],
+    provider: ZeroxProvider,
   },
   groundTruth: {
     models: ['ground-truth'],
