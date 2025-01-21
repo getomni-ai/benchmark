@@ -84,7 +84,7 @@ def display_markdown_diff(test_case):
 
 
 def main():
-    st.title("Error Analysis")
+    st.title("Test Results")
 
     # Load results
     results_dict = load_results()
