@@ -58,6 +58,21 @@ export class LLMProvider extends ModelProvider {
       ];
     }
 
+    if (GOOGLE_GENERATIVE_AI_MODELS.includes(this.model)) {
+      // gemini requires a text message in user messages
+      imageMessage.content = [
+        {
+          type: 'text',
+          text: ' ',
+        },
+        {
+          type: 'file',
+          data: imagePath,
+          mimeType: 'image/png',
+        },
+      ];
+    }
+
     const messages: CoreMessage[] = [
       { role: 'system', content: OCR_SYSTEM_PROMPT },
       imageMessage,
