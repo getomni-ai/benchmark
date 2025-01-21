@@ -37,6 +37,7 @@ const MODELS: { ocr: string; extraction?: string }[] = [
   { ocr: 'aws-textract', extraction: 'gpt-4o' },
   { ocr: 'google-document-ai', extraction: 'gpt-4o' },
   { ocr: 'azure-document-intelligence', extraction: 'gpt-4o' },
+  { ocr: 'unstructured', extraction: 'gpt-4o' },
   { ocr: 'ground-truth', extraction: 'gpt-4o' },
 ];
 

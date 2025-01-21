@@ -4,6 +4,7 @@ import { OmniAIProvider } from './omniAI';
 import { ZeroxProvider } from './zerox';
 import { GoogleDocumentAIProvider } from './googleDocumentAI';
 import { AzureDocumentIntelligenceProvider } from './azure';
+import { UnstructuredProvider } from './unstructured';
 
 export const OPENAI_MODELS = ['gpt-4o-mini', 'gpt-4o'];
 export const ANTHROPIC_MODELS = ['claude-3-5-sonnet-20241022'];
@@ -45,6 +46,10 @@ export const MODEL_PROVIDERS = {
   zerox: {
     models: ['zerox'],
     provider: ZeroxProvider,
+  },
+  unstructured: {
+    models: ['unstructured'],
+    provider: UnstructuredProvider,
   },
   groundTruth: {
     models: ['ground-truth'],
