@@ -1,4 +1,4 @@
-import { generateText, generateObject, CoreMessage } from 'ai';
+import { generateText, generateObject, CoreMessage, CoreUserMessage } from 'ai';
 import { createOpenAI } from '@ai-sdk/openai';
 import { createAnthropic } from '@ai-sdk/anthropic';
 import { createGoogleGenerativeAI } from '@ai-sdk/google';
@@ -35,17 +35,47 @@ export class LLMProvider extends ModelProvider {
   async ocr(imagePath: string) {
     const modelProvider = createModelProvider(this.model);
 
+    let imageMessage: CoreUserMessage = {
+      role: 'user',
+      content: [
+        {
+          type: 'image',
+          image: imagePath,
+        },
+      ],
+    };
+
+    if (ANTHROPIC_MODELS.includes(this.model)) {
+      // read image and convert to base64
+      const response = await fetch(imagePath);
+      const imageBuffer = await response.arrayBuffer();
+      const base64Image = Buffer.from(imageBuffer).toString('base64');
+      imageMessage.content = [
+        {
+          type: 'image',
+          image: base64Image,
+        },
+      ];
+    }
+
+    if (GOOGLE_GENERATIVE_AI_MODELS.includes(this.model)) {
+      // gemini requires a text message in user messages
+      imageMessage.content = [
+        {
+          type: 'text',
+          text: ' ',
+        },
+        {
+          type: 'file',
+          data: imagePath,
+          mimeType: 'image/png',
+        },
+      ];
+    }
+
     const messages: CoreMessage[] = [
       { role: 'system', content: OCR_SYSTEM_PROMPT },
-      {
-        role: 'user',
-        content: [
-          {
-            type: 'image',
-            image: imagePath,
-          },
-        ],
-      },
+      imageMessage,
     ];
 
     const start = performance.now();

@@ -4,6 +4,7 @@ import { OmniAIProvider } from './omniAI';
 import { ZeroxProvider } from './zerox';
 import { GoogleDocumentAIProvider } from './googleDocumentAI';
 import { AzureDocumentIntelligenceProvider } from './azure';
+import { UnstructuredProvider } from './unstructured';
 
 export const OPENAI_MODELS = [
   'gpt-4o-mini',
@@ -51,9 +52,17 @@ export const MODEL_PROVIDERS = {
     models: OPENAI_MODELS,
     provider: LLMProvider,
   },
+  unstructured: {
+    models: ['unstructured'],
+    provider: UnstructuredProvider,
+  },
   zerox: {
     models: ['zerox'],
     provider: ZeroxProvider,
+  },
+  groundTruth: {
+    models: ['ground-truth'],
+    provider: undefined,
   },
 };
 
@@ -63,6 +72,9 @@ export const getModelProvider = (model: string) => {
   );
 
   if (foundProvider) {
+    if (model === 'ground-truth') {
+      return undefined;
+    }
     const provider = new foundProvider.provider(model);
     return provider;
   }

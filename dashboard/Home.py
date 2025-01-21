@@ -14,7 +14,7 @@ Welcome to the OCR Benchmark Dashboard! This tool helps analyze and visualize OC
 
 ### Available Pages:
 - **Performance Metrics**: View detailed performance metrics, costs, and latency analysis
-- **Error Analysis**: Analyze markdown and JSON differences between predicted and true outputs
+- **Test Results**: View detailed test results
 
 Choose a page from the sidebar to get started.
 """

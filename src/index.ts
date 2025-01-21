@@ -22,7 +22,7 @@ dotenv.config();
 
 const MODEL_CONCURRENCY = {
   'aws-textract': 50,
-  'azure-document-intelligence': 10,
+  'azure-document-intelligence': 50,
   'claude-3-5-sonnet-20241022': 25,
   'gpt-4o': 50,
   omniai: 50,
@@ -37,13 +37,14 @@ const MODELS: { ocr: string; extraction?: string }[] = [
   // { ocr: 'ft:gpt-4o-2024-08-06:omniai::AryLM0UQ', extraction: 'gpt-4o' }, // 250
   // { ocr: 'ft:gpt-4o-2024-08-06:omniai::Arz2HbeO', extraction: 'gpt-4o' }, // 500
   { ocr: 'ft:gpt-4o-2024-08-06:omniai::Arzh2QBC', extraction: 'gpt-4o' }, // 1000
-  // { ocr: 'gpt-4o-mini', extraction: 'gpt-4o' },
-  // { ocr: 'omniai', extraction: 'omniai' },
-  // { ocr: 'claude-3-5-sonnet-20241022', extraction: 'gpt-4o' },
-  // { ocr: 'gemini-1.5-pro', extraction: 'gemini-1.5-pro' },
-  // { ocr: 'aws-textract', extraction: 'gpt-4o' },
-  // { ocr: 'google-document-ai', extraction: 'gpt-4o' },
-  // { ocr: 'azure-document-intelligence', extraction: 'gpt-4o' },
+  { ocr: 'gpt-4o-mini', extraction: 'gpt-4o' },
+  { ocr: 'omniai', extraction: 'omniai' },
+  { ocr: 'claude-3-5-sonnet-20241022', extraction: 'claude-3-5-sonnet-20241022' },
+  { ocr: 'aws-textract', extraction: 'gpt-4o' },
+  { ocr: 'google-document-ai', extraction: 'gpt-4o' },
+  { ocr: 'azure-document-intelligence', extraction: 'gpt-4o' },
+  { ocr: 'unstructured', extraction: 'gpt-4o' },
+  { ocr: 'ground-truth', extraction: 'gpt-4o' },
 ];
 
 // if true, image -> json, otherwise image -> markdown -> json
@@ -119,14 +120,17 @@ const runBenchmark = async () => {
           };
 
           try {
-            const ocrResult = await ocrModelProvider.ocr(item.imageUrl);
-
-            result.predictedMarkdown = ocrResult.text;
-            result.usage = {
-              ...ocrResult.usage,
-              ocr: ocrResult.usage,
-              extraction: undefined,
-            };
+            if (ocrModel === 'ground-truth') {
+              result.predictedMarkdown = item.trueMarkdownOutput;
+            } else {
+              const ocrResult = await ocrModelProvider.ocr(item.imageUrl);
+              result.predictedMarkdown = ocrResult.text;
+              result.usage = {
+                ...ocrResult.usage,
+                ocr: ocrResult.usage,
+                extraction: undefined,
+              };
+            }
 
             let extractionResult;
             if (extractionModelProvider) {
@@ -137,7 +141,7 @@ const runBenchmark = async () => {
                 );
               } else {
                 extractionResult = await extractionModelProvider.extractFromText(
-                  ocrResult.text,
+                  result.predictedMarkdown,
                   item.jsonSchema,
                 );
               }
@@ -154,16 +158,16 @@ const runBenchmark = async () => {
               });
 
               result.usage = {
-                ocr: ocrResult.usage,
+                ocr: result.usage?.ocr ?? {},
                 extraction: extractionResult.usage,
                 ...mergeUsage(result.usage, extractionResult.usage),
               };
             }
 
-            if (ocrResult.text) {
+            if (result.predictedMarkdown) {
               result.levenshteinDistance = calculateTextSimilarity(
                 item.trueMarkdownOutput,
-                ocrResult.text,
+                result.predictedMarkdown,
               );
             }
 
