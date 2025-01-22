@@ -37,14 +37,14 @@ const MODELS: { ocr: string; extraction?: string }[] = [
   // { ocr: 'ft:gpt-4o-2024-08-06:omniai::ArxtYMva', extraction: 'gpt-4o' }, // 50
   // { ocr: 'ft:gpt-4o-2024-08-06:omniai::ArxvfLvw', extraction: 'gpt-4o' }, // 100
   // { ocr: 'ft:gpt-4o-2024-08-06:omniai::AryLM0UQ', extraction: 'gpt-4o' }, // 250
-  // { ocr: 'ft:gpt-4o-2024-08-06:omniai::Arz2HbeO', extraction: 'gpt-4o' }, // 500
+  { ocr: 'ft:gpt-4o-2024-08-06:omniai::Arz2HbeO', extraction: 'gpt-4o' }, // 500
   // { ocr: 'ft:gpt-4o-2024-08-06:omniai::Arzh2QBC', extraction: 'gpt-4o' }, // 1000
   // { ocr: 'gpt-4o-mini', extraction: 'gpt-4o' },
-  // { ocr: 'omniai', extraction: 'omniai' },
+  { ocr: 'omniai', extraction: 'omniai' },
   { ocr: 'claude-3-5-sonnet-20241022', extraction: 'claude-3-5-sonnet-20241022' },
-  // { ocr: 'aws-textract', extraction: 'gpt-4o' },
-  // { ocr: 'google-document-ai', extraction: 'gpt-4o' },
-  // { ocr: 'azure-document-intelligence', extraction: 'gpt-4o' },
+  { ocr: 'aws-textract', extraction: 'gpt-4o' },
+  { ocr: 'google-document-ai', extraction: 'gpt-4o' },
+  { ocr: 'azure-document-intelligence', extraction: 'gpt-4o' },
   // { ocr: 'unstructured', extraction: 'gpt-4o' },
 ];
 
@@ -55,7 +55,7 @@ const DATA_FOLDER = path.join(__dirname, '../data');
 
 const DATABASE_URL = process.env.DATABASE_URL;
 
-const TIMEOUT_MS = 5 * 60 * 1000; // 5 minutes in milliseconds
+const TIMEOUT_MS = 10 * 60 * 1000; // 10 minutes in milliseconds
 
 const withTimeout = async (promise: Promise<any>, operation: string) => {
   let timeoutId: NodeJS.Timeout;
