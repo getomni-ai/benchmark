@@ -5,7 +5,6 @@ import { ZeroxProvider } from './zerox';
 import { GoogleDocumentAIProvider } from './googleDocumentAI';
 import { AzureDocumentIntelligenceProvider } from './azure';
 import { UnstructuredProvider } from './unstructured';
-import { FINETUNED_MODELS } from '../';
 
 export const OPENAI_MODELS = ['gpt-4o-mini', 'gpt-4o'];
 export const ANTHROPIC_MODELS = ['claude-3-5-sonnet-20241022'];
@@ -13,6 +12,14 @@ export const GOOGLE_GENERATIVE_AI_MODELS = [
   'gemini-2.0-flash-exp',
   'gemini-1.5-pro',
   'gemini-1.5-flash',
+];
+export const FINETUNED_MODELS = [
+  'ft:gpt-4o-2024-08-06:omniai::Arxk5CGQ', // 1040 - 25
+  'ft:gpt-4o-2024-08-06:omniai::ArxtYMva', // 1040 - 50
+  'ft:gpt-4o-2024-08-06:omniai::ArxvfLvw', // 1040 - 100
+  'ft:gpt-4o-2024-08-06:omniai::AryLM0UQ', // 1040 - 250
+  'ft:gpt-4o-2024-08-06:omniai::Arz2HbeO', // 1040 - 500
+  'ft:gpt-4o-2024-08-06:omniai::Arzh2QBC', // 1040 - 1000
 ];
 
 export const MODEL_PROVIDERS = {

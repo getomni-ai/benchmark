@@ -1,4 +1,4 @@
-import { FINETUNED_MODELS } from '../..';
+import { FINETUNED_MODELS } from '../registry';
 
 // token cost in USD per 1M tokens
 export const TOKEN_COST = {
