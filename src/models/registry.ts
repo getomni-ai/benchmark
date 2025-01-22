@@ -44,10 +44,6 @@ export const MODEL_PROVIDERS = {
     models: OPENAI_MODELS,
     provider: LLMProvider,
   },
-  openaiFt: {
-    models: FINETUNED_MODELS,
-    provider: LLMProvider,
-  },
   unstructured: {
     models: ['unstructured'],
     provider: UnstructuredProvider,
@@ -63,6 +59,11 @@ export const MODEL_PROVIDERS = {
 };
 
 export const getModelProvider = (model: string) => {
+  // Include Openai FT models
+  MODEL_PROVIDERS['openaiFt'] = {
+    models: FINETUNED_MODELS,
+    provider: LLMProvider,
+  };
   const foundProvider = Object.values(MODEL_PROVIDERS).find(
     (group) => group.models && group.models.includes(model),
   );

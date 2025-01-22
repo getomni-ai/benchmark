@@ -37,17 +37,12 @@ export const calculateTokenCost = (
   model: string,
   type: 'input' | 'output',
   tokens: number,
-) => {
-  // Add default OpenAI Finetune cost
-  const fineTuneCost = FINETUNED_MODELS.map((el) => {
-    return { [el]: { input: 3.75, output: 15.0 } };
-  });
+): number => {
+  const fineTuneCost = Object.fromEntries(
+    FINETUNED_MODELS.map((el) => [el, { input: 3.75, output: 15.0 }]),
+  );
   const combinedCost = { ...TOKEN_COST, ...fineTuneCost };
   const modelInfo = combinedCost[model];
-
-  if (!modelInfo) {
-    throw new Error(`Model '${model}' not found`);
-  }
-
-  return (modelInfo[type] * tokens) / 1000000;
+  if (!modelInfo) throw new Error(`Model '${model}' is not supported.`);
+  return (modelInfo[type] * tokens) / 1_000_000;
 };
