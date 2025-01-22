@@ -15,8 +15,8 @@ interface ExtractResponse {
   status: string;
 }
 
-const MAX_ATTEMPTS = 50;
-const POLL_INTERVAL = 1000;
+const MAX_ATTEMPTS = 200; // 10 minutes
+const POLL_INTERVAL = 3000;
 
 export const sendExtractRequest = async (
   imageUrl: string,
