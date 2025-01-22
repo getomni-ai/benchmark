@@ -29,26 +29,20 @@ const MODEL_CONCURRENCY = {
   zerox: 50,
 };
 
-export const FINETUNED_MODELS = [
-  'ft:gpt-4o-2024-08-06:omniai::Arxk5CGQ', // 1040 - 25
-  'ft:gpt-4o-2024-08-06:omniai::ArxtYMva', // 1040 - 50
-  'ft:gpt-4o-2024-08-06:omniai::ArxvfLvw', // 1040 - 100
-  'ft:gpt-4o-2024-08-06:omniai::AryLM0UQ', // 1040 - 250
-  'ft:gpt-4o-2024-08-06:omniai::Arz2HbeO', // 1040 - 500
-  'ft:gpt-4o-2024-08-06:omniai::Arzh2QBC', // 1040 - 1000
-];
-
 const MODELS: { ocr: string; extraction?: string }[] = [
   { ocr: 'ground-truth', extraction: 'gpt-4o' },
   // { ocr: 'ground-truth', extraction: 'claude-3-5-sonnet-20241022' },
+  // { ocr: 'gpt-4o', extraction: 'gpt-4o' },
   // { ocr: 'gpt-4o', extraction: 'gpt-4o' },
   // { ocr: 'ft:gpt-4o-2024-08-06:omniai::Arxk5CGQ', extraction: 'gpt-4o' }, // 25
   // { ocr: 'ft:gpt-4o-2024-08-06:omniai::ArxtYMva', extraction: 'gpt-4o' }, // 50
   // { ocr: 'ft:gpt-4o-2024-08-06:omniai::ArxvfLvw', extraction: 'gpt-4o' }, // 100
   // { ocr: 'ft:gpt-4o-2024-08-06:omniai::AryLM0UQ', extraction: 'gpt-4o' }, // 250
   // { ocr: 'ft:gpt-4o-2024-08-06:omniai::Arz2HbeO', extraction: 'gpt-4o' }, // 500
+  // { ocr: 'ft:gpt-4o-2024-08-06:omniai::Arz2HbeO', extraction: 'gpt-4o' }, // 500
   // { ocr: 'ft:gpt-4o-2024-08-06:omniai::Arzh2QBC', extraction: 'gpt-4o' }, // 1000
   // { ocr: 'gpt-4o-mini', extraction: 'gpt-4o' },
+  // { ocr: 'zerox', extraction: 'gpt-4o' },
   // { ocr: 'omniai', extraction: 'omniai' },
   // { ocr: 'claude-3-5-sonnet-20241022', extraction: 'claude-3-5-sonnet-20241022' },
   // { ocr: 'aws-textract', extraction: 'gpt-4o' },
@@ -63,6 +57,28 @@ const DIRECT_IMAGE_EXTRACTION = false;
 const DATA_FOLDER = path.join(__dirname, '../data');
 
 const DATABASE_URL = process.env.DATABASE_URL;
+
+const TIMEOUT_MS = 10 * 60 * 1000; // 10 minutes in milliseconds
+
+const withTimeout = async (promise: Promise<any>, operation: string) => {
+  let timeoutId: NodeJS.Timeout;
+
+  const timeoutPromise = new Promise((_, reject) => {
+    timeoutId = setTimeout(() => {
+      reject(new Error(`${operation} operation timed out after ${TIMEOUT_MS}ms`));
+    }, TIMEOUT_MS);
+  });
+
+  try {
+    const result = await Promise.race([promise, timeoutPromise]);
+    clearTimeout(timeoutId);
+    return result;
+  } catch (error) {
+    clearTimeout(timeoutId);
+    console.error(`Timeout error in ${operation}:`, error);
+    throw error;
+  }
+};
 
 /* -------------------------------------------------------------------------- */
 /*                                Run Benchmark                               */
@@ -133,7 +149,10 @@ const runBenchmark = async () => {
             if (ocrModel === 'ground-truth') {
               result.predictedMarkdown = item.trueMarkdownOutput;
             } else {
-              const ocrResult = await ocrModelProvider.ocr(item.imageUrl);
+              const ocrResult = await withTimeout(
+                ocrModelProvider.ocr(item.imageUrl),
+                `OCR: ${ocrModel}`,
+              );
               result.predictedMarkdown = ocrResult.text;
               result.usage = {
                 ...ocrResult.usage,
@@ -145,14 +164,20 @@ const runBenchmark = async () => {
             let extractionResult;
             if (extractionModelProvider) {
               if (extractionModel === 'omniai') {
-                extractionResult = await extractionModelProvider.extractFromImage(
-                  item.imageUrl,
-                  item.jsonSchema,
+                extractionResult = await withTimeout(
+                  extractionModelProvider.extractFromImage(
+                    item.imageUrl,
+                    item.jsonSchema,
+                  ),
+                  `JSON extraction: ${extractionModel}`,
                 );
               } else {
-                extractionResult = await extractionModelProvider.extractFromText(
-                  result.predictedMarkdown,
-                  item.jsonSchema,
+                extractionResult = await withTimeout(
+                  extractionModelProvider.extractFromText(
+                    result.predictedMarkdown,
+                    item.jsonSchema,
+                  ),
+                  `JSON extraction: ${extractionModel}`,
                 );
               }
               result.predictedJson = extractionResult.json;

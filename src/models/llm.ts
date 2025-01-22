@@ -12,8 +12,12 @@ import {
   JSON_EXTRACTION_SYSTEM_PROMPT,
   IMAGE_EXTRACTION_SYSTEM_PROMPT,
 } from './shared';
-import { OPENAI_MODELS, ANTHROPIC_MODELS, GOOGLE_GENERATIVE_AI_MODELS } from './registry';
-import { FINETUNED_MODELS } from '../index';
+import {
+  OPENAI_MODELS,
+  ANTHROPIC_MODELS,
+  GOOGLE_GENERATIVE_AI_MODELS,
+  FINETUNED_MODELS,
+} from './registry';
 
 export const createModelProvider = (model: string) => {
   if (OPENAI_MODELS.includes(model)) {
