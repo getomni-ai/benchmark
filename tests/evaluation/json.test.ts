@@ -35,3 +35,19 @@ describe('countTotalFields', () => {
     expect(countTotalFields(obj)).toBe(2);
   });
 });
+
+describe('calculateJsonAccuracy', () => {
+  it('should calculate json accuracy', () => {
+    const actual = { a: 1, b: 2 };
+    const predicted = { a: 1, b: 3 };
+    const result = calculateJsonAccuracy(actual, predicted);
+    expect(result.score).toBe(0.5);
+  });
+
+  it('should calculate json accuracy with nested objects', () => {
+    const actual = { a: 1, b: { c: 2, d: 4, e: 4 } };
+    const predicted = { a: 1, b: { c: 2, d: 4, e: 5 } };
+    const result = calculateJsonAccuracy(actual, predicted);
+    expect(result.score).toBe(0.75);
+  });
+});

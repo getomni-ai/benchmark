@@ -5,11 +5,7 @@ import cliProgress from 'cli-progress';
 import { isEmpty } from 'lodash';
 import pLimit from 'p-limit';
 
-import {
-  calculateJsonAccuracy,
-  calculateJsonArrayAccuracies,
-  calculateTextSimilarity,
-} from './evaluation';
+import { calculateJsonAccuracy, calculateTextSimilarity } from './evaluation';
 import { getModelProvider } from './models';
 import { Result } from './types';
 import { createResultFolder, loadLocalData, writeToFile, loadFromDb } from './utils';
@@ -215,13 +211,6 @@ const runBenchmark = async () => {
               result.fullJsonDiff = jsonAccuracyResult.fullJsonDiff;
               result.jsonDiffStats = jsonAccuracyResult.jsonDiffStats;
               result.jsonAccuracyResult = jsonAccuracyResult;
-
-              const arrayAccuracies = calculateJsonArrayAccuracies(
-                result.predictedJson,
-                item.trueJsonOutput,
-                item.jsonSchema,
-              );
-              result.arrayAccuracies = arrayAccuracies;
             }
           } catch (error) {
             result.error = error;

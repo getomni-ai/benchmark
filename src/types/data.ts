@@ -1,5 +1,5 @@
 import { Usage } from './model';
-import { AccuracyResult, ArrayAccuracyResult } from '../evaluation';
+import { AccuracyResult } from '../evaluation';
 
 export interface Input {
   imageUrl: string;
@@ -40,7 +40,6 @@ export interface Result {
   fullJsonDiff?: Record<string, any>;
   jsonDiffStats?: Record<string, any>;
   jsonAccuracyResult?: AccuracyResult;
-  arrayAccuracies?: Record<string, ArrayAccuracyResult>;
   usage?: Usage;
   error?: any;
 }
