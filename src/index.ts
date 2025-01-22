@@ -140,6 +140,7 @@ const runBenchmark = async () => {
             jsonDiff: undefined,
             fullJsonDiff: undefined,
             jsonDiffStats: undefined,
+            jsonAccuracyResult: undefined,
             usage: undefined,
           };
 
@@ -205,14 +206,15 @@ const runBenchmark = async () => {
             }
 
             if (!isEmpty(result.predictedJson)) {
-              const accuracy = calculateJsonAccuracy(
+              const jsonAccuracyResult = calculateJsonAccuracy(
                 item.trueJsonOutput,
                 result.predictedJson,
               );
-              result.jsonAccuracy = accuracy.score;
-              result.jsonDiff = accuracy.jsonDiff;
-              result.fullJsonDiff = accuracy.fullJsonDiff;
-              result.jsonDiffStats = accuracy.jsonDiffStats;
+              result.jsonAccuracy = jsonAccuracyResult.score;
+              result.jsonDiff = jsonAccuracyResult.jsonDiff;
+              result.fullJsonDiff = jsonAccuracyResult.fullJsonDiff;
+              result.jsonDiffStats = jsonAccuracyResult.jsonDiffStats;
+              result.jsonAccuracyResult = jsonAccuracyResult;
 
               const arrayAccuracies = calculateJsonArrayAccuracies(
                 result.predictedJson,

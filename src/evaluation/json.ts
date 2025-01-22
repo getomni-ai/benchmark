@@ -7,7 +7,7 @@ interface DiffStats {
   total: number;
 }
 
-interface AccuracyResult {
+export interface AccuracyResult {
   score: number;
   fullJsonDiff: Record<string, any>;
   jsonDiff: Record<string, any>;
@@ -16,8 +16,7 @@ interface AccuracyResult {
 }
 
 /**
- * Calculates accuracy for JSON structure and primitive values only (excluding arrays)
- * Arrays are handled separately by array accuracy calculation
+ * Calculates accuracy for JSON structure and primitive values only
  *
  * The accuracy is calculated as:
  * 1 - (number of differences / total fields in actual)
@@ -55,7 +54,7 @@ export const calculateJsonAccuracy = (
     };
   }
 
-  const changes = countStructuralChanges(diffResult);
+  const changes = countChanges(diffResult);
   const score = Math.max(
     0,
     1 - (changes.additions + changes.deletions + changes.modifications) / totalFields,
@@ -70,7 +69,7 @@ export const calculateJsonAccuracy = (
   };
 };
 
-const countStructuralChanges = (diffResult: any): DiffStats => {
+export const countChanges = (diffResult: any): DiffStats => {
   const changes: DiffStats = {
     additions: 0,
     deletions: 0,
@@ -79,27 +78,68 @@ const countStructuralChanges = (diffResult: any): DiffStats => {
   };
 
   const traverse = (obj: any) => {
-    for (const key in obj) {
-      // Skip array diffs - they're handled by array accuracy
-      if (Array.isArray(obj[key])) {
-        continue;
-      }
+    if (!obj || typeof obj !== 'object') {
+      return;
+    }
 
-      if (key.endsWith('__deleted')) {
-        changes.deletions++;
-      } else if (key.endsWith('__added')) {
-        changes.additions++;
-      } else if (typeof obj[key] === 'object' && obj[key] !== null) {
-        if (obj[key].__old !== undefined && obj[key].__new !== undefined) {
-          changes.modifications++;
-        } else {
-          traverse(obj[key]);
+    for (const key in obj) {
+      const value = obj[key];
+
+      if (Array.isArray(value)) {
+        // Handle array diffs
+        value.forEach(([operation, element]) => {
+          if (element === null || typeof element !== 'object') {
+            // Handle primitive value changes in arrays
+            switch (operation) {
+              case '+':
+                changes.additions++;
+                break;
+              case '-':
+                changes.deletions++;
+                break;
+            }
+          } else {
+            switch (operation) {
+              // Handle array element additions and deletions
+              case '+':
+                changes.additions += countTotalFields(element);
+                break;
+              case '-':
+                changes.deletions += countTotalFields(element);
+                break;
+              case '~':
+                // Handle array element modifications
+                traverse(element);
+                break;
+            }
+          }
+        });
+      } else {
+        if (key.endsWith('__deleted')) {
+          if (value === null || typeof value !== 'object') {
+            changes.deletions++;
+          } else {
+            changes.deletions += countTotalFields(value);
+          }
+        } else if (key.endsWith('__added')) {
+          if (value === null || typeof value !== 'object') {
+            changes.additions++;
+          } else {
+            changes.additions += countTotalFields(value);
+          }
+        } else if (typeof value === 'object' && value !== null) {
+          if (value.__old !== undefined && value.__new !== undefined) {
+            changes.modifications++;
+          } else {
+            traverse(value);
+          }
         }
       }
     }
   };
 
   traverse(diffResult);
+
   changes.total = changes.additions + changes.deletions + changes.modifications;
   return changes;
 };
@@ -112,23 +152,36 @@ export function countTotalFields(obj: any): number {
       return;
     }
 
-    // Skip arrays - they're handled by array accuracy
     if (Array.isArray(current)) {
-      return;
-    }
+      // Traverse into array elements if they're objects
+      current.forEach((item) => {
+        if (typeof item === 'object' && item !== null) {
+          traverse(item);
+        } else {
+          count++;
+        }
+      });
+    } else {
+      for (const key in current) {
+        // Skip diff metadata keys
+        if (key.includes('__')) {
+          continue;
+        }
 
-    for (const key in current) {
-      // Don't count diff metadata keys
-      if (
-        key.endsWith('__deleted') ||
-        key.endsWith('__added') ||
-        key === '__old' ||
-        key === '__new'
-      ) {
-        continue;
+        // Only count primitive value fields
+        if (
+          current[key] === null ||
+          typeof current[key] === 'string' ||
+          typeof current[key] === 'number' ||
+          typeof current[key] === 'boolean'
+        ) {
+          count++;
+        }
+        // Recurse into nested objects and arrays
+        else if (typeof current[key] === 'object') {
+          traverse(current[key]);
+        }
       }
-      count++;
-      traverse(current[key]);
     }
   };
 
