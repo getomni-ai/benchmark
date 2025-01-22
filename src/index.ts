@@ -40,6 +40,7 @@ const MODELS: { ocr: string; extraction?: string }[] = [
   { ocr: 'ft:gpt-4o-2024-08-06:omniai::Arz2HbeO', extraction: 'gpt-4o' }, // 500
   // { ocr: 'ft:gpt-4o-2024-08-06:omniai::Arzh2QBC', extraction: 'gpt-4o' }, // 1000
   // { ocr: 'gpt-4o-mini', extraction: 'gpt-4o' },
+  { ocr: 'zerox', extraction: 'gpt-4o' },
   { ocr: 'omniai', extraction: 'omniai' },
   { ocr: 'claude-3-5-sonnet-20241022', extraction: 'claude-3-5-sonnet-20241022' },
   { ocr: 'aws-textract', extraction: 'gpt-4o' },
