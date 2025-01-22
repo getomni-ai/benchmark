@@ -12,6 +12,7 @@ interface AccuracyResult {
   fullJsonDiff: Record<string, any>;
   jsonDiff: Record<string, any>;
   jsonDiffStats?: DiffStats;
+  totalFields: number;
 }
 
 /**
@@ -36,6 +37,7 @@ export const calculateJsonAccuracy = (
   // Get the diff result
   const fullDiffResult = diff(actual, predicted, { full: true });
   const diffResult = diff(actual, predicted);
+  const totalFields = countTotalFields(actual);
 
   if (!diffResult) {
     // If there's no diff, the JSONs are identical
@@ -47,27 +49,29 @@ export const calculateJsonAccuracy = (
         additions: 0,
         deletions: 0,
         modifications: 0,
-        total: countTotalFields(actual),
+        total: 0,
       },
+      totalFields,
     };
   }
 
-  const details = countStructuralChanges(diffResult);
+  const changes = countStructuralChanges(diffResult);
   const score = Math.max(
     0,
-    1 - (details.additions + details.deletions + details.modifications) / details.total,
+    1 - (changes.additions + changes.deletions + changes.modifications) / totalFields,
   );
 
   return {
     score: Number(score.toFixed(4)),
     jsonDiff: diffResult,
     fullJsonDiff: fullDiffResult,
-    jsonDiffStats: details,
+    jsonDiffStats: changes,
+    totalFields,
   };
 };
 
 const countStructuralChanges = (diffResult: any): DiffStats => {
-  const details: DiffStats = {
+  const changes: DiffStats = {
     additions: 0,
     deletions: 0,
     modifications: 0,
@@ -82,12 +86,12 @@ const countStructuralChanges = (diffResult: any): DiffStats => {
       }
 
       if (key.endsWith('__deleted')) {
-        details.deletions++;
+        changes.deletions++;
       } else if (key.endsWith('__added')) {
-        details.additions++;
+        changes.additions++;
       } else if (typeof obj[key] === 'object' && obj[key] !== null) {
         if (obj[key].__old !== undefined && obj[key].__new !== undefined) {
-          details.modifications++;
+          changes.modifications++;
         } else {
           traverse(obj[key]);
         }
@@ -96,8 +100,8 @@ const countStructuralChanges = (diffResult: any): DiffStats => {
   };
 
   traverse(diffResult);
-  details.total = countTotalFields(diffResult);
-  return details;
+  changes.total = changes.additions + changes.deletions + changes.modifications;
+  return changes;
 };
 
 export function countTotalFields(obj: any): number {
