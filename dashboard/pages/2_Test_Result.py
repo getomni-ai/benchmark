@@ -34,8 +34,10 @@ def display_json_diff(test_case, container):
         cols[1].metric("Accuracy", test_case.get("jsonAccuracy", 0))
 
         # Create tabs for different diff views
-        tab_summary, tab_full, tab_ground_truth, tab_predicted = container.tabs(
-            ["Summary Diff", "Full Diff", "Ground Truth", "Predicted"]
+        tab_summary, tab_full, tab_ground_truth, tab_predicted, tab_schema = (
+            container.tabs(
+                ["Summary Diff", "Full Diff", "Ground Truth", "Predicted", "Schema"]
+            )
         )
 
         with tab_summary:
@@ -55,6 +57,9 @@ def display_json_diff(test_case, container):
 
         with tab_predicted:
             tab_predicted.json(test_case["predictedJson"])
+
+        with tab_schema:
+            tab_schema.json(test_case.get("jsonSchema", {}))
 
 
 def display_file_preview(test_case, container):

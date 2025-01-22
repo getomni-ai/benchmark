@@ -29,6 +29,7 @@ export interface Result {
   metadata: Metadata;
   ocrModel: string;
   extractionModel: string;
+  jsonSchema: JsonSchema;
   directImageExtraction?: boolean;
   trueMarkdown: string;
   trueJson: Record<string, any>;
