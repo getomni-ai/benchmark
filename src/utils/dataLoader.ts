@@ -32,7 +32,7 @@ export const loadFromDb = async (): Promise<Input[]> => {
         markdown AS "trueMarkdownOutput"
       FROM documents
       WHERE include_in_training = FALSE
-      AND config ->> 'format' = 'FORM_1040';
+      AND config ->> 'format' = 'NUTRITION' LIMIT 50;
     `);
 
     return result.rows as Input[];
