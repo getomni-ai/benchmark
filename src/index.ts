@@ -5,11 +5,7 @@ import cliProgress from 'cli-progress';
 import { isEmpty } from 'lodash';
 import pLimit from 'p-limit';
 
-import {
-  calculateJsonAccuracy,
-  calculateJsonArrayAccuracies,
-  calculateTextSimilarity,
-} from './evaluation';
+import { calculateJsonAccuracy, calculateTextSimilarity } from './evaluation';
 import { getModelProvider } from './models';
 import { Result } from './types';
 import { createResultFolder, loadLocalData, writeToFile, loadFromDb } from './utils';
@@ -44,6 +40,7 @@ const MODELS: { ocr: string; extraction?: string }[] = [
   // { ocr: 'gpt-4o-mini', extraction: 'gpt-4o' },
   // { ocr: 'zerox', extraction: 'gpt-4o' },
   // { ocr: 'omniai', extraction: 'omniai' },
+  // { ocr: 'claude-3-5-sonnet-20241022', extraction: 'claude-3-5-sonnet-20241022' },
   // { ocr: 'claude-3-5-sonnet-20241022', extraction: 'claude-3-5-sonnet-20241022' },
   // { ocr: 'aws-textract', extraction: 'gpt-4o' },
   // { ocr: 'google-document-ai', extraction: 'gpt-4o' },
@@ -130,6 +127,7 @@ const runBenchmark = async () => {
           const result: Result = {
             fileUrl: item.imageUrl,
             metadata: item.metadata,
+            jsonSchema: item.jsonSchema,
             ocrModel,
             extractionModel,
             directImageExtraction: DIRECT_IMAGE_EXTRACTION,
@@ -142,6 +140,7 @@ const runBenchmark = async () => {
             jsonDiff: undefined,
             fullJsonDiff: undefined,
             jsonDiffStats: undefined,
+            jsonAccuracyResult: undefined,
             usage: undefined,
           };
 
@@ -207,21 +206,15 @@ const runBenchmark = async () => {
             }
 
             if (!isEmpty(result.predictedJson)) {
-              const accuracy = calculateJsonAccuracy(
+              const jsonAccuracyResult = calculateJsonAccuracy(
                 item.trueJsonOutput,
                 result.predictedJson,
               );
-              result.jsonAccuracy = accuracy.score;
-              result.jsonDiff = accuracy.jsonDiff;
-              result.fullJsonDiff = accuracy.fullJsonDiff;
-              result.jsonDiffStats = accuracy.jsonDiffStats;
-
-              const arrayAccuracies = calculateJsonArrayAccuracies(
-                result.predictedJson,
-                item.trueJsonOutput,
-                item.jsonSchema,
-              );
-              result.arrayAccuracies = arrayAccuracies;
+              result.jsonAccuracy = jsonAccuracyResult.score;
+              result.jsonDiff = jsonAccuracyResult.jsonDiff;
+              result.fullJsonDiff = jsonAccuracyResult.fullJsonDiff;
+              result.jsonDiffStats = jsonAccuracyResult.jsonDiffStats;
+              result.jsonAccuracyResult = jsonAccuracyResult;
             }
           } catch (error) {
             result.error = error;

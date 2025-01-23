@@ -83,7 +83,7 @@ def create_model_comparison_table(results):
 
 
 def create_accuracy_comparison_charts(results):
-    """Create separate DataFrames for JSON, Text, and Array accuracy comparisons"""
+    """Create separate DataFrames for JSON and Text accuracy comparisons"""
     model_accuracies = {}
 
     for test in results:
@@ -98,7 +98,6 @@ def create_accuracy_comparison_charts(results):
                 "text_similarity": 0,
                 "total_matched_items": 0,
                 "total_items": 0,
-                "array_count": 0,
                 "extraction_count": 0,
             }
 
@@ -111,14 +110,6 @@ def create_accuracy_comparison_charts(results):
             stats["extraction_count"] += 1
             stats["json_accuracy"] += test["jsonAccuracy"]
 
-        # Handle array accuracies if present
-        if "arrayAccuracies" in test and test["arrayAccuracies"]:
-            stats["array_count"] += 1
-            # Sum up matchedItems and totalItems for all arrays in the test
-            for array_result in test["arrayAccuracies"].values():
-                stats["total_matched_items"] += array_result["matchedItems"]
-                stats["total_items"] += array_result["totalItems"]
-
     # Calculate final averages
     for stats in model_accuracies.values():
         stats["text_similarity"] /= stats["count"]
@@ -128,13 +119,6 @@ def create_accuracy_comparison_charts(results):
             stats["json_accuracy"] /= stats["extraction_count"]
         else:
             stats["json_accuracy"] = 0
-
-        # Calculate array accuracy only if there were arrays
-        stats["array_accuracy"] = (
-            stats["total_matched_items"] / stats["total_items"]
-            if stats["total_items"] > 0
-            else 0
-        )
 
     # Create DataFrames
     json_df = pd.DataFrame(
@@ -155,16 +139,7 @@ def create_accuracy_comparison_charts(results):
         }
     ).set_index("Model")
 
-    array_df = pd.DataFrame(
-        {
-            "Model": model_accuracies.keys(),
-            "Array Accuracy": [
-                stats["array_accuracy"] for stats in model_accuracies.values()
-            ],
-        }
-    ).set_index("Model")
-
-    return json_df, text_df, array_df
+    return json_df, text_df
 
 
 def main():
@@ -194,7 +169,7 @@ def main():
     # Accuracy Charts
     st.header("Evaluation Metrics by Model")
 
-    json_df, text_df, array_df = create_accuracy_comparison_charts(results)
+    json_df, text_df = create_accuracy_comparison_charts(results)
     fig1 = px.bar(
         json_df.reset_index().sort_values("JSON Accuracy", ascending=False),
         x="Model",
@@ -208,18 +183,6 @@ def main():
     st.plotly_chart(fig1)
 
     fig2 = px.bar(
-        array_df.reset_index().sort_values("Array Accuracy", ascending=False),
-        x="Model",
-        y="Array Accuracy",
-        title="Array Accuracy by Model",
-        height=600,
-        color_discrete_sequence=["#636EFA"],
-    )
-    fig2.update_layout(showlegend=False)
-    fig2.update_traces(texttemplate="%{y:.1%}", textposition="outside")
-    st.plotly_chart(fig2)
-
-    fig3 = px.bar(
         text_df.reset_index().sort_values("Text Similarity", ascending=False),
         x="Model",
         y="Text Similarity",
@@ -227,9 +190,9 @@ def main():
         height=600,
         color_discrete_sequence=["#636EFA"],
     )
-    fig3.update_layout(showlegend=False)
-    fig3.update_traces(texttemplate="%{y:.1%}", textposition="outside")
-    st.plotly_chart(fig3)
+    fig2.update_layout(showlegend=False)
+    fig2.update_traces(texttemplate="%{y:.1%}", textposition="outside")
+    st.plotly_chart(fig2)
 
     # Model Statistics Table
     st.header("Model Performance Statistics")
@@ -239,7 +202,6 @@ def main():
             {
                 "json_accuracy": "{:.2%}",
                 "text_accuracy": "{:.2%}",
-                "array_accuracy": "{:.2%}",
                 "avg_latency": "{:.2f} s",
                 "total_cost": "${:.4f}",
                 "count": "{:.0f}",

@@ -1,5 +1,5 @@
 import { Usage } from './model';
-import { ArrayAccuracyResult } from '../evaluation';
+import { AccuracyResult } from '../evaluation';
 
 export interface Input {
   imageUrl: string;
@@ -29,6 +29,7 @@ export interface Result {
   metadata: Metadata;
   ocrModel: string;
   extractionModel: string;
+  jsonSchema: JsonSchema;
   directImageExtraction?: boolean;
   trueMarkdown: string;
   trueJson: Record<string, any>;
@@ -39,7 +40,7 @@ export interface Result {
   jsonDiff?: Record<string, any>;
   fullJsonDiff?: Record<string, any>;
   jsonDiffStats?: Record<string, any>;
-  arrayAccuracies?: Record<string, ArrayAccuracyResult>;
+  jsonAccuracyResult?: AccuracyResult;
   usage?: Usage;
   error?: any;
 }

@@ -20,17 +20,25 @@ def display_json_diff(test_case, container):
     # If no errors, display JSON diff as before
     if "jsonDiff" in test_case or "fullJsonDiff" in test_case:
         container.subheader("JSON Differences")
-
         # Display diff stats
         stats = test_case["jsonDiffStats"]
         cols = container.columns(4)
         cols[0].metric("Additions", stats["additions"])
-        cols[1].metric("Deletions", stats["deletions"])
+        cols[1].metric("Missing", stats["deletions"])
         cols[2].metric("Modifications", stats["modifications"])
         cols[3].metric("Total Changes", stats["total"])
 
+        cols = container.columns(2)
+        total_fields = test_case.get("jsonAccuracyResult", {}).get("totalFields", 0)
+        cols[0].metric("Total Fields", total_fields)
+        cols[1].metric("Accuracy", test_case.get("jsonAccuracy", 0))
+
         # Create tabs for different diff views
-        tab_summary, tab_full = container.tabs(["Summary Diff", "Full Diff"])
+        tab_summary, tab_full, tab_ground_truth, tab_predicted, tab_schema = (
+            container.tabs(
+                ["Summary Diff", "Full Diff", "Ground Truth", "Predicted", "Schema"]
+            )
+        )
 
         with tab_summary:
             if "jsonDiff" in test_case:
@@ -43,6 +51,15 @@ def display_json_diff(test_case, container):
                 tab_full.json(test_case["fullJsonDiff"])
             else:
                 tab_full.warning("Full diff not available")
+
+        with tab_ground_truth:
+            tab_ground_truth.json(test_case["trueJson"])
+
+        with tab_predicted:
+            tab_predicted.json(test_case["predictedJson"])
+
+        with tab_schema:
+            tab_schema.json(test_case.get("jsonSchema", {}))
 
 
 def display_file_preview(test_case, container):
@@ -105,7 +122,8 @@ def main():
     #    i.e. test["jsonDiffStats"]["total"] > 0
     all_test_cases = results_dict[selected_timestamp]
     results_with_diffs = [
-        test for test in all_test_cases
+        test
+        for test in all_test_cases
         if test.get("jsonDiffStats", {}).get("total", 0) > 0
     ]
 
@@ -116,8 +134,7 @@ def main():
 
     # 3. Build the dropdown items from only those filtered test cases
     test_case_labels = [
-        f"{test['ocrModel']} → {test['extractionModel']}"
-        for test in results_with_diffs
+        f"{test['ocrModel']} → {test['extractionModel']}" for test in results_with_diffs
     ]
     with col2:
         selected_test_idx = st.selectbox(
@@ -130,8 +147,7 @@ def main():
     test_case = results_with_diffs[selected_test_idx]
 
     # Display file URL
-    st.markdown(
-        f"**File URL:** [{test_case['fileUrl']}]({test_case['fileUrl']})")
+    st.markdown(f"**File URL:** [{test_case['fileUrl']}]({test_case['fileUrl']})")
 
     # Create two columns for file preview and JSON diff
     left_col, right_col = st.columns(2)
