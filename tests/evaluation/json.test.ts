@@ -58,4 +58,23 @@ describe('calculateJsonAccuracy', () => {
     console.log(result);
     expect(result.score).toBe(0.5);
   });
+
+  it('array of objects with different order should be considered a match', () => {
+    const actual = {
+      a: 1,
+      b: [
+        { c: 1, d: 2 },
+        { c: 3, d: 4 },
+      ],
+    };
+    const predicted = {
+      a: 1,
+      b: [
+        { c: 3, d: 4 },
+        { c: 1, d: 2 },
+      ],
+    };
+    const result = calculateJsonAccuracy(actual, predicted);
+    expect(result.score).toBe(1);
+  });
 });

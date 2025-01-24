@@ -34,8 +34,8 @@ export const calculateJsonAccuracy = (
   predicted: Record<string, any>,
 ): AccuracyResult => {
   // Get the diff result
-  const fullDiffResult = diff(actual, predicted, { full: true });
-  const diffResult = diff(actual, predicted);
+  const fullDiffResult = diff(actual, predicted, { full: true, sort: true });
+  const diffResult = diff(actual, predicted, { sort: true });
   const totalFields = countTotalFields(actual);
 
   if (!diffResult) {
