@@ -28,9 +28,9 @@ const MODEL_CONCURRENCY = {
 const MODELS: { ocr: string; extraction?: string }[] = [
   { ocr: 'ground-truth', extraction: 'gpt-4o' },
   // { ocr: 'ground-truth', extraction: 'claude-3-5-sonnet-20241022' },
-  // { ocr: 'gpt-4o', extraction: 'gpt-4o' },
-  // { ocr: 'gpt-4o', extraction: 'gpt-4o' },
-  // { ocr: 'ft:gpt-4o-2024-08-06:omniai::Arxk5CGQ', extraction: 'gpt-4o' }, // 25
+  { ocr: 'gpt-4o', extraction: 'gpt-4o' },
+  // { ocr: 'ft:gpt-4o-2024-08-06:omniai::AtOXM6UJ', extraction: 'gpt-4o' }, // 250 Full Dataaset
+  // { ocr: 'ft:gpt-4o-2024-08-06:omniai::Arxk5CGQ', extraction: 'gpt-  4o' }, // 25
   // { ocr: 'ft:gpt-4o-2024-08-06:omniai::ArxtYMva', extraction: 'gpt-4o' }, // 50
   // { ocr: 'ft:gpt-4o-2024-08-06:omniai::ArxvfLvw', extraction: 'gpt-4o' }, // 100
   // { ocr: 'ft:gpt-4o-2024-08-06:omniai::AryLM0UQ', extraction: 'gpt-4o' }, // 250
