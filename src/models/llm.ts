@@ -2,6 +2,7 @@ import { generateText, generateObject, CoreMessage, CoreUserMessage } from 'ai';
 import { createOpenAI } from '@ai-sdk/openai';
 import { createAnthropic } from '@ai-sdk/anthropic';
 import { createGoogleGenerativeAI } from '@ai-sdk/google';
+import { createDeepSeek } from '@ai-sdk/deepseek';
 
 import { ExtractionResult, JsonSchema } from '../types';
 import { generateZodSchema, writeResultToFile } from '../utils';
@@ -17,6 +18,7 @@ import {
   ANTHROPIC_MODELS,
   GOOGLE_GENERATIVE_AI_MODELS,
   FINETUNED_MODELS,
+  DEEPSEEK_MODELS,
 } from './registry';
 
 export const createModelProvider = (model: string) => {
@@ -31,6 +33,9 @@ export const createModelProvider = (model: string) => {
   }
   if (GOOGLE_GENERATIVE_AI_MODELS.includes(model)) {
     return createGoogleGenerativeAI({ apiKey: process.env.GEMINI_API_KEY });
+  }
+  if (DEEPSEEK_MODELS.includes(model)) {
+    return createDeepSeek({ apiKey: process.env.DEEPSEEK_API_KEY });
   }
   throw new Error(`Model '${model}' does not support image inputs`);
 };
