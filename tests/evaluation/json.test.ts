@@ -77,4 +77,25 @@ describe('calculateJsonAccuracy', () => {
     const result = calculateJsonAccuracy(actual, predicted);
     expect(result.score).toBe(1);
   });
+
+  it('when an entire array is null in the predicted json, the number of unmatched items should be the length of the array', () => {
+    const actual = { a: 1, b: [1, 2, 3] };
+    const predicted = { a: 1, b: null };
+    const result = calculateJsonAccuracy(actual, predicted);
+    expect(result.score).toBe(1 / 4);
+  });
+
+  it('when an entire array is null in the predicted json, the number of unmatched items should be the length of the array', () => {
+    const actual = { a: 1, b: [{ c: 1, d: 1 }, { c: 2 }, { c: 3, e: 4 }] };
+    const predicted = { a: 1, b: null };
+    const result = calculateJsonAccuracy(actual, predicted);
+    expect(result.score).toBe(Number((1 / 6).toFixed(4)));
+  });
+
+  it('missing object fields should be considered a match', () => {
+    const actual = { a: 1, b: { c: 1, d: { e: 1, f: 2 } } };
+    const predicted = { a: 1, b: { c: 1, d: null } };
+    const result = calculateJsonAccuracy(actual, predicted);
+    expect(result.score).toBe(0.5);
+  });
 });
