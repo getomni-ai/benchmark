@@ -26,6 +26,10 @@ export const TOKEN_COST = {
     input: 0.15,
     output: 0.6,
   },
+  'deepseek-chat': {
+    input: 0.14,
+    output: 0.28,
+  },
   // Zerox uses GPT-4o
   zerox: {
     input: 2.5,
