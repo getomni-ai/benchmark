@@ -8,6 +8,7 @@ import { UnstructuredProvider } from './unstructured';
 
 export const OPENAI_MODELS = ['gpt-4o-mini', 'gpt-4o'];
 export const ANTHROPIC_MODELS = ['claude-3-5-sonnet-20241022'];
+export const DEEPSEEK_MODELS = ['deepseek-chat'];
 export const GOOGLE_GENERATIVE_AI_MODELS = [
   'gemini-2.0-flash-exp',
   'gemini-1.5-pro',
@@ -39,6 +40,10 @@ export const MODEL_PROVIDERS = {
   google: {
     models: ['google-document-ai'],
     provider: GoogleDocumentAIProvider,
+  },
+  deepseek: {
+    models: DEEPSEEK_MODELS,
+    provider: LLMProvider,
   },
   azure: {
     models: ['azure-document-intelligence'],
