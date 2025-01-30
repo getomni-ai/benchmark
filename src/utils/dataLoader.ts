@@ -32,7 +32,7 @@ export const loadFromDb = async (): Promise<Input[]> => {
         markdown AS "trueMarkdownOutput"
       FROM documents
       WHERE include_in_training = FALSE
-      AND config ->> 'format' = 'REAL_ESTATE' LIMIT 50;
+      ORDER BY random() LIMIT 100;
     `);
 
     return result.rows as Input[];

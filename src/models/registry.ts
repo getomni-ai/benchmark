@@ -20,6 +20,7 @@ export const FINETUNED_MODELS = [
   'ft:gpt-4o-2024-08-06:omniai::AryLM0UQ', // 1040 - 250
   'ft:gpt-4o-2024-08-06:omniai::Arz2HbeO', // 1040 - 500
   'ft:gpt-4o-2024-08-06:omniai::Arzh2QBC', // 1040 - 1000
+  'ft:gpt-4o-2024-08-06:omniai::AtOXM6UJ', // Full Dataset - 250
 ];
 
 export const MODEL_PROVIDERS = {
