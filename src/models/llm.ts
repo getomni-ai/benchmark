@@ -171,17 +171,32 @@ export class LLMProvider extends ModelProvider {
   async extractFromImage(imagePath: string, schema: JsonSchema) {
     const modelProvider = createModelProvider(this.model);
 
+    let imageMessage: CoreUserMessage = {
+      role: 'user',
+      content: [
+        {
+          type: 'image',
+          image: imagePath,
+        },
+      ],
+    };
+
+    if (ANTHROPIC_MODELS.includes(this.model)) {
+      // read image and convert to base64
+      const response = await fetch(imagePath);
+      const imageBuffer = await response.arrayBuffer();
+      const base64Image = Buffer.from(imageBuffer).toString('base64');
+      imageMessage.content = [
+        {
+          type: 'image',
+          image: base64Image,
+        },
+      ];
+    }
+
     const messages: CoreMessage[] = [
       { role: 'system', content: IMAGE_EXTRACTION_SYSTEM_PROMPT },
-      {
-        role: 'user',
-        content: [
-          {
-            type: 'image',
-            image: imagePath,
-          },
-        ],
-      },
+      imageMessage,
     ];
 
     const zodSchema = generateZodSchema(schema);
@@ -191,21 +206,29 @@ export class LLMProvider extends ModelProvider {
       model: modelProvider(this.model),
       messages,
       schema: zodSchema,
+      temperature: 0,
     });
     const end = performance.now();
+
+    const inputCost = calculateTokenCost(
+      this.model,
+      'input',
+      extractionUsage.promptTokens,
+    );
+    const outputCost = calculateTokenCost(
+      this.model,
+      'output',
+      extractionUsage.completionTokens,
+    );
 
     const usage = {
       duration: end - start,
       inputTokens: extractionUsage.promptTokens,
       outputTokens: extractionUsage.completionTokens,
       totalTokens: extractionUsage.totalTokens,
-      inputCost: calculateTokenCost(this.model, 'input', extractionUsage.promptTokens),
-      outputCost: calculateTokenCost(
-        this.model,
-        'output',
-        extractionUsage.completionTokens,
-      ),
-      totalCost: extractionUsage.promptTokens + extractionUsage.completionTokens,
+      inputCost,
+      outputCost,
+      totalCost: inputCost + outputCost,
     };
 
     return {

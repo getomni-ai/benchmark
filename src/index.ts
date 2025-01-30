@@ -25,31 +25,32 @@ const MODEL_CONCURRENCY = {
   zerox: 50,
 };
 
-const MODELS: { ocr: string; extraction?: string }[] = [
-  { ocr: 'ground-truth', extraction: 'gpt-4o' },
+const MODELS: { ocr: string; extraction?: string; directImageExtraction?: boolean }[] = [
+  // { ocr: 'ground-truth', extraction: 'gpt-4o' },
   // { ocr: 'ground-truth', extraction: 'claude-3-5-sonnet-20241022' },
-  // { ocr: 'gpt-4o', extraction: 'gpt-4o' },
+  { ocr: 'gpt-4o', extraction: 'gpt-4o' },
+  { ocr: 'gpt-4o', extraction: 'gpt-4o', directImageExtraction: true },
   // { ocr: 'ft:gpt-4o-2024-08-06:omniai::Arxk5CGQ', extraction: 'gpt-4o' }, // 25
   // { ocr: 'ft:gpt-4o-2024-08-06:omniai::ArxtYMva', extraction: 'gpt-4o' }, // 50
   // { ocr: 'ft:gpt-4o-2024-08-06:omniai::ArxvfLvw', extraction: 'gpt-4o' }, // 100
   // { ocr: 'ft:gpt-4o-2024-08-06:omniai::AryLM0UQ', extraction: 'gpt-4o' }, // 250
   // { ocr: 'ft:gpt-4o-2024-08-06:omniai::Arz2HbeO', extraction: 'gpt-4o' }, // 500
-  // { ocr: 'ft:gpt-4o-2024-08-06:omniai::Arz2HbeO', extraction: 'gpt-4o' }, // 500
   // { ocr: 'ft:gpt-4o-2024-08-06:omniai::Arzh2QBC', extraction: 'gpt-4o' }, // 1000
   // { ocr: 'gpt-4o-mini', extraction: 'gpt-4o' },
   // { ocr: 'zerox', extraction: 'gpt-4o' },
   // { ocr: 'omniai', extraction: 'omniai' },
-  // { ocr: 'claude-3-5-sonnet-20241022', extraction: 'claude-3-5-sonnet-20241022' },
-  // { ocr: 'claude-3-5-sonnet-20241022', extraction: 'claude-3-5-sonnet-20241022' },
+  { ocr: 'claude-3-5-sonnet-20241022', extraction: 'claude-3-5-sonnet-20241022' },
+  {
+    ocr: 'claude-3-5-sonnet-20241022',
+    extraction: 'claude-3-5-sonnet-20241022',
+    directImageExtraction: true,
+  },
   // { ocr: 'aws-textract', extraction: 'gpt-4o' },
   // { ocr: 'google-document-ai', extraction: 'gpt-4o' },
   // { ocr: 'azure-document-intelligence', extraction: 'gpt-4o' },
   // { ocr: 'unstructured', extraction: 'gpt-4o' },
   // { ocr: 'gpt-4o', extraction: 'deepseek-chat' },
 ];
-
-// if true, image -> json, otherwise image -> markdown -> json
-const DIRECT_IMAGE_EXTRACTION = false;
 
 const DATA_FOLDER = path.join(__dirname, '../data');
 
@@ -101,15 +102,16 @@ const runBenchmark = async () => {
   const progressBars = MODELS.reduce(
     (acc, model) => ({
       ...acc,
-      [`${model.ocr}-${model.extraction}`]: multibar.create(data.length, 0, {
-        model: `${model.ocr} -> ${model.extraction}`,
-      }),
+      [`${model.directImageExtraction ? `${model.extraction} (IMG2JSON)` : `${model.ocr}-${model.extraction}`}`]:
+        multibar.create(data.length, 0, {
+          model: `${model.directImageExtraction ? `${model.extraction} (IMG2JSON)` : `${model.ocr} -> ${model.extraction}`}`,
+        }),
     }),
     {},
   );
 
   const modelPromises = MODELS.map(
-    async ({ ocr: ocrModel, extraction: extractionModel }) => {
+    async ({ ocr: ocrModel, extraction: extractionModel, directImageExtraction }) => {
       // Calculate concurrent requests based on rate limit
       const concurrency = Math.min(
         MODEL_CONCURRENCY[ocrModel as keyof typeof MODEL_CONCURRENCY] ?? 20,
@@ -130,7 +132,7 @@ const runBenchmark = async () => {
             jsonSchema: item.jsonSchema,
             ocrModel,
             extractionModel,
-            directImageExtraction: DIRECT_IMAGE_EXTRACTION,
+            directImageExtraction,
             trueMarkdown: item.trueMarkdownOutput,
             trueJson: item.trueJsonOutput,
             predictedMarkdown: undefined,
@@ -145,57 +147,73 @@ const runBenchmark = async () => {
           };
 
           try {
-            if (ocrModel === 'ground-truth') {
-              result.predictedMarkdown = item.trueMarkdownOutput;
-            } else {
-              const ocrResult = await withTimeout(
-                ocrModelProvider.ocr(item.imageUrl),
-                `OCR: ${ocrModel}`,
+            if (directImageExtraction) {
+              const extractionResult = await withTimeout(
+                extractionModelProvider.extractFromImage(item.imageUrl, item.jsonSchema),
+                `JSON extraction: ${extractionModel}`,
               );
-              result.predictedMarkdown = ocrResult.text;
-              result.usage = {
-                ...ocrResult.usage,
-                ocr: ocrResult.usage,
-                extraction: undefined,
-              };
-            }
-
-            let extractionResult;
-            if (extractionModelProvider) {
-              if (extractionModel === 'omniai') {
-                extractionResult = await withTimeout(
-                  extractionModelProvider.extractFromImage(
-                    item.imageUrl,
-                    item.jsonSchema,
-                  ),
-                  `JSON extraction: ${extractionModel}`,
-                );
-              } else {
-                extractionResult = await withTimeout(
-                  extractionModelProvider.extractFromText(
-                    result.predictedMarkdown,
-                    item.jsonSchema,
-                  ),
-                  `JSON extraction: ${extractionModel}`,
-                );
-              }
               result.predictedJson = extractionResult.json;
-
-              const mergeUsage = (base: any, additional: any) => ({
-                duration: (base?.duration ?? 0) + (additional?.duration ?? 0),
-                inputTokens: (base?.inputTokens ?? 0) + (additional?.inputTokens ?? 0),
-                outputTokens: (base?.outputTokens ?? 0) + (additional?.outputTokens ?? 0),
-                totalTokens: (base?.totalTokens ?? 0) + (additional?.totalTokens ?? 0),
-                inputCost: (base?.inputCost ?? 0) + (additional?.inputCost ?? 0),
-                outputCost: (base?.outputCost ?? 0) + (additional?.outputCost ?? 0),
-                totalCost: (base?.totalCost ?? 0) + (additional?.totalCost ?? 0),
-              });
-
               result.usage = {
-                ocr: result.usage?.ocr ?? {},
+                ...extractionResult.usage,
+                ocr: undefined,
                 extraction: extractionResult.usage,
-                ...mergeUsage(result.usage, extractionResult.usage),
               };
+            } else {
+              if (ocrModelProvider) {
+                if (ocrModel === 'ground-truth') {
+                  result.predictedMarkdown = item.trueMarkdownOutput;
+                } else {
+                  const ocrResult = await withTimeout(
+                    ocrModelProvider.ocr(item.imageUrl),
+                    `OCR: ${ocrModel}`,
+                  );
+                  result.predictedMarkdown = ocrResult.text;
+                  result.usage = {
+                    ...ocrResult.usage,
+                    ocr: ocrResult.usage,
+                    extraction: undefined,
+                  };
+                }
+              }
+
+              let extractionResult;
+              if (extractionModelProvider) {
+                if (extractionModel === 'omniai') {
+                  extractionResult = await withTimeout(
+                    extractionModelProvider.extractFromImage(
+                      item.imageUrl,
+                      item.jsonSchema,
+                    ),
+                    `JSON extraction: ${extractionModel}`,
+                  );
+                } else {
+                  extractionResult = await withTimeout(
+                    extractionModelProvider.extractFromText(
+                      result.predictedMarkdown,
+                      item.jsonSchema,
+                    ),
+                    `JSON extraction: ${extractionModel}`,
+                  );
+                }
+                result.predictedJson = extractionResult.json;
+
+                const mergeUsage = (base: any, additional: any) => ({
+                  duration: (base?.duration ?? 0) + (additional?.duration ?? 0),
+                  inputTokens: (base?.inputTokens ?? 0) + (additional?.inputTokens ?? 0),
+                  outputTokens:
+                    (base?.outputTokens ?? 0) + (additional?.outputTokens ?? 0),
+                  totalTokens: (base?.totalTokens ?? 0) + (additional?.totalTokens ?? 0),
+                  inputCost: (base?.inputCost ?? 0) + (additional?.inputCost ?? 0),
+                  outputCost: (base?.outputCost ?? 0) + (additional?.outputCost ?? 0),
+                  totalCost: (base?.totalCost ?? 0) + (additional?.totalCost ?? 0),
+                });
+
+                result.usage = {
+                  ocr: result.usage?.ocr ?? {},
+                  extraction: extractionResult.usage,
+                  ...mergeUsage(result.usage, extractionResult.usage),
+                };
+              }
             }
 
             if (result.predictedMarkdown) {
@@ -225,7 +243,9 @@ const runBenchmark = async () => {
           }
 
           // Update progress bar for this model
-          progressBars[`${ocrModel}-${extractionModel}`].increment();
+          progressBars[
+            `${directImageExtraction ? `${extractionModel} (IMG2JSON)` : `${ocrModel}-${extractionModel}`}`
+          ].increment();
           return result;
         }),
       );

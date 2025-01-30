@@ -38,7 +38,11 @@ def create_model_comparison_table(results):
         if "error" in test:
             continue
 
-        model_key = f"{test['ocrModel']} → {test['extractionModel']}"
+        model_key = (
+            f"{test['extractionModel']} (IMG2JSON)"
+            if test.get("directImageExtraction", False)
+            else f"{test['ocrModel']} → {test['extractionModel']}"
+        )
         if model_key not in model_stats:
             model_stats[model_key] = {
                 "count": 0,
@@ -52,10 +56,10 @@ def create_model_comparison_table(results):
 
         stats = model_stats[model_key]
         stats["count"] += 1
-        stats["text_accuracy"] += test["levenshteinDistance"]
+        stats["text_accuracy"] += test.get("levenshteinDistance", 0)
         stats["total_cost"] += test["usage"]["totalCost"]
         stats["ocr_latency"] += (
-            test["usage"]["ocr"].get("duration", 0) / 1000
+            test["usage"].get("ocr", {}).get("duration", 0) / 1000
         )  # Convert ms to seconds
 
         # Only add JSON accuracy and extraction latency if extraction was performed
@@ -90,7 +94,11 @@ def create_accuracy_comparison_charts(results):
         if "error" in test:
             continue
 
-        model_key = f"{test['ocrModel']} → {test['extractionModel']}"
+        model_key = (
+            f"{test['extractionModel']} (IMG2JSON)"
+            if test.get("directImageExtraction", False)
+            else f"{test['ocrModel']} → {test['extractionModel']}"
+        )
         if model_key not in model_accuracies:
             model_accuracies[model_key] = {
                 "count": 0,
@@ -103,7 +111,7 @@ def create_accuracy_comparison_charts(results):
 
         stats = model_accuracies[model_key]
         stats["count"] += 1
-        stats["text_similarity"] += test["levenshteinDistance"]
+        stats["text_similarity"] += test.get("levenshteinDistance", 0)
 
         # Handle JSON accuracy if present
         if "jsonAccuracy" in test:
@@ -236,7 +244,7 @@ def main():
     )
 
     # Calculate total latency for labels
-    latency_df["Total"] = latency_df["OCR"] + latency_df["Extraction"]
+    latency_df["Total"] = latency_df.get("OCR", 0) + latency_df.get("Extraction", 0)
     fig5 = px.bar(
         latency_df.sort_values("Total", ascending=True),
         x="Model",
