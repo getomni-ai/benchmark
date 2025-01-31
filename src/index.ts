@@ -26,9 +26,9 @@ const MODEL_CONCURRENCY = {
 };
 
 const MODELS: { ocr: string; extraction?: string; directImageExtraction?: boolean }[] = [
-  // { ocr: 'ground-truth', extraction: 'gpt-4o' },
+  { ocr: 'ground-truth', extraction: 'gpt-4o' },
   // { ocr: 'ground-truth', extraction: 'claude-3-5-sonnet-20241022' },
-  { ocr: 'gpt-4o', extraction: 'o3-mini' },
+  // { ocr: 'gpt-4o', extraction: 'o3-mini' },
   { ocr: 'gpt-4o', extraction: 'gpt-4o' },
   // { ocr: 'gpt-4o', extraction: 'gpt-4o', directImageExtraction: true },
   // { ocr: 'ft:gpt-4o-2024-08-06:omniai::Arxk5CGQ', extraction: 'gpt-4o' }, // 25
@@ -40,7 +40,7 @@ const MODELS: { ocr: string; extraction?: string; directImageExtraction?: boolea
   // { ocr: 'gpt-4o-mini', extraction: 'gpt-4o' },
   // { ocr: 'zerox', extraction: 'gpt-4o' },
   // { ocr: 'omniai', extraction: 'omniai' },
-  { ocr: 'gpt-4o', extraction: 'claude-3-5-sonnet-20241022' },
+  // { ocr: 'gpt-4o', extraction: 'claude-3-5-sonnet-20241022' },
   // { ocr: 'claude-3-5-sonnet-20241022', extraction: 'claude-3-5-sonnet-20241022' },
   // {
   //   ocr: 'claude-3-5-sonnet-20241022',
