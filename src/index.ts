@@ -161,10 +161,10 @@ const runBenchmark = async () => {
                 extraction: extractionResult.usage,
               };
             } else {
-              if (ocrModelProvider) {
-                if (ocrModel === 'ground-truth') {
-                  result.predictedMarkdown = item.trueMarkdownOutput;
-                } else {
+              if (ocrModel === 'ground-truth') {
+                result.predictedMarkdown = item.trueMarkdownOutput;
+              } else {
+                if (ocrModelProvider) {
                   const ocrResult = await withTimeout(
                     ocrModelProvider.ocr(item.imageUrl),
                     `OCR: ${ocrModel}`,
