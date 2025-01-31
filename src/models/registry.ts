@@ -6,7 +6,7 @@ import { GoogleDocumentAIProvider } from './googleDocumentAI';
 import { AzureDocumentIntelligenceProvider } from './azure';
 import { UnstructuredProvider } from './unstructured';
 
-export const OPENAI_MODELS = ['gpt-4o-mini', 'gpt-4o'];
+export const OPENAI_MODELS = ['gpt-4o-mini', 'gpt-4o', 'o1', 'o1-mini', 'o3-mini'];
 export const ANTHROPIC_MODELS = ['claude-3-5-sonnet-20241022'];
 export const DEEPSEEK_MODELS = ['deepseek-chat'];
 export const GOOGLE_GENERATIVE_AI_MODELS = [

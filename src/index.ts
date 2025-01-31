@@ -28,8 +28,9 @@ const MODEL_CONCURRENCY = {
 const MODELS: { ocr: string; extraction?: string; directImageExtraction?: boolean }[] = [
   // { ocr: 'ground-truth', extraction: 'gpt-4o' },
   // { ocr: 'ground-truth', extraction: 'claude-3-5-sonnet-20241022' },
+  { ocr: 'gpt-4o', extraction: 'o3-mini' },
   { ocr: 'gpt-4o', extraction: 'gpt-4o' },
-  { ocr: 'gpt-4o', extraction: 'gpt-4o', directImageExtraction: true },
+  // { ocr: 'gpt-4o', extraction: 'gpt-4o', directImageExtraction: true },
   // { ocr: 'ft:gpt-4o-2024-08-06:omniai::Arxk5CGQ', extraction: 'gpt-4o' }, // 25
   // { ocr: 'ft:gpt-4o-2024-08-06:omniai::ArxtYMva', extraction: 'gpt-4o' }, // 50
   // { ocr: 'ft:gpt-4o-2024-08-06:omniai::ArxvfLvw', extraction: 'gpt-4o' }, // 100
@@ -39,12 +40,13 @@ const MODELS: { ocr: string; extraction?: string; directImageExtraction?: boolea
   // { ocr: 'gpt-4o-mini', extraction: 'gpt-4o' },
   // { ocr: 'zerox', extraction: 'gpt-4o' },
   // { ocr: 'omniai', extraction: 'omniai' },
-  { ocr: 'claude-3-5-sonnet-20241022', extraction: 'claude-3-5-sonnet-20241022' },
-  {
-    ocr: 'claude-3-5-sonnet-20241022',
-    extraction: 'claude-3-5-sonnet-20241022',
-    directImageExtraction: true,
-  },
+  { ocr: 'gpt-4o', extraction: 'claude-3-5-sonnet-20241022' },
+  // { ocr: 'claude-3-5-sonnet-20241022', extraction: 'claude-3-5-sonnet-20241022' },
+  // {
+  //   ocr: 'claude-3-5-sonnet-20241022',
+  //   extraction: 'claude-3-5-sonnet-20241022',
+  //   directImageExtraction: true,
+  // },
   // { ocr: 'aws-textract', extraction: 'gpt-4o' },
   // { ocr: 'google-document-ai', extraction: 'gpt-4o' },
   // { ocr: 'azure-document-intelligence', extraction: 'gpt-4o' },

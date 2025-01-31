@@ -26,6 +26,18 @@ export const TOKEN_COST = {
     input: 0.15,
     output: 0.6,
   },
+  o1: {
+    input: 15,
+    output: 60,
+  },
+  'o1-mini': {
+    input: 1.1,
+    output: 4.4,
+  },
+  'o3-mini': {
+    input: 1.1,
+    output: 4.4,
+  },
   'deepseek-chat': {
     input: 0.14,
     output: 0.28,
