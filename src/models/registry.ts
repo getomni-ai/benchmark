@@ -7,6 +7,12 @@ import { AzureDocumentIntelligenceProvider } from './azure';
 import { UnstructuredProvider } from './unstructured';
 
 export const OPENAI_MODELS = ['gpt-4o-mini', 'gpt-4o', 'o1', 'o1-mini', 'o3-mini'];
+export const AZURE_OPENAI_MODELS = [
+  'azure-gpt-4o-mini',
+  'azure-gpt-4o',
+  'azure-o1',
+  'azure-o1-mini',
+];
 export const ANTHROPIC_MODELS = ['claude-3-5-sonnet-20241022'];
 export const DEEPSEEK_MODELS = ['deepseek-chat'];
 export const GOOGLE_GENERATIVE_AI_MODELS = [
@@ -16,7 +22,7 @@ export const GOOGLE_GENERATIVE_AI_MODELS = [
 ];
 export const FINETUNED_MODELS = [
   'ft:gpt-4o-2024-08-06:omniai::Arxk5CGQ', // 1040 - 25
-  'ft:gpt-4o-2024-08-06:omniai::ArxtYMva', // 1040 - 50
+  'ft:gpt-4o-2024-08-06:omniai::ArxtsMva', // 1040 - 50
   'ft:gpt-4o-2024-08-06:omniai::ArxvfLvw', // 1040 - 100
   'ft:gpt-4o-2024-08-06:omniai::AryLM0UQ', // 1040 - 250
   'ft:gpt-4o-2024-08-06:omniai::Arz2HbeO', // 1040 - 500
@@ -32,6 +38,10 @@ export const MODEL_PROVIDERS = {
   aws: {
     models: ['aws-textract'],
     provider: AWSTextractProvider,
+  },
+  azureOpenai: {
+    models: AZURE_OPENAI_MODELS,
+    provider: LLMProvider,
   },
   gemini: {
     models: GOOGLE_GENERATIVE_AI_MODELS,

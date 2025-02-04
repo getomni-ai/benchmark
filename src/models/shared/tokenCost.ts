@@ -1,6 +1,5 @@
 import { FINETUNED_MODELS } from '../registry';
 
-// token cost in USD per 1M tokens
 export const TOKEN_COST = {
   'claude-3-5-sonnet-20241022': {
     input: 3,
@@ -35,6 +34,22 @@ export const TOKEN_COST = {
     output: 4.4,
   },
   'o3-mini': {
+    input: 1.1,
+    output: 4.4,
+  },
+  'azure-gpt-4o-mini': {
+    input: 0.15,
+    output: 0.6,
+  },
+  'azure-gpt-4o': {
+    input: 2.5,
+    output: 10,
+  },
+  'azure-o1': {
+    input: 15,
+    output: 60,
+  },
+  'azure-o1-mini': {
     input: 1.1,
     output: 4.4,
   },

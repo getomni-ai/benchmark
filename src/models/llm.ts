@@ -3,6 +3,7 @@ import { createOpenAI } from '@ai-sdk/openai';
 import { createAnthropic } from '@ai-sdk/anthropic';
 import { createGoogleGenerativeAI } from '@ai-sdk/google';
 import { createDeepSeek } from '@ai-sdk/deepseek';
+import { createAzure } from '@ai-sdk/azure';
 
 import { ExtractionResult, JsonSchema } from '../types';
 import { generateZodSchema, writeResultToFile } from '../utils';
@@ -19,11 +20,21 @@ import {
   GOOGLE_GENERATIVE_AI_MODELS,
   FINETUNED_MODELS,
   DEEPSEEK_MODELS,
+  AZURE_OPENAI_MODELS,
 } from './registry';
 
 export const createModelProvider = (model: string) => {
   if (OPENAI_MODELS.includes(model)) {
-    return createOpenAI({ apiKey: process.env.OPENAI_API_KEY });
+    return createOpenAI({
+      apiKey: process.env.OPENAI_API_KEY,
+      baseURL: process.env.OPENAI_ENDPOINT || 'https://api.openai.com/v1',
+    });
+  }
+  if (AZURE_OPENAI_MODELS.includes(model)) {
+    return createAzure({
+      apiKey: process.env.AZURE_OPENAI_API_KEY,
+      resourceName: process.env.AZURE_OPENAI_RESOURCE_NAME,
+    });
   }
   if (FINETUNED_MODELS.includes(model)) {
     return createOpenAI({ apiKey: process.env.OPENAI_API_KEY });
@@ -42,7 +53,12 @@ export const createModelProvider = (model: string) => {
 
 export class LLMProvider extends ModelProvider {
   constructor(model: string) {
-    super(model);
+    if (AZURE_OPENAI_MODELS.includes(model)) {
+      const openaiModel = model.replace('azure-', '');
+      super(openaiModel);
+    } else {
+      super(model);
+    }
   }
 
   async ocr(imagePath: string) {
