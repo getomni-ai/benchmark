@@ -11,3 +11,5 @@ eng.traineddata
 venv
 
 google_credentials.json
+
+models.yaml

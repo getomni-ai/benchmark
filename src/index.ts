@@ -4,6 +4,8 @@ import moment from 'moment';
 import cliProgress from 'cli-progress';
 import { isEmpty } from 'lodash';
 import pLimit from 'p-limit';
+import yaml from 'js-yaml';
+import fs from 'fs';
 
 import { calculateJsonAccuracy, calculateTextSimilarity } from './evaluation';
 import { getModelProvider } from './models';
@@ -25,34 +27,26 @@ const MODEL_CONCURRENCY = {
   zerox: 50,
 };
 
-const MODELS: { ocr: string; extraction?: string; directImageExtraction?: boolean }[] = [
-  { ocr: 'ground-truth', extraction: 'gpt-4o' },
-  // { ocr: 'ground-truth', extraction: 'claude-3-5-sonnet-20241022' },
-  // { ocr: 'gpt-4o', extraction: 'o3-mini' },
-  { ocr: 'gpt-4o', extraction: 'gpt-4o' },
-  // { ocr: 'gpt-4o', extraction: 'gpt-4o', directImageExtraction: true },
-  // { ocr: 'ft:gpt-4o-2024-08-06:omniai::Arxk5CGQ', extraction: 'gpt-4o' }, // 25
-  // { ocr: 'ft:gpt-4o-2024-08-06:omniai::ArxtYMva', extraction: 'gpt-4o' }, // 50
-  // { ocr: 'ft:gpt-4o-2024-08-06:omniai::ArxvfLvw', extraction: 'gpt-4o' }, // 100
-  // { ocr: 'ft:gpt-4o-2024-08-06:omniai::AryLM0UQ', extraction: 'gpt-4o' }, // 250
-  // { ocr: 'ft:gpt-4o-2024-08-06:omniai::Arz2HbeO', extraction: 'gpt-4o' }, // 500
-  // { ocr: 'ft:gpt-4o-2024-08-06:omniai::Arzh2QBC', extraction: 'gpt-4o' }, // 1000
-  // { ocr: 'gpt-4o-mini', extraction: 'gpt-4o' },
-  // { ocr: 'zerox', extraction: 'gpt-4o' },
-  // { ocr: 'omniai', extraction: 'omniai' },
-  // { ocr: 'gpt-4o', extraction: 'claude-3-5-sonnet-20241022' },
-  // { ocr: 'claude-3-5-sonnet-20241022', extraction: 'claude-3-5-sonnet-20241022' },
-  // {
-  //   ocr: 'claude-3-5-sonnet-20241022',
-  //   extraction: 'claude-3-5-sonnet-20241022',
-  //   directImageExtraction: true,
-  // },
-  // { ocr: 'aws-textract', extraction: 'gpt-4o' },
-  // { ocr: 'google-document-ai', extraction: 'gpt-4o' },
-  // { ocr: 'azure-document-intelligence', extraction: 'gpt-4o' },
-  // { ocr: 'unstructured', extraction: 'gpt-4o' },
-  // { ocr: 'gpt-4o', extraction: 'deepseek-chat' },
-];
+interface ModelConfig {
+  ocr: string;
+  extraction?: string;
+  directImageExtraction?: boolean;
+}
+
+// Load models config
+const loadModelsConfig = () => {
+  try {
+    const configPath = path.join(__dirname, 'models.yaml');
+    const fileContents = fs.readFileSync(configPath, 'utf8');
+    const config = yaml.load(fileContents) as { models: ModelConfig[] };
+    return config.models;
+  } catch (error) {
+    console.error('Error loading models config:', error);
+    return [] as ModelConfig[];
+  }
+};
+
+const MODELS = loadModelsConfig();
 
 const DATA_FOLDER = path.join(__dirname, '../data');
 
