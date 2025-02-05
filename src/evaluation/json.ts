@@ -129,12 +129,10 @@ export const countChanges = (diffResult: any): DiffStats => {
           }
         } else if (typeof value === 'object' && value !== null) {
           if (value.__old !== undefined && value.__new !== undefined) {
-            // check if the old value is an object ,
-            // if so, add the number of fields in the old value to the modifications
-            if (typeof value.__old === 'object' || Array.isArray(value.__old)) {
-              changes.modifications += countTotalFields(value.__old);
+            if (value.__old === null && value.__new !== null) {
+              changes.modifications += countTotalFields(value.__new) || 1;
             } else {
-              changes.modifications++;
+              changes.modifications += countTotalFields(value.__old) || 1;
             }
           } else {
             traverse(value);

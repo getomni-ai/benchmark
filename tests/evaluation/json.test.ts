@@ -55,7 +55,6 @@ describe('calculateJsonAccuracy', () => {
     const actual = { a: 1, b: [{ c: 2, d: 4, e: 4, f: [2, 9] }] };
     const predicted = { a: 1, b: [{ c: 2, d: 4, e: 5, f: [2, 3] }] };
     const result = calculateJsonAccuracy(actual, predicted);
-    console.log(result);
     expect(result.score).toBe(0.5);
   });
 
@@ -97,5 +96,61 @@ describe('calculateJsonAccuracy', () => {
     const predicted = { a: 1, b: { c: 1, d: null } };
     const result = calculateJsonAccuracy(actual, predicted);
     expect(result.score).toBe(0.5);
+  });
+
+  it('__old == null & __new == smth', () => {
+    const actual = { a: [{ b: 1, c: null }] };
+    const predicted = { a: [{ b: 1, c: 2 }] };
+    const result = calculateJsonAccuracy(actual, predicted);
+    expect(result.score).toBe(0.5);
+  });
+
+  it('__old == null & __new == smth & __new is an object', () => {
+    const actual = { a: [{ b: 1, c: null, f: 4 }] };
+    const predicted = { a: [{ b: 1, c: { d: 2 }, f: 4 }] };
+    const result = calculateJsonAccuracy(actual, predicted);
+    expect(result.score).toBe(0.6667);
+  });
+
+  it('__old == null & __new == smth & __new is an object 2', () => {
+    const actual = { a: [{ b: 1, c: null, f: 4 }] };
+    const predicted = { a: [{ b: 1, c: { d: 2, e: 3 }, f: 4 }] };
+    const result = calculateJsonAccuracy(actual, predicted);
+    expect(result.score).toBe(0.3333);
+  });
+
+  it('__old == null & __new == smth & __new is an array', () => {
+    const actual = { a: [{ b: 1, c: null, f: 4 }] };
+    const predicted = { a: [{ b: 1, c: [3], f: 4 }] };
+    const result = calculateJsonAccuracy(actual, predicted);
+    expect(result.score).toBe(0.6667);
+  });
+
+  it('__old == smth & __new == null', () => {
+    const actual = { a: [{ b: 1, c: 2 }] };
+    const predicted = { a: [{ b: 1, c: null }] };
+    const result = calculateJsonAccuracy(actual, predicted);
+    expect(result.score).toBe(0.5);
+  });
+
+  it('__old == smth & __new == null & __new is an object', () => {
+    const actual = { a: [{ b: 1, c: { d: 2 } }] };
+    const predicted = { a: [{ b: 1, c: null }] };
+    const result = calculateJsonAccuracy(actual, predicted);
+    expect(result.score).toBe(0.5);
+  });
+
+  it('__old == smth & __new == null & __new is an object 2', () => {
+    const actual = { a: [{ b: 1, c: { d: 2, e: 3 } }] };
+    const predicted = { a: [{ b: 1, c: null }] };
+    const result = calculateJsonAccuracy(actual, predicted);
+    expect(result.score).toBe(0.3333);
+  });
+
+  it('__old == smth & __new == null & __new is an array', () => {
+    const actual = { a: [{ b: 1, c: [3, 2] }] };
+    const predicted = { a: [{ b: 1, c: null }] };
+    const result = calculateJsonAccuracy(actual, predicted);
+    expect(result.score).toBe(0.3333);
   });
 });
