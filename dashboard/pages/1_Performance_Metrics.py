@@ -76,11 +76,14 @@ def create_model_comparison_table(results):
     for stats in model_stats.values():
         stats["text_accuracy"] /= stats["count"]
         stats["ocr_latency"] /= stats["count"]
+        stats["ocr_cost"] /= stats["count"]
+        stats["total_cost"] /= stats["count"]
 
         # Calculate extraction-related averages only if there were extractions
         if stats["extraction_count"] > 0:
             stats["json_accuracy"] /= stats["extraction_count"]
             stats["extraction_latency"] /= stats["extraction_count"]
+            stats["extraction_cost"] /= stats["extraction_count"]
 
     # Convert to DataFrame
     df = pd.DataFrame.from_dict(model_stats, orient="index")
@@ -222,13 +225,14 @@ def main():
     # Cost and Latency Charts
     st.header("Cost and Latency Analysis")
 
+    # Cost per document chart
     cost_df = pd.DataFrame(model_stats["total_cost"]).reset_index()
-    cost_df.columns = ["Model", "Total Cost"]
+    cost_df.columns = ["Model", "Cost per Page"]
     fig4 = px.bar(
-        cost_df.sort_values("Total Cost", ascending=True),
+        cost_df.sort_values("Cost per Page", ascending=True),
         x="Model",
-        y="Total Cost",
-        title="Total Cost by Model Combination",
+        y="Cost per Page",
+        title="Cost per Page by Model Combination",
         height=600,
         color_discrete_sequence=["#EE553B"],
     )
@@ -236,7 +240,7 @@ def main():
     fig4.update_traces(texttemplate="$%{y:.4f}", textposition="outside")
     st.plotly_chart(fig4)
 
-    # Create stacked bar chart for cost
+    # Create stacked bar chart for cost breakdown per document
     cost_breakdown_df = pd.DataFrame(
         {
             "Model": model_stats.index,
@@ -245,7 +249,7 @@ def main():
         }
     )
 
-    # Calculate total cost for sorting
+    # Calculate cost per document for sorting
     cost_breakdown_df["Total"] = (
         cost_breakdown_df["OCR"] + cost_breakdown_df["Extraction"]
     )
@@ -253,7 +257,7 @@ def main():
         cost_breakdown_df.sort_values("Total", ascending=True),
         x="Model",
         y=["OCR", "Extraction"],
-        title="Cost Breakdown by Model Combination (OCR + Extraction)",
+        title="Cost per Page Breakdown by Model Combination (OCR + Extraction)",
         height=600,
         color_discrete_sequence=["#636EFA", "#EF553B"],
     )
@@ -262,7 +266,7 @@ def main():
         showlegend=True,
         legend_title="Phase",
         yaxis=dict(
-            title="Cost (USD)",
+            title="Cost per Page (USD)",
             range=[
                 0,
                 cost_breakdown_df["Total"].max() * 1.2,
