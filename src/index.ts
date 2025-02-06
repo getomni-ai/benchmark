@@ -22,6 +22,7 @@ const MODEL_CONCURRENCY = {
   'aws-textract': 50,
   'azure-document-intelligence': 50,
   'claude-3-5-sonnet-20241022': 10,
+  'gemini-2.0-flash-001': 50,
   'gpt-4o': 50,
   omniai: 50,
   zerox: 50,
