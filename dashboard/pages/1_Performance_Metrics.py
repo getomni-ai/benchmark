@@ -49,6 +49,8 @@ def create_model_comparison_table(results):
                 "json_accuracy": 0,
                 "text_accuracy": 0,
                 "total_cost": 0,
+                "ocr_cost": 0,
+                "extraction_cost": 0,
                 "ocr_latency": 0,
                 "extraction_latency": 0,
                 "extraction_count": 0,
@@ -58,14 +60,14 @@ def create_model_comparison_table(results):
         stats["count"] += 1
         stats["text_accuracy"] += test.get("levenshteinDistance", 0)
         stats["total_cost"] += test["usage"]["totalCost"]
-        stats["ocr_latency"] += (
-            test["usage"].get("ocr", {}).get("duration", 0) / 1000
-        )  # Convert ms to seconds
+        stats["ocr_cost"] += test["usage"].get("ocr", {}).get("totalCost", 0)
+        stats["ocr_latency"] += test["usage"].get("ocr", {}).get("duration", 0) / 1000
 
-        # Only add JSON accuracy and extraction latency if extraction was performed
+        # Only add JSON accuracy and extraction stats if extraction was performed
         if "jsonAccuracy" in test and test["usage"].get("extraction"):
             stats["extraction_count"] += 1
             stats["json_accuracy"] += test["jsonAccuracy"]
+            stats["extraction_cost"] += test["usage"]["extraction"].get("totalCost", 0)
             stats["extraction_latency"] += (
                 test["usage"]["extraction"].get("duration", 0) / 1000
             )
@@ -233,6 +235,42 @@ def main():
     fig4.update_layout(showlegend=False)
     fig4.update_traces(texttemplate="$%{y:.4f}", textposition="outside")
     st.plotly_chart(fig4)
+
+    # Create stacked bar chart for cost
+    cost_breakdown_df = pd.DataFrame(
+        {
+            "Model": model_stats.index,
+            "OCR": model_stats["ocr_cost"],
+            "Extraction": model_stats["extraction_cost"],
+        }
+    )
+
+    # Calculate total cost for sorting
+    cost_breakdown_df["Total"] = (
+        cost_breakdown_df["OCR"] + cost_breakdown_df["Extraction"]
+    )
+    fig_cost = px.bar(
+        cost_breakdown_df.sort_values("Total", ascending=True),
+        x="Model",
+        y=["OCR", "Extraction"],
+        title="Cost Breakdown by Model Combination (OCR + Extraction)",
+        height=600,
+        color_discrete_sequence=["#636EFA", "#EF553B"],
+    )
+    fig_cost.update_layout(
+        barmode="stack",
+        showlegend=True,
+        legend_title="Phase",
+        yaxis=dict(
+            title="Cost (USD)",
+            range=[
+                0,
+                cost_breakdown_df["Total"].max() * 1.2,
+            ],  # Set y-axis range to 120% of max value
+        ),
+    )
+    fig_cost.update_traces(texttemplate="$%{y:.4f}", textposition="inside")
+    st.plotly_chart(fig_cost)
 
     # Create stacked bar chart for latency
     latency_df = pd.DataFrame(
