@@ -9,6 +9,9 @@ models:
     extraction: gpt-4o
     directImageExtraction: true
 
+  # - ocr: gemini-2.0-flash-001
+  #   extraction: gpt-4o
+
   # - ocr: azure-gpt-4o
   #   extraction: azure-gpt-4o
 

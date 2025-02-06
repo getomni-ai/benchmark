@@ -16,7 +16,7 @@ export const AZURE_OPENAI_MODELS = [
 export const ANTHROPIC_MODELS = ['claude-3-5-sonnet-20241022'];
 export const DEEPSEEK_MODELS = ['deepseek-chat'];
 export const GOOGLE_GENERATIVE_AI_MODELS = [
-  'gemini-2.0-flash-exp',
+  'gemini-2.0-flash-001',
   'gemini-1.5-pro',
   'gemini-1.5-flash',
 ];

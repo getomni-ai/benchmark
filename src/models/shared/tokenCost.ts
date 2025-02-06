@@ -53,6 +53,10 @@ export const TOKEN_COST = {
     input: 1.1,
     output: 4.4,
   },
+  'gemini-2.0-flash-001': {
+    input: 0.1,
+    output: 0.4,
+  },
   'deepseek-chat': {
     input: 0.14,
     output: 0.28,
