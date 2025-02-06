@@ -17,6 +17,10 @@ export const TOKEN_COST = {
     input: 0.075,
     output: 0.3,
   },
+  'gemini-2.0-flash-001': {
+    input: 0.1,
+    output: 0.4,
+  },
   'gpt-4o': {
     input: 2.5,
     output: 10,
@@ -52,10 +56,6 @@ export const TOKEN_COST = {
   'azure-o1-mini': {
     input: 1.1,
     output: 4.4,
-  },
-  'gemini-2.0-flash-001': {
-    input: 0.1,
-    output: 0.4,
   },
   'deepseek-chat': {
     input: 0.14,
