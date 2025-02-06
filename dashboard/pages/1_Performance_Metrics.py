@@ -226,30 +226,30 @@ def main():
     st.header("Cost and Latency Analysis")
 
     # Cost per document chart
-    cost_df = pd.DataFrame(model_stats["total_cost"]).reset_index()
-    cost_df.columns = ["Model", "Cost per Page"]
+    cost_df = pd.DataFrame(model_stats["total_cost"] * 1000).reset_index()
+    cost_df.columns = ["Model", "Cost per 1,000 Pages"]
     fig4 = px.bar(
-        cost_df.sort_values("Cost per Page", ascending=True),
+        cost_df.sort_values("Cost per 1,000 Pages", ascending=True),
         x="Model",
-        y="Cost per Page",
-        title="Cost per Page by Model Combination",
+        y="Cost per 1,000 Pages",
+        title="Cost per 1,000 Pages by Model Combination",
         height=600,
         color_discrete_sequence=["#EE553B"],
     )
     fig4.update_layout(showlegend=False)
-    fig4.update_traces(texttemplate="$%{y:.4f}", textposition="outside")
+    fig4.update_traces(texttemplate="$%{y:.2f}", textposition="outside")
     st.plotly_chart(fig4)
 
     # Create stacked bar chart for cost breakdown per document
     cost_breakdown_df = pd.DataFrame(
         {
             "Model": model_stats.index,
-            "OCR": model_stats["ocr_cost"],
-            "Extraction": model_stats["extraction_cost"],
+            "OCR": model_stats["ocr_cost"] * 1000,
+            "Extraction": model_stats["extraction_cost"] * 1000,
         }
     )
 
-    # Calculate cost per document for sorting
+    # Calculate cost per 1k documents for sorting
     cost_breakdown_df["Total"] = (
         cost_breakdown_df["OCR"] + cost_breakdown_df["Extraction"]
     )
@@ -257,7 +257,7 @@ def main():
         cost_breakdown_df.sort_values("Total", ascending=True),
         x="Model",
         y=["OCR", "Extraction"],
-        title="Cost per Page Breakdown by Model Combination (OCR + Extraction)",
+        title="Cost per 1,000 Pages Breakdown by Model Combination (OCR + Extraction)",
         height=600,
         color_discrete_sequence=["#636EFA", "#EF553B"],
     )
@@ -266,14 +266,14 @@ def main():
         showlegend=True,
         legend_title="Phase",
         yaxis=dict(
-            title="Cost per Page (USD)",
+            title="Cost per 1,000 Pages (USD)",
             range=[
                 0,
                 cost_breakdown_df["Total"].max() * 1.2,
-            ],  # Set y-axis range to 120% of max value
+            ],
         ),
     )
-    fig_cost.update_traces(texttemplate="$%{y:.4f}", textposition="inside")
+    fig_cost.update_traces(texttemplate="$%{y:.2f}", textposition="inside")
     st.plotly_chart(fig_cost)
 
     # Create stacked bar chart for latency
