@@ -3,7 +3,7 @@ import { ModelProvider } from './base';
 import { htmlToMarkdown } from '../utils';
 
 // Fast Pipeline: $1 per 1,000 pages
-const COST_PER_PAGE = 1 / 1000;
+const COST_PER_PAGE = 20 / 1000;
 
 enum UnstructuredTypes {
   Title = 'Title',

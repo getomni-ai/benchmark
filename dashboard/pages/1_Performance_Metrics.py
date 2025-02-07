@@ -54,6 +54,10 @@ def create_model_comparison_table(results):
                 "ocr_latency": 0,
                 "extraction_latency": 0,
                 "extraction_count": 0,
+                "ocr_input_tokens": 0,
+                "ocr_output_tokens": 0,
+                "extraction_input_tokens": 0,
+                "extraction_output_tokens": 0,
             }
 
         stats = model_stats[model_key]
@@ -62,6 +66,19 @@ def create_model_comparison_table(results):
         stats["total_cost"] += test["usage"]["totalCost"]
         stats["ocr_cost"] += test["usage"].get("ocr", {}).get("totalCost", 0)
         stats["ocr_latency"] += test["usage"].get("ocr", {}).get("duration", 0) / 1000
+        stats["ocr_input_tokens"] += test["usage"].get("ocr", {}).get("inputTokens", 0)
+        stats["ocr_output_tokens"] += (
+            test["usage"].get("ocr", {}).get("outputTokens", 0)
+        )
+
+        # Add token counting
+        if "extraction" in test["usage"]:
+            stats["extraction_input_tokens"] += test["usage"]["extraction"].get(
+                "inputTokens", 0
+            )
+            stats["extraction_output_tokens"] += test["usage"]["extraction"].get(
+                "outputTokens", 0
+            )
 
         # Only add JSON accuracy and extraction stats if extraction was performed
         if "jsonAccuracy" in test and test["usage"].get("extraction"):
@@ -78,12 +95,16 @@ def create_model_comparison_table(results):
         stats["ocr_latency"] /= stats["count"]
         stats["ocr_cost"] /= stats["count"]
         stats["total_cost"] /= stats["count"]
+        stats["ocr_input_tokens"] /= stats["count"]
+        stats["ocr_output_tokens"] /= stats["count"]
 
         # Calculate extraction-related averages only if there were extractions
         if stats["extraction_count"] > 0:
             stats["json_accuracy"] /= stats["extraction_count"]
             stats["extraction_latency"] /= stats["extraction_count"]
             stats["extraction_cost"] /= stats["extraction_count"]
+            stats["extraction_input_tokens"] /= stats["extraction_count"]
+            stats["extraction_output_tokens"] /= stats["extraction_count"]
 
     # Convert to DataFrame
     df = pd.DataFrame.from_dict(model_stats, orient="index")
@@ -328,6 +349,54 @@ def main():
     fig6.update_layout(showlegend=False)
     fig6.update_traces(texttemplate="%{y:.2f}s", textposition="outside")
     st.plotly_chart(fig6)
+
+    # Add new token usage chart at the bottom
+    st.header("Token Usage Analysis")
+    token_df = pd.DataFrame(
+        {
+            "Model": model_stats.index,
+            "Input Tokens": model_stats["ocr_input_tokens"] / model_stats["count"],
+            "Output Tokens": model_stats["ocr_output_tokens"] / model_stats["count"],
+            "Extraction Input Tokens": model_stats["extraction_input_tokens"]
+            / model_stats["count"],
+            "Extraction Output Tokens": model_stats["extraction_output_tokens"]
+            / model_stats["count"],
+        }
+    )
+
+    # Calculate total tokens for sorting
+    token_df["Total"] = (
+        token_df["Input Tokens"]
+        + token_df["Output Tokens"]
+        + token_df["Extraction Input Tokens"]
+        + token_df["Extraction Output Tokens"]
+    )
+
+    fig_tokens = px.bar(
+        token_df.sort_values("Total", ascending=True),
+        x="Model",
+        y=[
+            "Input Tokens",
+            "Output Tokens",
+            "Extraction Input Tokens",
+            "Extraction Output Tokens",
+        ],
+        title="Average Token Usage per Document by Model Combination",
+        height=600,
+        color_discrete_sequence=["#636EFA", "#EF553B", "#7B83FB", "#F76D57"],
+    )
+
+    fig_tokens.update_layout(
+        barmode="stack",
+        showlegend=True,
+        legend_title="Token Type",
+        yaxis=dict(
+            title="Number of Tokens",
+            range=[0, token_df["Total"].max() * 1.2],
+        ),
+    )
+    fig_tokens.update_traces(texttemplate="%{y:.0f}", textposition="inside")
+    st.plotly_chart(fig_tokens)
 
     # Detailed Results Table
     st.header("Test Results")
