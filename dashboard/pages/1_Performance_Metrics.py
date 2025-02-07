@@ -355,12 +355,10 @@ def main():
     token_df = pd.DataFrame(
         {
             "Model": model_stats.index,
-            "Input Tokens": model_stats["ocr_input_tokens"] / model_stats["count"],
-            "Output Tokens": model_stats["ocr_output_tokens"] / model_stats["count"],
-            "Extraction Input Tokens": model_stats["extraction_input_tokens"]
-            / model_stats["count"],
-            "Extraction Output Tokens": model_stats["extraction_output_tokens"]
-            / model_stats["count"],
+            "Input Tokens": model_stats["ocr_input_tokens"],
+            "Output Tokens": model_stats["ocr_output_tokens"],
+            "Extraction Input Tokens": model_stats["extraction_input_tokens"],
+            "Extraction Output Tokens": model_stats["extraction_output_tokens"],
         }
     )
 
@@ -381,7 +379,7 @@ def main():
             "Extraction Input Tokens",
             "Extraction Output Tokens",
         ],
-        title="Average Token Usage per Document by Model Combination",
+        title="Average Token Usage per Page by Model Combination",
         height=600,
         color_discrete_sequence=["#636EFA", "#EF553B", "#7B83FB", "#F76D57"],
     )
