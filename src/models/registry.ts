@@ -1,10 +1,11 @@
 import { AWSTextractProvider } from './awsTextract';
+import { AzureDocumentIntelligenceProvider } from './azure';
+import { DoubleTap } from './doubleTap';
+import { GoogleDocumentAIProvider } from './googleDocumentAI';
 import { LLMProvider } from './llm';
 import { OmniAIProvider } from './omniAI';
-import { ZeroxProvider } from './zerox';
-import { GoogleDocumentAIProvider } from './googleDocumentAI';
-import { AzureDocumentIntelligenceProvider } from './azure';
 import { UnstructuredProvider } from './unstructured';
+import { ZeroxProvider } from './zerox';
 
 export const OPENAI_MODELS = ['gpt-4o-mini', 'gpt-4o', 'o1', 'o1-mini', 'o3-mini'];
 export const AZURE_OPENAI_MODELS = [
@@ -42,6 +43,10 @@ export const MODEL_PROVIDERS = {
   azureOpenai: {
     models: AZURE_OPENAI_MODELS,
     provider: LLMProvider,
+  },
+  doubleTap: {
+    models: ['double-tap'],
+    provider: DoubleTap,
   },
   gemini: {
     models: GOOGLE_GENERATIVE_AI_MODELS,
