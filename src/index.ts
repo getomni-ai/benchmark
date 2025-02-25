@@ -244,7 +244,7 @@ const runBenchmark = async () => {
             );
           }
 
-          if (benchmarkRun.id) {
+          if (benchmarkRun) {
             await saveResult(benchmarkRun.id, result);
           }
 
@@ -270,7 +270,7 @@ const runBenchmark = async () => {
   multibar.stop();
 
   // Complete benchmark run successfully
-  if (benchmarkRun.id) {
+  if (benchmarkRun) {
     await completeBenchmarkRun(benchmarkRun.id);
   }
 
