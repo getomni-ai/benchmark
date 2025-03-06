@@ -32,8 +32,8 @@ export const loadFromDb = async (): Promise<Input[]> => {
         markdown AS "trueMarkdownOutput"
       FROM documents
       WHERE include_in_training = FALSE
-      ORDER BY RANDOM()
-      LIMIT 100;
+      ORDER BY created_at
+      LIMIT 200;
     `);
 
     return result.rows as Input[];

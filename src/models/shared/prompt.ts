@@ -12,7 +12,7 @@ RULES:
 `;
 
 export const JSON_EXTRACTION_SYSTEM_PROMPT = `
-  Extract the following JSON schema from the text.
+  Extract the following JSON schema from the text and images if provided.
   Return only the JSON with no explanation text.
 `;
 

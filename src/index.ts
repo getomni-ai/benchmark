@@ -32,6 +32,7 @@ const MODEL_CONCURRENCY = {
   'azure-document-intelligence': 50,
   'claude-3-5-sonnet-20241022': 10,
   'gemini-2.0-flash-001': 30,
+  'mistral-ocr': 5,
   'gpt-4o': 50,
   omniai: 30,
   zerox: 50,
@@ -171,11 +172,12 @@ const runBenchmark = async () => {
                 extraction: extractionResult.usage,
               };
             } else {
+              let ocrResult;
               if (ocrModel === 'ground-truth') {
                 result.predictedMarkdown = item.trueMarkdownOutput;
               } else {
                 if (ocrModelProvider) {
-                  const ocrResult = await withTimeout(
+                  ocrResult = await withTimeout(
                     ocrModelProvider.ocr(item.imageUrl),
                     `OCR: ${ocrModel}`,
                   );
@@ -194,6 +196,7 @@ const runBenchmark = async () => {
                   extractionModelProvider.extractFromText(
                     result.predictedMarkdown,
                     item.jsonSchema,
+                    ocrResult?.imageBase64s,
                   ),
                   `JSON extraction: ${extractionModel}`,
                 );

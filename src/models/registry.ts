@@ -3,6 +3,7 @@ import { AWSTextractProvider } from './awsTextract';
 import { GeminiProvider } from './gemini';
 import { GoogleDocumentAIProvider } from './googleDocumentAI';
 import { LLMProvider } from './llm';
+import { MistralProvider } from './mistral';
 import { OmniAIProvider } from './omniAI';
 import { UnstructuredProvider } from './unstructured';
 import { ZeroxProvider } from './zerox';
@@ -62,6 +63,10 @@ export const MODEL_PROVIDERS = {
   azure: {
     models: ['azure-document-intelligence'],
     provider: AzureDocumentIntelligenceProvider,
+  },
+  mistral: {
+    models: ['mistral-ocr'],
+    provider: MistralProvider,
   },
   omniai: {
     models: ['omniai'],

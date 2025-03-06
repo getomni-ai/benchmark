@@ -66,6 +66,7 @@ You can view configuration for each model in the [src/models/](./src/models/) fo
 | Azure          | `azure-document-intelligence`                                | ✅  | ❌              | `AZURE_DOCUMENT_INTELLIGENCE_ENDPOINT`, `AZURE_DOCUMENT_INTELLIGENCE_KEY`                            |
 | Gemini         | `gemini-2.0-flash-001`, `gemini-1.5-pro`, `gemini-1.5-flash` | ✅  | ✅              | `GOOGLE_GENERATIVE_AI_API_KEY`                                                                       |
 | Google         | `google-document-ai`                                         | ✅  | ❌              | `GOOGLE_LOCATION`, `GOOGLE_PROJECT_ID`, `GOOGLE_PROCESSOR_ID`, `GOOGLE_APPLICATION_CREDENTIALS_PATH` |
+| Mistral        | `mistral-ocr`                                                | ✅  | ❌              | `MISTRAL_API_KEY`                                                        |
 | OmniAI         | `omniai`                                                     | ✅  | ✅              | `OMNIAI_API_KEY`, `OMNIAI_API_URL`                                                                   |
 | OpenAI         | `gpt-4o-mini`, `gpt-4o`                                      | ✅  | ✅              | `OPENAI_API_KEY`                                                                                     |
 | Unstructured   | `unstructured`                                               | ✅  | ❌              | `UNSTRUCTURED_API_KEY`                                                                               |

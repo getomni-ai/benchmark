@@ -143,11 +143,24 @@ export class LLMProvider extends ModelProvider {
     };
   }
 
-  async extractFromText(text: string, schema: JsonSchema) {
+  async extractFromText(text: string, schema: JsonSchema, imageBase64s?: string[]) {
     const modelProvider = createModelProvider(this.model);
 
+    let imageMessages: CoreMessage[] = [];
+    if (imageBase64s && imageBase64s.length > 0) {
+      imageMessages = [
+        {
+          role: 'user',
+          content: imageBase64s.map((base64) => ({
+            type: 'image',
+            image: base64,
+          })),
+        },
+      ];
+    }
     const messages: CoreMessage[] = [
       { role: 'system', content: JSON_EXTRACTION_SYSTEM_PROMPT },
+      ...imageMessages,
       { role: 'user', content: text },
     ];
 

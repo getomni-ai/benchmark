@@ -11,6 +11,7 @@ export class ModelProvider {
 
   async ocr(imagePath: string): Promise<{
     text: string;
+    imageBase64s?: string[];
     usage: Usage;
   }> {
     throw new Error('Not implemented');
@@ -19,6 +20,7 @@ export class ModelProvider {
   async extractFromText?(
     text: string,
     schema: JsonSchema,
+    imageBase64s?: string[],
   ): Promise<{
     json: Record<string, any>;
     usage: Usage;
