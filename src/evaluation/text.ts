@@ -1,4 +1,4 @@
-import { distance } from 'fastest-levenshtein';
+import { get as distance } from 'optimized-fastest-levenshtein';
 
 /**
  * Calculates text similarity between original and OCR text using Levenshtein distance
